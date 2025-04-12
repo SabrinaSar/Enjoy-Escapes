@@ -57,8 +57,42 @@ function SubmitButton({ formType }: { formType: "create" | "edit" }) {
 export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
   const router = useRouter();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  // Add refs for form fields
+  const titleRef = React.useRef<HTMLInputElement>(null);
+  const subtitleRef = React.useRef<HTMLTextAreaElement>(null);
+  const countryRef = React.useRef<HTMLInputElement>(null);
+  const priceRef = React.useRef<HTMLInputElement>(null);
+  const linkRef = React.useRef<HTMLInputElement>(null);
+  const tagsRef = React.useRef<HTMLInputElement>(null);
+
   const MAX_FILE_SIZE_MB = 3;
   const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
+  // Add test data functions
+  const fillTestData1 = () => {
+    if (titleRef.current) titleRef.current.value = "Morocco 🌴 All inclusive";
+    if (subtitleRef.current)
+      subtitleRef.current.value =
+        "All inclusive hotel stay with return flights";
+    if (countryRef.current) countryRef.current.value = "Morocco";
+    if (priceRef.current) priceRef.current.value = "£339";
+    if (linkRef.current) linkRef.current.value = "https://prf.hn/l/xEeBPeN/";
+    if (tagsRef.current)
+      tagsRef.current.value = "beach, all-inclusive, flights";
+  };
+
+  const fillTestData2 = () => {
+    if (titleRef.current) titleRef.current.value = "Morocco Desert Safari";
+    if (subtitleRef.current)
+      subtitleRef.current.value =
+        "Luxury desert camping experience with guided tours";
+    if (countryRef.current) countryRef.current.value = "Morocco";
+    if (priceRef.current) priceRef.current.value = "£459";
+    if (linkRef.current)
+      linkRef.current.value = "https://prf.hn/l/example-desert/";
+    if (tagsRef.current) tagsRef.current.value = "desert, luxury, adventure";
+  };
 
   const initialState: FormState = {
     success: false,
@@ -141,6 +175,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
           <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
             <Input
+              ref={titleRef}
               id="title"
               name="title"
               placeholder="e.g., Luxury Beach Resort"
@@ -161,6 +196,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
           <div className="space-y-2">
             <Label htmlFor="subtitle">Subtitle</Label>
             <Textarea
+              ref={subtitleRef}
               id="subtitle"
               name="subtitle"
               placeholder="Short description of the escape..."
@@ -182,6 +218,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
             <div className="space-y-2">
               <Label htmlFor="country">Country</Label>
               <Input
+                ref={countryRef}
                 id="country"
                 name="country"
                 placeholder="e.g., Maldives"
@@ -202,6 +239,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
             <div className="space-y-2">
               <Label htmlFor="price">Price</Label>
               <Input
+                ref={priceRef}
                 id="price"
                 name="price"
                 placeholder="e.g., $1999 / 7 nights"
@@ -226,6 +264,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
           <div className="space-y-2">
             <Label htmlFor="link">Booking Link</Label>
             <Input
+              ref={linkRef}
               id="link"
               name="link"
               type="url"
@@ -286,6 +325,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
           <div className="space-y-2">
             <Label htmlFor="tags">Tags (comma-separated)</Label>
             <Input
+              ref={tagsRef}
               id="tags"
               name="tags"
               placeholder="e.g., beach, luxury, all-inclusive"
@@ -345,6 +385,27 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
           </div>
 
           <SubmitButton formType={formType} />
+
+          {process.env.NODE_ENV !== "production" && (
+            <div className="flex space-x-2 mt-4 border-t pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={fillTestData1}
+                className="px-2 py-1 bg-secondary text-secondary-foreground border-0 rounded"
+              >
+                Debug: Morocco All-inclusive
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={fillTestData2}
+                className="px-2 py-1 bg-secondary text-secondary-foreground border-0 rounded"
+              >
+                Debug: Morocco Safari
+              </Button>
+            </div>
+          )}
         </form>
       </CardContent>
     </Card>
