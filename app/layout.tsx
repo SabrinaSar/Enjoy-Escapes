@@ -1,5 +1,6 @@
 import "./globals.css";
 
+import AuthButton from "@/components/header-auth";
 import { Geist } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
@@ -52,10 +53,10 @@ export default function RootLayout({
                     />
                     <span>Enjoy Escapes</span>
                   </Link>
-                  <div>{/* Placeholder if other nav items are needed */}</div>
+                  <AuthButton />
                 </div>
               </nav>
-              <div className="w-full">{children}</div>
+              <div className="w-full flex-1 flex flex-col">{children}</div>
 
               <footer className="w-full border-t border-t-foreground/10 p-8 flex justify-center text-center text-xs">
                 <div className="max-w-5xl w-full flex flex-col md:flex-row justify-between items-center gap-4">
