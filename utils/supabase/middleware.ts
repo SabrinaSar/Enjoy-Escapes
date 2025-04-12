@@ -39,18 +39,30 @@ export const updateSession = async (request: NextRequest) => {
     // Check for admin role
     const isAdmin = claimsData?.claims?.user_role === "admin";
 
+    // Disable access to auth pages (except sign-in)
+    const disabledAuthPages = [
+      "/forgot-password",
+      "/sign-up",
+      "/admin/reset-password",
+    ];
+
+    // Check if current path is a disabled auth page
+    const isDisabledAuthPage = disabledAuthPages.some((path) =>
+      request.nextUrl.pathname.startsWith(path)
+    );
+
+    // Return 404 for disabled auth pages to make them appear non-existent
+    if (isDisabledAuthPage) {
+      return NextResponse.rewrite(new URL("/page-not-found", request.url));
+    }
+
     // Handle route access and redirects
     if (request.nextUrl.pathname.startsWith("/admin") && !isAdmin) {
       return NextResponse.redirect(new URL("/", request.url));
     }
 
-    if (request.nextUrl.pathname === "/" && isAdmin) {
-      return NextResponse.redirect(new URL("/admin", request.url));
-    }
-
     return response;
   } catch (e) {
-    // Fallback for when Supabase client cannot be created
     return NextResponse.next({
       request: {
         headers: request.headers,

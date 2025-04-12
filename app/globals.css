@@ -3,6 +3,14 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  /* Custom Brand Colors */
+  --color-orange-web: #f9ac4b;
+  --color-white: #ffffff;
+  --color-delft-blue: #26346c;
+  --color-blue-green: #139ec3;
+  --color-sunglow: #fccc60;
+
+  /* ShadCN/UI Base Variables */
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
@@ -86,26 +94,28 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    /* Brand Colors - Light Theme */
+    --background: 0 0% 100%; /* white */
+    --foreground: 228 47% 10%; /* dark delft-blue */
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 228 47% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --popover-foreground: 228 47% 10%;
+    --primary: 228 47% 28.6%; /* delft-blue */
+    --primary-foreground: 0 0% 100%; /* white */
+    --secondary: 194 82% 42%; /* blue-green */
+    --secondary-foreground: 0 0% 100%; /* white */
+    --muted: 228 20% 96%; /* lighter, desaturated delft-blue */
+    --muted-foreground: 228 15% 45%; /* darker muted */
+    --accent: 37 93% 63.1%; /* orange-web */
+    --accent-foreground: 228 47% 10%; /* dark delft-blue for contrast */
+    --destructive: 0 84.2% 60.2%; /* default red */
+    --destructive-foreground: 0 0% 100%; /* white */
+    --border: 228 20% 90%; /* light delft-blue derived */
+    --input: 228 20% 90%; /* light delft-blue derived */
+    --ring: 228 47% 28.6%; /* delft-blue */
     --radius: 0.5rem;
+    /* Chart colors can be updated too if needed */
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -114,25 +124,27 @@
   }
 
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    /* Brand Colors - Dark Theme */
+    --background: 228 47% 10%; /* dark delft-blue */
+    --foreground: 0 0% 100%; /* white */
+    --card: 228 47% 15%; /* slightly lighter dark delft-blue */
+    --card-foreground: 0 0% 100%;
+    --popover: 228 47% 15%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 228 47% 50%; /* lighter delft-blue */
+    --primary-foreground: 228 47% 10%; /* dark delft-blue */
+    --secondary: 194 82% 60%; /* lighter blue-green */
+    --secondary-foreground: 228 47% 10%; /* dark delft-blue */
+    --muted: 228 20% 20%; /* darker, desaturated delft-blue */
+    --muted-foreground: 228 10% 70%; /* light gray derived */
+    --accent: 37 93% 63.1%; /* orange-web (kept bright) */
+    --accent-foreground: 228 47% 10%; /* dark delft-blue */
+    --destructive: 0 72% 50%; /* adjusted red for dark */
+    --destructive-foreground: 0 0% 100%;
+    --border: 228 20% 25%; /* darker delft-blue derived */
+    --input: 228 20% 25%; /* darker delft-blue derived */
+    --ring: 228 47% 60%; /* lighter primary for rings */
+    /* Chart colors can be updated too if needed */
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
