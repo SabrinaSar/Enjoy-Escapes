@@ -58,7 +58,7 @@ export const updateSession = async (request: NextRequest) => {
 
     // Handle route access and redirects
     if (request.nextUrl.pathname.startsWith("/admin") && !isAdmin) {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
     return response;
