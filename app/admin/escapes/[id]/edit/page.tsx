@@ -5,14 +5,12 @@ import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
 import { updateEscape } from "../../actions"; // Adjust path as needed
 
-interface EditEscapePageProps {
-  params: {
-    id: string;
-  };
-}
+// Define the params type as a Promise based on Next.js >= 15 changes
+type PageParams = Promise<{ id: string }>;
 
-export default async function EditEscapePage({ params }: EditEscapePageProps) {
-  const { id } = params;
+export default async function EditEscapePage(props: { params: PageParams }) {
+  // Await the params promise to resolve it
+  const { id } = await props.params;
   const supabase = await createClient();
 
   const { data: escape, error } = await supabase
