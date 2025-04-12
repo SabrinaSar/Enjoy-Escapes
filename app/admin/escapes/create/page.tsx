@@ -5,7 +5,7 @@ import { createEscape } from "../actions";
 export default function CreateEscapePage() {
   return (
     <>
-      <EscapeForm onSubmit={createEscape} formType="create" />
+      <EscapeForm action={createEscape} formType="create" />
       <Toaster richColors /> {/* Ensure Toaster is rendered */}
     </>
   );

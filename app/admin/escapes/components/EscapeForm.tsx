@@ -1,69 +1,102 @@
 "use client";
 
-import * as z from "zod";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 
 import { Button } from "@/components/ui/button";
 import { Database } from "@/types/supabase";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import React from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner"; // Using sonner for toast notifications
-import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { useActionState } from "react";
+import { useEffect } from "react";
+import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 type EscapeData = Database["public"]["Tables"]["escapes_data"]["Row"];
-type EscapeInsert = Database["public"]["Tables"]["escapes_data"]["Insert"];
-type EscapeUpdate = Database["public"]["Tables"]["escapes_data"]["Update"];
 
-// Basic Zod schema (can be expanded with more specific rules)
-const formSchema = z.object({
-  title: z.string().min(2, { message: "Title must be at least 2 characters." }),
-  subtitle: z
-    .string()
-    .min(5, { message: "Subtitle must be at least 5 characters." }),
-  country: z.string().min(2, { message: "Country is required." }),
-  price: z.string().min(1, { message: "Price is required." }),
-  link: z.string().url({ message: "Please enter a valid URL." }),
-  image: z.string().url({ message: "Please enter a valid image URL." }),
-  tags: z.string().optional(), // Handle comma-separated string for tags input
-  validFrom: z.string().optional(), // Consider using a date picker
-  validTo: z.string().optional(), // Consider using a date picker
-});
+interface FormState {
+  success: boolean;
+  message: string;
+  errors?: Record<string, string[]>;
+  data?: any;
+}
+
+type ServerAction = (
+  prevState: FormState,
+  formData: FormData
+) => Promise<FormState>;
 
 interface EscapeFormProps {
-  onSubmit: (
-    values: EscapeInsert | EscapeUpdate
-  ) => Promise<{ success: boolean; message: string; data?: any; error?: any }>;
-  initialData?: EscapeData | null; // Optional initial data for editing
+  action: ServerAction;
+  initialData?: EscapeData | null;
   formType: "create" | "edit";
 }
 
-export function EscapeForm({
-  onSubmit,
-  initialData,
-  formType,
-}: EscapeFormProps) {
+function SubmitButton({ formType }: { formType: "create" | "edit" }) {
+  const { pending } = useFormStatus();
+  return (
+    <Button
+      type="submit"
+      disabled={pending}
+      aria-disabled={pending}
+      className="px-2 py-1 bg-secondary text-secondary-foreground border-0 rounded"
+    >
+      {pending
+        ? formType === "create"
+          ? "Creating..."
+          : "Updating..."
+        : formType === "create"
+          ? "Create Escape"
+          : "Update Escape"}
+    </Button>
+  );
+}
+
+export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const MAX_FILE_SIZE_MB = 3;
+  const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
+  const initialState: FormState = {
+    success: false,
+    message: "",
+    errors: {},
+  };
+
+  const [state, formAction] = useActionState(action, initialState);
+
+  useEffect(() => {
+    if (state.message) {
+      if (state.success) {
+        toast.success(state.message);
+        router.push("/admin/escapes");
+        router.refresh();
+      } else {
+        let errorMessage = state.message;
+        if (state.errors && Object.keys(state.errors).length > 0) {
+          errorMessage +=
+            "\n" +
+            Object.entries(state.errors)
+              .map(([field, errors]) => `${field}: ${errors.join(", ")}`)
+              .join("\n");
+        }
+        toast.error(errorMessage || "An error occurred.");
+        if (state.errors?.image_file && fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      }
+    }
+  }, [state, router]);
 
   const defaultValues = initialData
     ? {
         ...initialData,
-        tags: initialData.tags?.join(", ") || "", // Convert array to comma-separated string for input
-        validFrom: initialData.validFrom?.split("T")[0] || "", // Format date for input type=date
-        validTo: initialData.validTo?.split("T")[0] || "",
+        tags: initialData.tags?.join(", ") ?? "",
+        validFrom: initialData.validFrom?.split("T")[0] ?? "",
+        validTo: initialData.validTo?.split("T")[0] ?? "",
       }
     : {
         title: "",
@@ -77,58 +110,15 @@ export function EscapeForm({
         validTo: "",
       };
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: defaultValues,
-  });
-
-  async function handleFormSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true);
-    const tagsArray =
-      values.tags
-        ?.split(",")
-        .map((tag) => tag.trim())
-        .filter((tag) => tag) || null;
-
-    // Prepare data for submission (either Insert or Update type)
-    const submissionData: EscapeInsert | EscapeUpdate = {
-      ...values,
-      tags: tagsArray,
-      // Ensure dates are in ISO format or null if empty
-      validFrom: values.validFrom
-        ? new Date(values.validFrom).toISOString()
-        : null,
-      validTo: values.validTo ? new Date(values.validTo).toISOString() : null,
-    };
-
-    // If editing, add the ID
-    if (formType === "edit" && initialData?.id) {
-      (submissionData as EscapeUpdate).id = initialData.id;
-    }
-
-    try {
-      const result = await onSubmit(submissionData);
-      if (result.success) {
-        toast.success(
-          result.message ||
-            (formType === "create"
-              ? "Escape created successfully!"
-              : "Escape updated successfully!")
-        );
-        // Redirect after successful submission
-        router.push("/admin/escapes");
-        router.refresh(); // Ensure data is refreshed on the target page
-      } else {
-        toast.error(result.message || "An error occurred.");
-        console.error("Submission error:", result.error);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.size > MAX_FILE_SIZE_BYTES) {
+      toast.error(`File size exceeds the limit of ${MAX_FILE_SIZE_MB} MB.`);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
       }
-    } catch (error) {
-      console.error("Form submission error:", error);
-      toast.error("An unexpected error occurred during submission.");
-    } finally {
-      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <Card>
@@ -136,166 +126,226 @@ export function EscapeForm({
         <CardTitle>
           {formType === "create" ? "Create New Escape" : "Edit Escape"}
         </CardTitle>
+        {!state.success && state.message && !state.errors && (
+          <p className="text-sm font-medium text-destructive">
+            {state.message}
+          </p>
+        )}
       </CardHeader>
       <CardContent>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleFormSubmit)}
-            className="space-y-8"
-          >
-            <FormField
-              control={form.control}
+        <form action={formAction} className="space-y-6">
+          {formType === "edit" && initialData?.id && (
+            <input type="hidden" name="id" value={initialData.id} />
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="title">Title</Label>
+            <Input
+              id="title"
               name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Luxury Beach Resort" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              placeholder="e.g., Luxury Beach Resort"
+              defaultValue={defaultValues.title}
+              aria-invalid={!!state.errors?.title}
+              aria-describedby="title-error"
             />
-            <FormField
-              control={form.control}
+            {state.errors?.title && (
+              <p
+                id="title-error"
+                className="text-sm font-medium text-destructive"
+              >
+                {state.errors.title.join(", ")}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="subtitle">Subtitle</Label>
+            <Textarea
+              id="subtitle"
               name="subtitle"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Subtitle</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Short description of the escape..."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              placeholder="Short description of the escape..."
+              defaultValue={defaultValues.subtitle}
+              aria-invalid={!!state.errors?.subtitle}
+              aria-describedby="subtitle-error"
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
+            {state.errors?.subtitle && (
+              <p
+                id="subtitle-error"
+                className="text-sm font-medium text-destructive"
+              >
+                {state.errors.subtitle.join(", ")}
+              </p>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="country">Country</Label>
+              <Input
+                id="country"
                 name="country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Country</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Maldives" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                placeholder="e.g., Maldives"
+                defaultValue={defaultValues.country}
+                aria-invalid={!!state.errors?.country}
+                aria-describedby="country-error"
               />
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Price</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., $1999 / 7 nights" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Include currency and duration if applicable.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <FormField
-              control={form.control}
-              name="link"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Booking Link</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="url"
-                      placeholder="https://example.com/booking"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+              {state.errors?.country && (
+                <p
+                  id="country-error"
+                  className="text-sm font-medium text-destructive"
+                >
+                  {state.errors.country.join(", ")}
+                </p>
               )}
-            />
-            <FormField
-              control={form.control}
-              name="image"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image URL</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="url"
-                      placeholder="https://example.com/image.jpg"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="tags"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tags</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="e.g., beach, luxury, all-inclusive"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Comma-separated list of tags.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="validFrom"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Valid From (Optional)</FormLabel>
-                    <FormControl>
-                      {/* Use type="date" for a basic date picker */}
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="validTo"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Valid To (Optional)</FormLabel>
-                    <FormControl>
-                      {/* Use type="date" for a basic date picker */}
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
 
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? "Submitting..."
-                : formType === "create"
-                  ? "Create Escape"
-                  : "Update Escape"}
-            </Button>
-          </form>
-        </Form>
+            <div className="space-y-2">
+              <Label htmlFor="price">Price</Label>
+              <Input
+                id="price"
+                name="price"
+                placeholder="e.g., $1999 / 7 nights"
+                defaultValue={defaultValues.price}
+                aria-invalid={!!state.errors?.price}
+                aria-describedby="price-error"
+              />
+              {state.errors?.price && (
+                <p
+                  id="price-error"
+                  className="text-sm font-medium text-destructive"
+                >
+                  {state.errors.price.join(", ")}
+                </p>
+              )}
+              <p className="text-sm text-muted-foreground">
+                Include currency and duration if applicable.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="link">Booking Link</Label>
+            <Input
+              id="link"
+              name="link"
+              type="url"
+              placeholder="https://example.com/booking"
+              defaultValue={defaultValues.link}
+              aria-invalid={!!state.errors?.link}
+              aria-describedby="link-error"
+            />
+            {state.errors?.link && (
+              <p
+                id="link-error"
+                className="text-sm font-medium text-destructive"
+              >
+                {state.errors.link.join(", ")}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="image_file">Image (Max {MAX_FILE_SIZE_MB}MB)</Label>
+            {formType === "edit" && initialData?.image && (
+              <div className="mb-2">
+                <p className="text-sm text-muted-foreground">Current Image:</p>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={initialData.image}
+                  alt="Current escape image"
+                  className="h-20 w-auto rounded object-cover"
+                />
+              </div>
+            )}
+            <Input
+              ref={fileInputRef}
+              id="image_file"
+              name="image_file"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              aria-invalid={!!state.errors?.image_file}
+              aria-describedby="image-file-error"
+              className="text-foreground file:mr-2 file:px-2 file:py-1 file:bg-secondary file:text-secondary-foreground file:border-0 file:rounded"
+            />
+            <p className="text-sm text-muted-foreground">
+              {formType === "edit"
+                ? "Upload a new image to replace the current one."
+                : "Upload an image for the escape."}
+            </p>
+            {state.errors?.image_file && (
+              <p
+                id="image-file-error"
+                className="text-sm font-medium text-destructive"
+              >
+                {state.errors.image_file.join(", ")}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="tags">Tags (comma-separated)</Label>
+            <Input
+              id="tags"
+              name="tags"
+              placeholder="e.g., beach, luxury, all-inclusive"
+              defaultValue={defaultValues.tags}
+              aria-invalid={!!state.errors?.tags}
+              aria-describedby="tags-error"
+            />
+            {state.errors?.tags && (
+              <p
+                id="tags-error"
+                className="text-sm font-medium text-destructive"
+              >
+                {state.errors.tags.join(", ")}
+              </p>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="validFrom">Valid From (Optional)</Label>
+              <Input
+                id="validFrom"
+                name="validFrom"
+                type="date"
+                defaultValue={defaultValues.validFrom}
+                aria-invalid={!!state.errors?.validFrom}
+                aria-describedby="validFrom-error"
+              />
+              {state.errors?.validFrom && (
+                <p
+                  id="validFrom-error"
+                  className="text-sm font-medium text-destructive"
+                >
+                  {state.errors.validFrom.join(", ")}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="validTo">Valid To (Optional)</Label>
+              <Input
+                id="validTo"
+                name="validTo"
+                type="date"
+                defaultValue={defaultValues.validTo}
+                aria-invalid={!!state.errors?.validTo}
+                aria-describedby="validTo-error"
+              />
+              {state.errors?.validTo && (
+                <p
+                  id="validTo-error"
+                  className="text-sm font-medium text-destructive"
+                >
+                  {state.errors.validTo.join(", ")}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <SubmitButton formType={formType} />
+        </form>
       </CardContent>
     </Card>
   );

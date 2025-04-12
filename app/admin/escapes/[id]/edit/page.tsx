@@ -28,11 +28,7 @@ export default async function EditEscapePage({ params }: EditEscapePageProps) {
 
   return (
     <>
-      <EscapeForm
-        onSubmit={updateEscape}
-        initialData={escape}
-        formType="edit"
-      />
+      <EscapeForm action={updateEscape} initialData={escape} formType="edit" />
       <Toaster richColors /> {/* Ensure Toaster is rendered */}
     </>
   );
