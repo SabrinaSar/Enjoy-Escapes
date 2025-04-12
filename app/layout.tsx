@@ -1,13 +1,10 @@
 import "./globals.css";
 
-import DeployButton from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
 import { Geist } from "next/font/google";
-import HeaderAuth from "@/components/header-auth";
+import Image from "next/image";
 import Link from "next/link";
 import { ThemeProvider } from "next-themes";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -15,8 +12,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Enjoy Escapes - Curated Travel Experiences",
+  description: "Discover unique travel escapes curated by Enjoy Escapes.",
 };
 
 const geistSans = Geist({
@@ -42,30 +39,50 @@ export default function RootLayout({
             <div className="flex-1 w-full flex flex-col">
               <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
                 <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-                  <div className="flex gap-5 items-center font-semibold">
-                    <Link href={"/"}>Next.js Supabase Starter</Link>
-                    <div className="flex items-center gap-2">
-                      <DeployButton />
-                    </div>
-                  </div>
-                  {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
+                  <Link
+                    href={"/"}
+                    className="flex items-center gap-2 font-semibold"
+                  >
+                    <Image
+                      src="/logo.png"
+                      alt="Enjoy Escapes Logo"
+                      width={40}
+                      height={40}
+                      className="h-8 w-auto"
+                    />
+                    <span>Enjoy Escapes</span>
+                  </Link>
+                  <div>{/* Placeholder if other nav items are needed */}</div>
                 </div>
               </nav>
               <div className="w-full">{children}</div>
 
-              <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-                <p>
-                  Powered by{" "}
-                  <a
-                    href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-                    target="_blank"
-                    className="font-bold hover:underline"
-                    rel="noreferrer"
-                  >
-                    Supabase
-                  </a>
-                </p>
-                <ThemeSwitcher />
+              <footer className="w-full border-t border-t-foreground/10 p-8 flex justify-center text-center text-xs">
+                <div className="max-w-5xl w-full flex flex-col md:flex-row justify-between items-center gap-4">
+                  <p>
+                    &copy; {new Date().getFullYear()} Enjoy Escapes. All rights
+                    reserved.
+                  </p>
+                  <div className="flex gap-4 items-center">
+                    <a
+                      href="https://tiktok.com/@sabrinaescapes"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="hover:underline"
+                    >
+                      TikTok
+                    </a>
+                    <a
+                      href="https://instagram.com/sabrinaescapes"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="hover:underline"
+                    >
+                      Instagram
+                    </a>
+                    <ThemeSwitcher />
+                  </div>
+                </div>
               </footer>
             </div>
           </main>
