@@ -83,15 +83,16 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
   };
 
   const fillTestData2 = () => {
-    if (titleRef.current) titleRef.current.value = "Morocco Desert Safari";
+    if (titleRef.current) titleRef.current.value = "5* Platinum Cape Verde";
     if (subtitleRef.current)
       subtitleRef.current.value =
-        "Luxury desert camping experience with guided tours";
-    if (countryRef.current) countryRef.current.value = "Morocco";
-    if (priceRef.current) priceRef.current.value = "£459";
+        "Everything included! Get yourself beach side!";
+    if (countryRef.current) countryRef.current.value = "Cape Verde";
+    if (priceRef.current) priceRef.current.value = "£705";
     if (linkRef.current)
-      linkRef.current.value = "https://prf.hn/l/example-desert/";
-    if (tagsRef.current) tagsRef.current.value = "desert, luxury, adventure";
+      linkRef.current.value = "https://tui-uk.7cnq.net/gOqEoO";
+    if (tagsRef.current)
+      tagsRef.current.value = "beach, all-inclusive, flights";
   };
 
   const initialState: FormState = {
@@ -402,7 +403,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 onClick={fillTestData2}
                 className="px-2 py-1 bg-secondary text-secondary-foreground border-0 rounded"
               >
-                Debug: Morocco Safari
+                Debug: 5* Platinum Cape Verde
               </Button>
             </div>
           )}

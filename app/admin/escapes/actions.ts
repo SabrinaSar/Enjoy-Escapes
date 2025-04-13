@@ -203,7 +203,7 @@ export async function updateEscape(
   let newImageUrl: string | null = null;
   let newImagePath: string | null = null;
   const imageFile = formData.get("image_file") as File | null;
-  if (imageFile) {
+  if (imageFile && imageFile.size > 0 && imageFile.name) {
     newImagePath = `escapes/${Date.now()}-${imageFile.name}`;
     const { error: uploadError } = await supabase.storage
       .from("enjoy-escapes-assets")
@@ -295,12 +295,18 @@ export async function updateEscape(
     country,
     price,
     link,
-    // tags: tags ? tags.split(',').map(tag => tag.trim()).filter(Boolean) : null,
-    // validFrom: validFrom ? new Date(validFrom).toISOString() : null,
-    // validTo: validTo ? new Date(validTo).toISOString() : null,
+    tags: tags
+      ? tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean)
+      : null,
+    validFrom: validFrom ? validFrom : null,
+    validTo: validTo ? validTo : null,
 
     // Conditionally add the image field only if a new one was uploaded
-    ...(newImageUrl && { image: newImageUrl }),
+    // Otherwise keep the existing image URL from currentEscapeData
+    ...(newImageUrl ? { image: newImageUrl } : {}),
   };
 
   // --- Update data in the database ---

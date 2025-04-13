@@ -9,6 +9,7 @@ export type EscapeData = {
   id: number;
   created_at: string;
   title: string | null;
+  subtitle: string | null;
   country: string | null;
   price: number | null;
   link: string | null;

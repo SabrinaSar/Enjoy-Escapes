@@ -59,6 +59,7 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
             </span>
           )}
         </div>
+        {escape.subtitle && <p className="text-sm mb-2">{escape.subtitle}</p>}
         <p className="text-sm text-muted-foreground mb-3">
           {escape.country || "Unknown Location"}
         </p>
