@@ -16,6 +16,7 @@ export type EscapeData = {
   image: string | null;
   validFrom: string | null;
   validTo: string | null;
+  tags: string[] | null;
 };
 
 export async function fetchEscapes(

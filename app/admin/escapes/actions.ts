@@ -116,10 +116,15 @@ export async function createEscape(
     price, // Already validated as string
     link,
     // Handle tags: Convert comma-separated string to array for DB if needed
-    // tags: tags ? tags.split(',').map(tag => tag.trim()).filter(Boolean) : null,
+    tags: tags
+      ? tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean)
+      : null,
     // Handle dates: Convert date string to ISO format for DB if needed
-    // validFrom: validFrom ? new Date(validFrom).toISOString() : null,
-    // validTo: validTo ? new Date(validTo).toISOString() : null,
+    validFrom: validFrom ? validFrom : null,
+    validTo: validTo ? validTo : null,
 
     image: imageUrl ?? "", // Use uploaded URL or empty string
   };
