@@ -13,8 +13,8 @@ export type EscapeData = {
   price: number | null;
   link: string | null;
   image: string | null;
-  valid_from: string | null;
-  valid_to: string | null;
+  validFrom: string | null;
+  validTo: string | null;
 };
 
 export async function fetchEscapes(

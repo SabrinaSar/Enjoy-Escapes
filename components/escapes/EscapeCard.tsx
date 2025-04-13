@@ -19,8 +19,6 @@ interface EscapeCardProps {
 }
 
 const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
-  const placeholderImage = "/placeholder-image.png"; // Add a placeholder image to your public folder
-
   return (
     <Card className="overflow-hidden flex flex-col h-full border hover:shadow-md transition-shadow duration-200">
       <CardHeader className="p-0">
@@ -33,18 +31,12 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
         >
           <AspectRatio ratio={16 / 9}>
             <Image
-              src={escape.image ?? placeholderImage}
+              src={escape.image!}
               alt={escape.title ?? "Escape deal image"}
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // Optimize image loading
               priority={false} // Set to true for above-the-fold images if needed, false for lazy loading
-              onError={(e) => {
-                // Fallback to placeholder if image fails to load
-                const target = e.target as HTMLImageElement;
-                target.srcset = placeholderImage; // Use srcset to cover different resolutions if needed
-                target.src = placeholderImage;
-              }}
             />
           </AspectRatio>
         </a>
@@ -71,13 +63,13 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
           {escape.country || "Unknown Location"}
         </p>
         <div className="flex flex-wrap gap-2 items-center">
-          <NewDealTag validFrom={escape.valid_from} />
+          <NewDealTag validFrom={escape.validFrom} />
           {/* Countdown timer might be better placed in footer or here */}
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0 mt-auto">
         {/* Display countdown timer if valid_to exists */}
-        <CountdownTimer validTo={escape.valid_to} />
+        <CountdownTimer validTo={escape.validTo} />
       </CardFooter>
     </Card>
   );
