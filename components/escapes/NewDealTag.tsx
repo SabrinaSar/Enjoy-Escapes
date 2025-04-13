@@ -23,7 +23,7 @@ const NewDealTag: React.FC<NewDealTagProps> = ({ validFrom }) => {
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
     // Return true if today is 1 day after validFrom
-    return diffDays === 1;
+    return diffDays <= 1;
   };
 
   if (!isNew()) return null;
