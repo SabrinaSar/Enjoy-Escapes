@@ -66,7 +66,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ validTo }) => {
 
   return (
     <div className="flex items-center text-sm text-muted-foreground">
-      <Clock className="mr-1.5 h-4 w-4 text-blue-green" />
+      <Clock className="mr-1.5 h-4 w-4 text-blue-green dark:text-secondary" />
       <span>Expires in: {timerComponents}</span>
     </div>
   );

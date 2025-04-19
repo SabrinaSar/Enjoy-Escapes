@@ -1,4 +1,3 @@
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   fetchEscapes,
   getLatestEscapeTimestamp,
@@ -6,7 +5,6 @@ import {
 
 import CategoryFilter from "@/components/escapes/CategoryFilter";
 import EscapeGrid from "@/components/escapes/EscapeGrid";
-import { Terminal } from "lucide-react";
 import { format } from "date-fns"; // Using date-fns for formatting
 
 export default async function Home() {

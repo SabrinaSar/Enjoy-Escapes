@@ -143,17 +143,20 @@ export default function CategoryFilter() {
           <Button
             key={category.id}
             variant="ghost"
-            className={`flex flex-col items-center p-2 h-auto w-auto rounded-md hover:bg-gray-100 ${
-              activeCategory === category.id ? "bg-gray-100" : ""
+            className={`flex flex-col items-center p-2 h-auto w-auto rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 ${
+              activeCategory === category.id
+                ? "bg-gray-100 dark:bg-gray-800"
+                : ""
             }`}
             onClick={() => handleCategorySelect(category.id)}
           >
-            <div className="h-10 w-10 mb-2 flex items-center justify-center">
+            <div className="h-10 w-10 mb-2 flex items-center justify-center bg-white group-hover:bg-gray-100 dark:bg-primary/20 rounded-full">
               <Image
                 src={category.icon}
                 alt={category.name}
                 width={24}
                 height={24}
+                className="dark:invert dark:brightness-200 dark:hue-rotate-180"
               />
             </div>
             <span className="text-xs font-medium">{category.name}</span>

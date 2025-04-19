@@ -54,15 +54,18 @@ const DealTypeTag = ({
   if (type === "hotel") {
     icon = <Hotel className="h-3 w-3 mr-1" />;
     label = "Hotel";
-    bgColor = "bg-blue-100 text-blue-800";
+    bgColor =
+      "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
   } else if (type === "flight") {
     icon = <Plane className="h-3 w-3 mr-1" />;
     label = "Flight";
-    bgColor = "bg-purple-100 text-purple-800";
+    bgColor =
+      "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300";
   } else if (type === "hotel+flight") {
     icon = <PackageCheck className="h-3 w-3 mr-1" />;
     label = "Hotel + Flight";
-    bgColor = "bg-green-100 text-green-800";
+    bgColor =
+      "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
   }
 
   return (
@@ -88,7 +91,7 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
       aria-label={`View details for ${escape.title}`}
       className="block w-full h-full group cursor-pointer"
     >
-      <Card className="overflow-hidden border hover:shadow-md transition-shadow duration-200 p-0 group-hover:shadow-lg">
+      <Card className="overflow-hidden border hover:shadow-md dark:hover:shadow-black/30 transition-shadow duration-200 p-0 group-hover:shadow-lg dark:group-hover:shadow-black/40">
         {/* Image section */}
         <div className="relative h-48 w-full">
           <Image
@@ -100,7 +103,7 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
             priority={false} // Set to true for above-the-fold images if needed, false for lazy loading
           />
         </div>
-        <CardContent className="relative z-10 mt-[-1.25rem] bg-white rounded-tr-3xl pt-6 px-4 pb-0">
+        <CardContent className="relative z-10 mt-[-1.25rem] bg-white dark:bg-card rounded-tr-3xl pt-6 px-4 pb-0">
           <div>
             <CardTitle className="text-lg font-semibold leading-tight group-hover:text-primary transition-colors">
               {escape.country || "Unknown Location"}
@@ -144,7 +147,7 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
             <NewDealTag validFrom={escape.validFrom} />
           </div>
         </CardContent>
-        <CardFooter className="p-4 pt-0 flex flex-col items-end gap-1">
+        <CardFooter className="p-4 pt-0 flex flex-col items-end gap-1 bg-white dark:bg-card">
           {escape.price && (
             <span className="whitespace-nowrap text-right">
               <span className="text-base text-muted-foreground mr-1">from</span>
@@ -159,7 +162,7 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
             </span>
           )}
           {escape.deposit_price && (
-            <span className="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+            <span className="inline-block bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs font-medium px-2.5 py-0.5 rounded-full">
               Book for £{escape.deposit_price}
               {escape.deposit_price_unit
                 ? ` ${escape.deposit_price_unit}`
