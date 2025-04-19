@@ -100,7 +100,7 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
             priority={false} // Set to true for above-the-fold images if needed, false for lazy loading
           />
         </div>
-        <CardContent className="pt-4 px-4 pb-0">
+        <CardContent className="relative z-10 mt-[-1.25rem] bg-white rounded-tr-3xl pt-6 px-4 pb-0">
           <div>
             <CardTitle className="text-lg font-semibold leading-tight group-hover:text-primary transition-colors">
               {escape.country || "Unknown Location"}
