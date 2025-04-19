@@ -538,3 +538,66 @@ export async function deleteEscape(id: number) {
     message: "Escape deleted successfully!",
   };
 }
+
+// Function to fetch escapes with pagination and search
+export async function fetchEscapesWithPagination(
+  page: number = 1,
+  pageSize: number = 10,
+  searchQuery: string = ""
+): Promise<{
+  escapes: Database["public"]["Tables"]["escapes_data"]["Row"][];
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+  error: string | null;
+}> {
+  const supabase = await createClient();
+
+  // Calculate pagination limits
+  const from = (page - 1) * pageSize;
+  const to = page * pageSize - 1;
+
+  // Start with the base query
+  let query = supabase.from("escapes_data").select("*", { count: "exact" });
+
+  // Add search filtering if a search query is provided
+  if (searchQuery) {
+    const searchQueryLower = searchQuery.toLowerCase();
+
+    // Use ilike for case-insensitive partial matches
+    query = query.or(
+      `title.ilike.%${searchQueryLower}%,` +
+        `country.ilike.%${searchQueryLower}%,` +
+        `city.ilike.%${searchQueryLower}%,` +
+        `subtitle.ilike.%${searchQueryLower}%`
+    );
+  }
+
+  // Apply pagination and ordering
+  const { data, error, count } = await query
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (error) {
+    console.error("Error fetching escapes:", error);
+    return {
+      escapes: [],
+      totalCount: 0,
+      currentPage: page,
+      totalPages: 0,
+      error: error.message,
+    };
+  }
+
+  // Calculate total pages
+  const totalCount = count || 0;
+  const totalPages = Math.ceil(totalCount / pageSize);
+
+  return {
+    escapes: data || [],
+    totalCount,
+    currentPage: page,
+    totalPages,
+    error: null,
+  };
+}

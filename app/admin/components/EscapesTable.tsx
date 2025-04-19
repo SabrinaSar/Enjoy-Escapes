@@ -24,6 +24,7 @@ import {
   MoreHorizontal,
   PackageCheck,
   Plane,
+  Search,
   Star,
 } from "lucide-react";
 import {
@@ -43,6 +44,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { deleteEscape } from "../actions"; // Import the delete action
 import { toast } from "sonner";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 type Escape = Database["public"]["Tables"]["escapes_data"]["Row"];
@@ -74,6 +76,8 @@ const formatPrice = (price?: number | null, unit?: string | null) => {
 export default function EscapesTable({ escapes }: EscapesTableProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("q") || "";
 
   const handleDeleteClick = (id: number) => {
     setDeleteTargetId(id);
@@ -149,13 +153,37 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
     );
   };
 
+  // If there are no results, show a message
+  if (escapes.length === 0) {
+    return (
+      <div className="text-center py-10">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+          <Search className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <h3 className="text-lg font-medium">No escapes found</h3>
+        <p className="text-muted-foreground mt-1">
+          {searchQuery
+            ? `No results match "${searchQuery}". Try a different search term.`
+            : "There are no escapes yet. Create your first one!"}
+        </p>
+        <Button asChild className="mt-4">
+          <Link href="/admin/create">Create New Escape</Link>
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <AlertDialog
       open={deleteTargetId !== null}
       onOpenChange={(open) => !open && setDeleteTargetId(null)}
     >
       <Table>
-        <TableCaption>A list of your recent escapes.</TableCaption>
+        <TableCaption>
+          {searchQuery
+            ? `Search results for "${searchQuery}"`
+            : "A list of your recent escapes."}
+        </TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead className="w-[60px]">Image</TableHead>
