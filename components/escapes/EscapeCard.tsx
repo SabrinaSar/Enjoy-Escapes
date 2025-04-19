@@ -22,7 +22,7 @@ const StarRating = ({ rating }: { rating: number }) => {
   return (
     <div className="flex items-center">
       {[...Array(rating)].map((_, i) => (
-        <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+        <Star key={i} className="h-4 w-4 text-accent fill-accent" />
       ))}
     </div>
   );
@@ -88,7 +88,7 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
       aria-label={`View details for ${escape.title}`}
       className="block w-full h-full group cursor-pointer"
     >
-      <Card className="overflow-hidden flex flex-col h-full border hover:shadow-md transition-shadow duration-200 p-0 group-hover:shadow-lg">
+      <Card className="overflow-hidden border hover:shadow-md transition-shadow duration-200 p-0 group-hover:shadow-lg">
         {/* Image section */}
         <div className="relative h-48 w-full">
           <Image
@@ -100,65 +100,70 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
             priority={false} // Set to true for above-the-fold images if needed, false for lazy loading
           />
         </div>
-        <CardContent className="p-4">
-          <div className="flex justify-between items-start gap-2 mb-2">
+        <CardContent className="pt-4 px-4 pb-0">
+          <div>
             <CardTitle className="text-lg font-semibold leading-tight group-hover:text-primary transition-colors">
-              {escape.title || "Untitled Escape"}
+              {escape.country || "Unknown Location"}
+              {escape.city ? `, ${escape.city}` : ""}
             </CardTitle>
-            <div className="text-right">
-              {escape.price && (
-                <span className="text-lg font-bold text-accent whitespace-nowrap">
-                  {escape.price}
-                  {escape.price_unit ? ` ${escape.price_unit}` : ""}
-                </span>
-              )}
-              {escape.deposit_price && (
-                <div className="text-xs text-muted-foreground">
-                  Deposit: {escape.deposit_price}
-                  {escape.deposit_price_unit
-                    ? ` ${escape.deposit_price_unit}`
-                    : ""}
-                </div>
-              )}
-            </div>
-          </div>
-          {escape.subtitle && <p className="text-sm mb-2">{escape.subtitle}</p>}
-
-          <div className="text-sm text-muted-foreground mb-3 flex flex-wrap items-center gap-1">
-            <span>{escape.country || "Unknown Location"}</span>
-            {escape.city && (
-              <>
-                <span className="text-xs">•</span>
-                <span>{escape.city}</span>
-              </>
+            {escape.star_rating && (
+              <div className="mt-1">
+                <StarRating rating={escape.star_rating} />
+              </div>
             )}
-          </div>
-
-          {escape.star_rating && (
-            <div className="mb-2">
-              <StarRating rating={escape.star_rating} />
-            </div>
-          )}
-
-          <div className="flex flex-wrap gap-2 items-center mb-2">
-            {escape.type && <DealTypeTag type={escape.type} />}
-            <NewDealTag validFrom={escape.validFrom} />
-
-            {escape.nights && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                <Moon className="h-3 w-3 mr-1" />
-                {escape.nights} {escape.nights === 1 ? "night" : "nights"}
-              </span>
-            )}
-
             {escape.board_basis && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                {BOARD_BASIS_LABELS[escape.board_basis] || escape.board_basis}
-              </span>
+              <div className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
+                <span>
+                  {BOARD_BASIS_LABELS[escape.board_basis] || escape.board_basis}
+                </span>
+                {escape.type && (
+                  <>
+                    <span className="text-xs">•</span>
+                    <span>
+                      {escape.type === "hotel"
+                        ? "Hotel"
+                        : escape.type === "flight"
+                          ? "Flight"
+                          : "Hotel + Flight"}
+                    </span>
+                  </>
+                )}
+              </div>
             )}
+            {escape.nights && (
+              <div className="text-sm text-muted-foreground mt-1">
+                {escape.nights} {escape.nights === 1 ? "night" : "nights"}
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-2 items-center">
+            <NewDealTag validFrom={escape.validFrom} />
           </div>
         </CardContent>
-        <CardFooter className="p-4 pt-0 mt-auto">
+        <CardFooter className="p-4 pt-0 flex flex-col items-end gap-1">
+          {escape.price && (
+            <span className="whitespace-nowrap text-right">
+              <span className="text-base text-muted-foreground mr-1">from</span>
+              <span className="text-2xl font-bold text-accent align-middle">
+                {escape.price}
+              </span>
+              {escape.price_unit && (
+                <span className="text-base text-muted-foreground ml-1">
+                  {escape.price_unit}
+                </span>
+              )}
+            </span>
+          )}
+          {escape.deposit_price && (
+            <span className="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full mt-1">
+              Book for {escape.deposit_price}
+              {escape.deposit_price_unit
+                ? `${escape.deposit_price_unit}`
+                : ""}{" "}
+              deposit
+            </span>
+          )}
           {/* Display countdown timer if valid_to exists */}
           <CountdownTimer validTo={escape.validTo} />
         </CardFooter>
