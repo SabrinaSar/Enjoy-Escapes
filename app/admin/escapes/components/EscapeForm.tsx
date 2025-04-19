@@ -55,6 +55,18 @@ function SubmitButton({ formType }: { formType: "create" | "edit" }) {
   );
 }
 
+// Map of board basis values to display labels
+const BOARD_BASIS_LABELS = {
+  room_only: "Room Only",
+  self_catering: "Self-Catering",
+  bed_and_breakfast: "Bed & Breakfast",
+  half_board: "Half Board",
+  full_board: "Full Board",
+  all_inclusive: "All Inclusive",
+  ultra_all_inclusive: "Ultra All Inclusive (AI+)",
+  flight_only: "Flight Only",
+};
+
 export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
   const router = useRouter();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -63,9 +75,12 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
   const titleRef = React.useRef<HTMLInputElement>(null);
   const subtitleRef = React.useRef<HTMLTextAreaElement>(null);
   const countryRef = React.useRef<HTMLInputElement>(null);
+  const cityRef = React.useRef<HTMLInputElement>(null);
   const priceRef = React.useRef<HTMLInputElement>(null);
   const linkRef = React.useRef<HTMLInputElement>(null);
-  const tagsRef = React.useRef<HTMLInputElement>(null);
+  const nightsRef = React.useRef<HTMLInputElement>(null);
+  const starRatingRef = React.useRef<HTMLInputElement>(null);
+  const depositPriceRef = React.useRef<HTMLInputElement>(null);
 
   const MAX_FILE_SIZE_MB = 3;
   const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
@@ -79,8 +94,6 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     if (countryRef.current) countryRef.current.value = "Morocco";
     if (priceRef.current) priceRef.current.value = "£339";
     if (linkRef.current) linkRef.current.value = "https://prf.hn/l/xEeBPeN/";
-    if (tagsRef.current)
-      tagsRef.current.value = "beach, all-inclusive, flights";
 
     // Find the type select element and set its value to 'hotel+flight'
     const typeSelect = document.getElementById("type") as HTMLSelectElement;
@@ -96,8 +109,6 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     if (priceRef.current) priceRef.current.value = "£705";
     if (linkRef.current)
       linkRef.current.value = "https://tui-uk.7cnq.net/gOqEoO";
-    if (tagsRef.current)
-      tagsRef.current.value = "beach, all-inclusive, flights";
 
     // Find the type select element and set its value to 'hotel'
     const typeSelect = document.getElementById("type") as HTMLSelectElement;
@@ -138,21 +149,33 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
   const defaultValues = initialData
     ? {
         ...initialData,
-        tags: initialData.tags?.join(", ") ?? "",
         validFrom: initialData.validFrom?.split("T")[0] ?? "",
         validTo: initialData.validTo?.split("T")[0] ?? "",
+        nights: initialData.nights ?? "",
+        board_basis: initialData.board_basis ?? "",
+        star_rating: initialData.star_rating ?? "",
+        price_unit: initialData.price_unit ?? "pp",
+        deposit_price: initialData.deposit_price ?? "",
+        deposit_price_unit: initialData.deposit_price_unit ?? "pp",
+        city: initialData.city ?? "",
       }
     : {
         title: "",
         subtitle: "",
         country: "",
+        city: "",
         price: "",
+        price_unit: "pp",
+        deposit_price: "",
+        deposit_price_unit: "pp",
         link: "",
         image: "",
-        tags: "",
         type: "hotel",
         validFrom: "",
         validTo: "",
+        nights: "",
+        board_basis: "",
+        star_rating: "",
       };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -248,27 +271,24 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="price">Price</Label>
+              <Label htmlFor="city">City</Label>
               <Input
-                ref={priceRef}
-                id="price"
-                name="price"
-                placeholder="e.g., $1999 / 7 nights"
-                defaultValue={defaultValues.price}
-                aria-invalid={!!state.errors?.price}
-                aria-describedby="price-error"
+                ref={cityRef}
+                id="city"
+                name="city"
+                placeholder="e.g., Marrakech"
+                defaultValue={defaultValues.city}
+                aria-invalid={!!state.errors?.city}
+                aria-describedby="city-error"
               />
-              {state.errors?.price && (
+              {state.errors?.city && (
                 <p
-                  id="price-error"
+                  id="city-error"
                   className="text-sm font-medium text-destructive"
                 >
-                  {state.errors.price.join(", ")}
+                  {state.errors.city.join(", ")}
                 </p>
               )}
-              <p className="text-sm text-muted-foreground">
-                Include currency and duration if applicable.
-              </p>
             </div>
           </div>
 
@@ -360,25 +380,193 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="tags">Tags (comma-separated)</Label>
-            <Input
-              ref={tagsRef}
-              id="tags"
-              name="tags"
-              placeholder="e.g., beach, luxury, all-inclusive"
-              defaultValue={defaultValues.tags}
-              aria-invalid={!!state.errors?.tags}
-              aria-describedby="tags-error"
-            />
-            {state.errors?.tags && (
-              <p
-                id="tags-error"
-                className="text-sm font-medium text-destructive"
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="price">Price</Label>
+              <Input
+                ref={priceRef}
+                id="price"
+                name="price"
+                placeholder="e.g., £599"
+                defaultValue={defaultValues.price}
+                aria-invalid={!!state.errors?.price}
+                aria-describedby="price-error"
+              />
+              {state.errors?.price && (
+                <p
+                  id="price-error"
+                  className="text-sm font-medium text-destructive"
+                >
+                  {state.errors.price.join(", ")}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="price_unit">Price Unit</Label>
+              <select
+                id="price_unit"
+                name="price_unit"
+                defaultValue={defaultValues.price_unit}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                aria-invalid={!!state.errors?.price_unit}
+                aria-describedby="price-unit-error"
               >
-                {state.errors.tags.join(", ")}
-              </p>
-            )}
+                <option value="pp">Per Person (pp)</option>
+                <option value="pn">Per Night (pn)</option>
+                <option value="pr">Per Room (pr)</option>
+              </select>
+              {state.errors?.price_unit && (
+                <p
+                  id="price-unit-error"
+                  className="text-sm font-medium text-destructive"
+                >
+                  {state.errors.price_unit.join(", ")}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="deposit_price">Deposit Price</Label>
+              <Input
+                ref={depositPriceRef}
+                id="deposit_price"
+                name="deposit_price"
+                placeholder="e.g., £75"
+                defaultValue={defaultValues.deposit_price}
+                aria-invalid={!!state.errors?.deposit_price}
+                aria-describedby="deposit-price-error"
+              />
+              {state.errors?.deposit_price && (
+                <p
+                  id="deposit-price-error"
+                  className="text-sm font-medium text-destructive"
+                >
+                  {state.errors.deposit_price.join(", ")}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="deposit_price_unit">Deposit Price Unit</Label>
+              <select
+                id="deposit_price_unit"
+                name="deposit_price_unit"
+                defaultValue={defaultValues.deposit_price_unit}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                aria-invalid={!!state.errors?.deposit_price_unit}
+                aria-describedby="deposit-price-unit-error"
+              >
+                <option value="pp">Per Person (pp)</option>
+                <option value="pn">Per Night (pn)</option>
+                <option value="pr">Per Room (pr)</option>
+              </select>
+              {state.errors?.deposit_price_unit && (
+                <p
+                  id="deposit-price-unit-error"
+                  className="text-sm font-medium text-destructive"
+                >
+                  {state.errors.deposit_price_unit.join(", ")}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="nights">Number of Nights</Label>
+              <Input
+                ref={nightsRef}
+                id="nights"
+                name="nights"
+                type="number"
+                min="1"
+                placeholder="e.g., 7"
+                defaultValue={defaultValues.nights}
+                aria-invalid={!!state.errors?.nights}
+                aria-describedby="nights-error"
+              />
+              {state.errors?.nights && (
+                <p
+                  id="nights-error"
+                  className="text-sm font-medium text-destructive"
+                >
+                  {state.errors.nights.join(", ")}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="star_rating">Star Rating</Label>
+              <Input
+                ref={starRatingRef}
+                id="star_rating"
+                name="star_rating"
+                type="number"
+                min="1"
+                max="6"
+                placeholder="e.g., 5"
+                defaultValue={defaultValues.star_rating}
+                aria-invalid={!!state.errors?.star_rating}
+                aria-describedby="star-rating-error"
+              />
+              {state.errors?.star_rating && (
+                <p
+                  id="star-rating-error"
+                  className="text-sm font-medium text-destructive"
+                >
+                  {state.errors.star_rating.join(", ")}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="board_basis">Board Basis</Label>
+              <select
+                id="board_basis"
+                name="board_basis"
+                defaultValue={defaultValues.board_basis}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                aria-invalid={!!state.errors?.board_basis}
+                aria-describedby="board-basis-error"
+              >
+                <option value="">Select Board Basis</option>
+                <option value="room_only">
+                  {BOARD_BASIS_LABELS.room_only}
+                </option>
+                <option value="self_catering">
+                  {BOARD_BASIS_LABELS.self_catering}
+                </option>
+                <option value="bed_and_breakfast">
+                  {BOARD_BASIS_LABELS.bed_and_breakfast}
+                </option>
+                <option value="half_board">
+                  {BOARD_BASIS_LABELS.half_board}
+                </option>
+                <option value="full_board">
+                  {BOARD_BASIS_LABELS.full_board}
+                </option>
+                <option value="all_inclusive">
+                  {BOARD_BASIS_LABELS.all_inclusive}
+                </option>
+                <option value="ultra_all_inclusive">
+                  {BOARD_BASIS_LABELS.ultra_all_inclusive}
+                </option>
+                <option value="flight_only">
+                  {BOARD_BASIS_LABELS.flight_only}
+                </option>
+              </select>
+              {state.errors?.board_basis && (
+                <p
+                  id="board-basis-error"
+                  className="text-sm font-medium text-destructive"
+                >
+                  {state.errors.board_basis.join(", ")}
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

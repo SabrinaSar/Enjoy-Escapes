@@ -23,6 +23,22 @@ export type Database = {
           type: "hotel" | "flight" | "hotel+flight";
           validFrom: string | null;
           validTo: string | null;
+          nights: number | null;
+          board_basis:
+            | "room_only"
+            | "self_catering"
+            | "bed_and_breakfast"
+            | "half_board"
+            | "full_board"
+            | "all_inclusive"
+            | "ultra_all_inclusive"
+            | "flight_only"
+            | null;
+          star_rating: number | null;
+          price_unit: "pp" | "pn" | "pr" | null;
+          deposit_price: string | null;
+          deposit_price_unit: "pp" | "pn" | "pr" | null;
+          city: string | null;
         };
         Insert: {
           country: string;
@@ -37,6 +53,22 @@ export type Database = {
           type: "hotel" | "flight" | "hotel+flight";
           validFrom?: string | null;
           validTo?: string | null;
+          nights?: number | null;
+          board_basis?:
+            | "room_only"
+            | "self_catering"
+            | "bed_and_breakfast"
+            | "half_board"
+            | "full_board"
+            | "all_inclusive"
+            | "ultra_all_inclusive"
+            | "flight_only"
+            | null;
+          star_rating?: number | null;
+          price_unit?: "pp" | "pn" | "pr" | null;
+          deposit_price?: string | null;
+          deposit_price_unit?: "pp" | "pn" | "pr" | null;
+          city?: string | null;
         };
         Update: {
           country?: string;
@@ -51,6 +83,22 @@ export type Database = {
           type?: "hotel" | "flight" | "hotel+flight";
           validFrom?: string | null;
           validTo?: string | null;
+          nights?: number | null;
+          board_basis?:
+            | "room_only"
+            | "self_catering"
+            | "bed_and_breakfast"
+            | "half_board"
+            | "full_board"
+            | "all_inclusive"
+            | "ultra_all_inclusive"
+            | "flight_only"
+            | null;
+          star_rating?: number | null;
+          price_unit?: "pp" | "pn" | "pr" | null;
+          deposit_price?: string | null;
+          deposit_price_unit?: "pp" | "pn" | "pr" | null;
+          city?: string | null;
         };
         Relationships: [];
       };

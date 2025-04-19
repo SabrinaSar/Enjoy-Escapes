@@ -50,6 +50,9 @@ export default async function AuthButton() {
   }
   return user ? (
     <form action={signOutAction}>
+      <Link className="mr-2" href="/admin">
+        <Button variant={"outline"}>Admin</Button>
+      </Link>
       <Button type="submit" variant={"outline"}>
         Sign out
       </Button>

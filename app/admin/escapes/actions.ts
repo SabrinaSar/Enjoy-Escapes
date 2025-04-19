@@ -20,6 +20,21 @@ type EscapeUpdate = Database["public"]["Tables"]["escapes_data"]["Update"];
 // Define a type validator for the deal type enum
 const dealTypeEnum = z.enum(["hotel", "flight", "hotel+flight"]);
 
+// Define a type validator for the board basis enum
+const boardBasisEnum = z.enum([
+  "room_only",
+  "self_catering",
+  "bed_and_breakfast",
+  "half_board",
+  "full_board",
+  "all_inclusive",
+  "ultra_all_inclusive",
+  "flight_only",
+]);
+
+// Define a type validator for the price unit enum
+const priceUnitEnum = z.enum(["pp", "pn", "pr"]);
+
 // Updated Zod schema with the new type field
 const escapeFormSchema = z.object({
   title: z.string().min(1, "Title is required."),
@@ -29,9 +44,27 @@ const escapeFormSchema = z.object({
   link: z.string().url("Invalid URL format."),
   type: dealTypeEnum, // Add type validation
   // Optional fields
-  tags: z.string().optional(),
   validFrom: z.string().optional(),
   validTo: z.string().optional(),
+  nights: z
+    .union([
+      z.string().transform((val) => (val === "" ? null : parseInt(val, 10))),
+      z.number(),
+      z.null(),
+    ])
+    .optional(),
+  board_basis: boardBasisEnum.optional(),
+  star_rating: z
+    .union([
+      z.string().transform((val) => (val === "" ? null : parseInt(val, 10))),
+      z.number(),
+      z.null(),
+    ])
+    .optional(),
+  price_unit: priceUnitEnum.optional(),
+  deposit_price: z.string().optional(),
+  deposit_price_unit: priceUnitEnum.optional(),
+  city: z.string().optional(),
   // Exclude image_file from schema validation if handled separately
 });
 
@@ -90,9 +123,15 @@ export async function createEscape(
     price: rawFormData.price,
     link: rawFormData.link,
     type: rawFormData.type, // Add the type field to validation
-    tags: rawFormData.tags,
     validFrom: rawFormData.validFrom,
     validTo: rawFormData.validTo,
+    nights: rawFormData.nights,
+    board_basis: rawFormData.board_basis,
+    star_rating: rawFormData.star_rating,
+    price_unit: rawFormData.price_unit,
+    deposit_price: rawFormData.deposit_price,
+    deposit_price_unit: rawFormData.deposit_price_unit,
+    city: rawFormData.city,
   });
 
   // If validation fails, return errors
@@ -116,9 +155,15 @@ export async function createEscape(
     price,
     link,
     type,
-    tags,
     validFrom,
     validTo,
+    nights,
+    board_basis,
+    star_rating,
+    price_unit,
+    deposit_price,
+    deposit_price_unit,
+    city,
   } = validatedFields.data;
 
   // Prepare data for database insertion
@@ -129,17 +174,18 @@ export async function createEscape(
     price, // Already validated as string
     link,
     type, // Add the type field to the data being inserted
-    // Handle tags: Convert comma-separated string to array for DB if needed
-    tags: tags
-      ? tags
-          .split(",")
-          .map((tag) => tag.trim())
-          .filter(Boolean)
-      : null,
+    // Set tags to null since we removed the field
+    tags: null,
     // Handle dates: Convert date string to ISO format for DB if needed
     validFrom: validFrom ? validFrom : null,
     validTo: validTo ? validTo : null,
-
+    nights: nights,
+    board_basis: board_basis,
+    star_rating: star_rating,
+    price_unit: price_unit,
+    deposit_price: deposit_price,
+    deposit_price_unit: deposit_price_unit,
+    city: city,
     image: imageUrl ?? "", // Use uploaded URL or empty string
   };
 
@@ -271,9 +317,27 @@ export async function updateEscape(
     price: z.string().min(1, "Price is required."),
     link: z.string().url("Invalid URL format."),
     type: dealTypeEnum, // Add type validation
-    tags: z.string().optional(),
     validFrom: z.string().optional(),
     validTo: z.string().optional(),
+    nights: z
+      .union([
+        z.string().transform((val) => (val === "" ? null : parseInt(val, 10))),
+        z.number(),
+        z.null(),
+      ])
+      .optional(),
+    board_basis: boardBasisEnum.optional(),
+    star_rating: z
+      .union([
+        z.string().transform((val) => (val === "" ? null : parseInt(val, 10))),
+        z.number(),
+        z.null(),
+      ])
+      .optional(),
+    price_unit: priceUnitEnum.optional(),
+    deposit_price: z.string().optional(),
+    deposit_price_unit: priceUnitEnum.optional(),
+    city: z.string().optional(),
     // ID is handled separately, image_file is handled separately
   });
 
@@ -312,9 +376,15 @@ export async function updateEscape(
     price,
     link,
     type,
-    tags,
     validFrom,
     validTo,
+    nights,
+    board_basis,
+    star_rating,
+    price_unit,
+    deposit_price,
+    deposit_price_unit,
+    city,
   } = validatedFields.data;
 
   // Prepare data for database update
@@ -325,14 +395,16 @@ export async function updateEscape(
     price,
     link,
     type, // Add the type field to the update data
-    tags: tags
-      ? tags
-          .split(",")
-          .map((tag) => tag.trim())
-          .filter(Boolean)
-      : null,
+    tags: null, // Set tags to null since we removed the field
     validFrom: validFrom ? validFrom : null,
     validTo: validTo ? validTo : null,
+    nights: nights,
+    board_basis: board_basis,
+    star_rating: star_rating,
+    price_unit: price_unit,
+    deposit_price: deposit_price,
+    deposit_price_unit: deposit_price_unit,
+    city: city,
 
     // Conditionally add the image field only if a new one was uploaded
     // Otherwise keep the existing image URL from currentEscapeData
