@@ -102,6 +102,23 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // Optimize image loading
             priority={false} // Set to true for above-the-fold images if needed, false for lazy loading
           />
+
+          {/* Tags positioned at the top-left corner of the image */}
+          <div className="absolute top-2 left-2 z-10 flex flex-col gap-1.5 items-start">
+            {/* Custom wrapper for NewDealTag to maintain original styling */}
+            {escape.validFrom && (
+              <div className="inline-flex rounded-md bg-orange-50 dark:bg-orange-900/30 px-2 py-0.5 text-xs font-medium text-orange-600 dark:text-orange-400 ring-1 ring-inset ring-orange-500/10 dark:ring-orange-500/30">
+                <span>New Deal 🔥</span>
+              </div>
+            )}
+
+            {/* Countdown timer with consistent styling */}
+            {escape.validTo && (
+              <div className="inline-flex bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded">
+                <CountdownTimer validTo={escape.validTo} />
+              </div>
+            )}
+          </div>
         </div>
         <CardContent className="relative z-10 mt-[-1.25rem] bg-white dark:bg-card rounded-tr-3xl pt-6 px-4 pb-0">
           <div>
@@ -142,10 +159,6 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
               </div>
             )}
           </div>
-
-          <div className="flex flex-wrap gap-2 items-center">
-            <NewDealTag validFrom={escape.validFrom} />
-          </div>
         </CardContent>
         <CardFooter className="p-4 pt-0 flex flex-col items-end gap-1 bg-white dark:bg-card">
           {escape.price && (
@@ -170,8 +183,6 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
               deposit
             </span>
           )}
-          {/* Display countdown timer if valid_to exists */}
-          <CountdownTimer validTo={escape.validTo} />
         </CardFooter>
       </Card>
     </a>

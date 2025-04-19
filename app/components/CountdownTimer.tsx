@@ -47,28 +47,30 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ validTo }) => {
     return null; // Don't render if no time left or not applicable
   }
 
-  const timerComponents = Object.entries(timeLeft)
-    .map(([interval, value]) => {
-      if (
-        value === 0 &&
-        interval !== "seconds" &&
-        Object.keys(timeLeft).length > 1
-      )
-        return null; // Optionally hide zero values except seconds if other units exist
-      return (
-        <span key={interval} className="mx-1">
-          {value}
-          {interval.charAt(0)}
-        </span>
-      );
-    })
-    .filter(Boolean); // Remove null entries
+  // Compact time format
+  const formatTime = () => {
+    const parts = [];
+
+    if (timeLeft.days > 0) {
+      parts.push(`${timeLeft.days}d`);
+    }
+
+    parts.push(`${String(timeLeft.hours).padStart(2, "0")}h`);
+    parts.push(`${String(timeLeft.minutes).padStart(2, "0")}m`);
+
+    // Only show seconds if less than a day remaining
+    if (timeLeft.days === 0) {
+      parts.push(`${String(timeLeft.seconds).padStart(2, "0")}s`);
+    }
+
+    return parts.join(" ");
+  };
 
   return (
-    <div className="flex items-center text-sm text-muted-foreground">
-      <Clock className="mr-1.5 h-4 w-4 text-blue-green dark:text-secondary" />
-      <span>Expires in: {timerComponents}</span>
-    </div>
+    <span className="inline-flex items-center">
+      <Clock className="h-3 w-3 mr-1" />
+      <span>Expires {formatTime()}</span>
+    </span>
   );
 };
 

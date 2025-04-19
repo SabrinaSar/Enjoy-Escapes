@@ -3,8 +3,8 @@ import {
   getLatestEscapeTimestamp,
 } from "@/app/actions/fetchEscapes";
 
-import CategoryFilter from "@/components/escapes/CategoryFilter";
-import EscapeGrid from "@/components/escapes/EscapeGrid";
+import CategoryFilter from "@/app/components/CategoryFilter";
+import EscapeGrid from "@/app/components/EscapeGrid";
 import { format } from "date-fns"; // Using date-fns for formatting
 
 export default async function Home() {
