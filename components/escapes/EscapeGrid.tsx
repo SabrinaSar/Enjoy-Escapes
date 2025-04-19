@@ -65,7 +65,7 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
           No escape deals found.
         </p>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {escapes.map((escape) => (
           <EscapeCard key={escape.id} escape={escape} />
         ))}
