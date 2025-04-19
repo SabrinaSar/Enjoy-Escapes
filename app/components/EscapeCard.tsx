@@ -20,9 +20,13 @@ const formatPrice = (price?: number | null, unit?: string | null) => {
 // Star Rating component
 const StarRating = ({ rating }: { rating: number }) => {
   return (
-    <div className="flex items-center">
+    <div className="flex items-center" aria-label={`${rating} star rating`}>
       {[...Array(rating)].map((_, i) => (
-        <Star key={i} className="h-4 w-4 text-accent fill-accent" />
+        <Star
+          key={i}
+          className="h-4 w-4 text-accent fill-accent"
+          aria-hidden="true"
+        />
       ))}
     </div>
   );
@@ -52,17 +56,17 @@ const DealTypeTag = ({
 
   // Define icon and label based on type
   if (type === "hotel") {
-    icon = <Hotel className="h-3 w-3 mr-1" />;
+    icon = <Hotel className="h-3 w-3 mr-1" aria-hidden="true" />;
     label = "Hotel";
     bgColor =
       "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
   } else if (type === "flight") {
-    icon = <Plane className="h-3 w-3 mr-1" />;
+    icon = <Plane className="h-3 w-3 mr-1" aria-hidden="true" />;
     label = "Flight";
     bgColor =
       "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300";
   } else if (type === "hotel+flight") {
-    icon = <PackageCheck className="h-3 w-3 mr-1" />;
+    icon = <PackageCheck className="h-3 w-3 mr-1" aria-hidden="true" />;
     label = "Hotel + Flight";
     bgColor =
       "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
@@ -83,20 +87,48 @@ interface EscapeCardProps {
 }
 
 const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
+  const location = `${escape.city ? `${escape.city}, ` : ""}${escape.country || "Unknown Location"}`;
+  const dealType =
+    escape.type === "hotel"
+      ? "Hotel"
+      : escape.type === "flight"
+        ? "Flight"
+        : escape.type === "hotel+flight"
+          ? "Hotel + Flight Package"
+          : "Travel Deal";
+
+  const dealTitle = escape.title || `${dealType} in ${location}`;
+  const fullDescription = escape.subtitle
+    ? escape.subtitle
+    : `${dealType} in ${location}${escape.nights ? ` for ${escape.nights} nights` : ""}${escape.board_basis ? `, ${BOARD_BASIS_LABELS[escape.board_basis] || escape.board_basis}` : ""}`;
+
   return (
     <a
       href={escape.link ?? "#"}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`View details for ${escape.title}`}
+      aria-label={`View details for ${dealTitle} - ${fullDescription}`}
       className="block w-full h-full group cursor-pointer"
+      itemScope
+      itemType="https://schema.org/TravelAction"
     >
+      {/* Hidden semantic SEO elements */}
+      <meta itemProp="name" content={dealTitle} />
+      <meta itemProp="description" content={fullDescription} />
+      {escape.image && <meta itemProp="image" content={escape.image} />}
+      {escape.price && (
+        <meta itemProp="price" content={escape.price.toString()} />
+      )}
+      {escape.country && (
+        <meta itemProp="addressCountry" content={escape.country} />
+      )}
+
       <Card className="overflow-hidden border hover:shadow-md dark:hover:shadow-black/30 transition-shadow duration-200 p-0 group-hover:shadow-lg dark:group-hover:shadow-black/40 flex flex-col h-full">
         {/* Image section */}
         <div className="relative h-48 w-full">
           <Image
             src={escape.image!}
-            alt={escape.title ?? "Escape deal image"}
+            alt={dealTitle}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // Optimize image loading
@@ -158,7 +190,7 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
             <div className="min-h-[1.5rem] mt-auto">
               {escape.nights && (
                 <div className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
-                  <Moon className="h-4 w-4 text-accent" />
+                  <Moon className="h-4 w-4 text-accent" aria-hidden="true" />
                   <span>
                     {escape.nights} {escape.nights === 1 ? "night" : "nights"}
                   </span>

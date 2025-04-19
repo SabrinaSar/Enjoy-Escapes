@@ -7,9 +7,7 @@ import Link from "next/link";
 import { ThemeProvider } from "next-themes";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
+const defaultUrl = "https://enjoyescapes.com";
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
