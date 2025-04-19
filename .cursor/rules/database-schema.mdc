@@ -1,0 +1,90 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Database Schema Structure
+
+This guide outlines where database schema is defined and what files need to be updated when making schema changes.
+
+## Type Definitions
+
+The Supabase database types are defined in [types/supabase.ts](mdc:types/supabase.ts). When adding or modifying tables or columns, this file should be updated first to ensure type safety throughout the application.
+
+Example of a table definition:
+```typescript
+escapes_data: {
+  Row: {
+    country: string;
+    created_at: string;
+    id: number;
+    image: string;
+    link: string;
+    price: string;
+    subtitle: string;
+    tags: string[] | null;
+    title: string;
+    type: "hotel" | "flight" | "hotel+flight";
+    validFrom: string | null;
+    validTo: string | null;
+  };
+  // Insert and Update definitions...
+}
+```
+
+## Data Access Layer
+
+The data fetching logic that interacts with the database is contained in:
+
+- [app/actions/fetchEscapes.ts](mdc:app/actions/fetchEscapes.ts) - Server actions for fetching escape data
+
+When adding new fields or tables, ensure corresponding EscapeData type is updated here:
+
+```typescript
+export type EscapeData = {
+  id: number;
+  created_at: string;
+  // ... other fields
+  type: "hotel" | "flight" | "hotel+flight" | null;
+  // ... 
+};
+```
+
+## Form Components
+
+Form components that create or update database records need to be updated when schema changes:
+
+- [app/admin/escapes/components/EscapeForm.tsx](mdc:app/admin/escapes/components/EscapeForm.tsx) - Form component for creating/editing escapes
+- [app/admin/escapes/actions.ts](mdc:app/admin/escapes/actions.ts) - Server actions for creating/updating escapes
+
+Important patterns to update in actions.ts:
+1. Form schema validation (using Zod)
+2. Data transformation between form and database
+3. Error handling
+
+```typescript
+// Example of schema validation
+const escapeFormSchema = z.object({
+  // ... other fields
+  type: dealTypeEnum, // z.enum(["hotel", "flight", "hotel+flight"]),
+  // ...
+});
+```
+
+## Display Components
+
+Components that display database content need updates when schema changes:
+
+- [components/escapes/EscapeCard.tsx](mdc:components/escapes/EscapeCard.tsx) - Card component showing escape details
+- [components/escapes/EscapeGrid.tsx](mdc:components/escapes/EscapeGrid.tsx) - Grid container for escape cards
+
+## Schema Change Checklist
+
+When modifying the database schema:
+
+1. Update Supabase type definitions in [types/supabase.ts](mdc:types/supabase.ts)
+2. Update EscapeData type in [app/actions/fetchEscapes.ts](mdc:app/actions/fetchEscapes.ts)
+3. Update form validation in [app/admin/escapes/actions.ts](mdc:app/admin/escapes/actions.ts)
+4. Update form components in [app/admin/escapes/components/EscapeForm.tsx](mdc:app/admin/escapes/components/EscapeForm.tsx)
+5. Update display components like [components/escapes/EscapeCard.tsx](mdc:components/escapes/EscapeCard.tsx)
+6. Test form submission and display with the new schema
