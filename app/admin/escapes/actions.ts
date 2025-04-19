@@ -36,37 +36,54 @@ const boardBasisEnum = z.enum([
 const priceUnitEnum = z.enum(["pp", "pn", "pr"]);
 
 // Updated Zod schema with the new type field
-const escapeFormSchema = z.object({
-  title: z.string().min(1, "Title is required."),
-  subtitle: z.string().min(1, "Subtitle is required."),
-  country: z.string().min(1, "Country is required."),
-  price: z.string().min(1, "Price is required."), // Keep as string based on previous findings
-  link: z.string().url("Invalid URL format."),
-  type: dealTypeEnum, // Add type validation
-  // Optional fields
-  validFrom: z.string().optional(),
-  validTo: z.string().optional(),
-  nights: z
-    .union([
-      z.string().transform((val) => (val === "" ? null : parseInt(val, 10))),
-      z.number(),
-      z.null(),
-    ])
-    .optional(),
-  board_basis: boardBasisEnum.optional(),
-  star_rating: z
-    .union([
-      z.string().transform((val) => (val === "" ? null : parseInt(val, 10))),
-      z.number(),
-      z.null(),
-    ])
-    .optional(),
-  price_unit: priceUnitEnum.optional(),
-  deposit_price: z.string().optional(),
-  deposit_price_unit: priceUnitEnum.optional(),
-  city: z.string().optional(),
-  // Exclude image_file from schema validation if handled separately
-});
+const escapeFormSchema = z
+  .object({
+    title: z.string().min(1, "Title is required."),
+    subtitle: z.string().min(1, "Subtitle is required."),
+    country: z.string().min(1, "Country is required."),
+    price: z.string().min(1, "Price is required."), // Keep as string based on previous findings
+    link: z.string().url("Invalid URL format."),
+    type: dealTypeEnum, // Add type validation
+    // Optional fields
+    validFrom: z.string().optional(),
+    validTo: z.string().optional(),
+    nights: z
+      .union([
+        z.string().transform((val) => (val === "" ? null : parseInt(val, 10))),
+        z.number(),
+        z.null(),
+      ])
+      .optional(),
+    board_basis: boardBasisEnum.optional(),
+    star_rating: z
+      .union([
+        z.string().transform((val) => (val === "" ? null : parseInt(val, 10))),
+        z.number(),
+        z.null(),
+      ])
+      .optional(),
+    price_unit: priceUnitEnum.optional(),
+    deposit_price: z.string().optional(),
+    deposit_price_unit: priceUnitEnum.optional(),
+    city: z.string().optional(),
+    // Exclude image_file from schema validation if handled separately
+  })
+  .refine(
+    (data) => {
+      if (data.type === "flight")
+        return data.board_basis === "flight_only" || !data.board_basis;
+      if (data.type === "hotel") return data.board_basis !== "flight_only";
+      if (data.type === "hotel+flight")
+        return (
+          data.board_basis !== "flight_only" && data.board_basis !== "room_only"
+        );
+      return true;
+    },
+    {
+      message: "Invalid combination of type and board basis",
+      path: ["board_basis"],
+    }
+  );
 
 // Updated function signature for createEscape
 export async function createEscape(
@@ -308,36 +325,58 @@ export async function updateEscape(
 
   // --- Add Zod Validation (Example) ---
   // Define Zod schema for update (similar to create, adjust if needed)
-  const escapeUpdateFormSchema = z.object({
-    title: z.string().min(1, "Title is required."),
-    subtitle: z.string().min(1, "Subtitle is required."),
-    country: z.string().min(1, "Country is required."),
-    price: z.string().min(1, "Price is required."),
-    link: z.string().url("Invalid URL format."),
-    type: dealTypeEnum, // Add type validation
-    validFrom: z.string().optional(),
-    validTo: z.string().optional(),
-    nights: z
-      .union([
-        z.string().transform((val) => (val === "" ? null : parseInt(val, 10))),
-        z.number(),
-        z.null(),
-      ])
-      .optional(),
-    board_basis: boardBasisEnum.optional(),
-    star_rating: z
-      .union([
-        z.string().transform((val) => (val === "" ? null : parseInt(val, 10))),
-        z.number(),
-        z.null(),
-      ])
-      .optional(),
-    price_unit: priceUnitEnum.optional(),
-    deposit_price: z.string().optional(),
-    deposit_price_unit: priceUnitEnum.optional(),
-    city: z.string().optional(),
-    // ID is handled separately, image_file is handled separately
-  });
+  const escapeUpdateFormSchema = z
+    .object({
+      title: z.string().min(1, "Title is required."),
+      subtitle: z.string().min(1, "Subtitle is required."),
+      country: z.string().min(1, "Country is required."),
+      price: z.string().min(1, "Price is required."),
+      link: z.string().url("Invalid URL format."),
+      type: dealTypeEnum, // Add type validation
+      validFrom: z.string().optional(),
+      validTo: z.string().optional(),
+      nights: z
+        .union([
+          z
+            .string()
+            .transform((val) => (val === "" ? null : parseInt(val, 10))),
+          z.number(),
+          z.null(),
+        ])
+        .optional(),
+      board_basis: boardBasisEnum.optional(),
+      star_rating: z
+        .union([
+          z
+            .string()
+            .transform((val) => (val === "" ? null : parseInt(val, 10))),
+          z.number(),
+          z.null(),
+        ])
+        .optional(),
+      price_unit: priceUnitEnum.optional(),
+      deposit_price: z.string().optional(),
+      deposit_price_unit: priceUnitEnum.optional(),
+      city: z.string().optional(),
+      // ID is handled separately, image_file is handled separately
+    })
+    .refine(
+      (data) => {
+        if (data.type === "flight")
+          return data.board_basis === "flight_only" || !data.board_basis;
+        if (data.type === "hotel") return data.board_basis !== "flight_only";
+        if (data.type === "hotel+flight")
+          return (
+            data.board_basis !== "flight_only" &&
+            data.board_basis !== "room_only"
+          );
+        return true;
+      },
+      {
+        message: "Invalid combination of type and board basis",
+        path: ["board_basis"],
+      }
+    );
 
   // Exclude file and id before validation
   const { image_file, id: removedId, ...dataToValidate } = rawFormData;

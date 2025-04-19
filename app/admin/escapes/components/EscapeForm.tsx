@@ -123,6 +123,26 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
 
   const [state, formAction] = useActionState(action, initialState);
 
+  const [selectedType, setSelectedType] = React.useState<string>(
+    initialData?.type ?? "hotel"
+  );
+
+  // Filter board_basis options based on selectedType
+  const getFilteredBoardBasisOptions = () => {
+    if (selectedType === "flight") {
+      return ["flight_only"];
+    }
+    if (selectedType === "hotel") {
+      return Object.keys(BOARD_BASIS_LABELS).filter((k) => k !== "flight_only");
+    }
+    if (selectedType === "hotel+flight") {
+      return Object.keys(BOARD_BASIS_LABELS).filter(
+        (k) => k !== "flight_only" && k !== "room_only"
+      );
+    }
+    return Object.keys(BOARD_BASIS_LABELS);
+  };
+
   useEffect(() => {
     if (state.message) {
       if (state.success) {
@@ -302,6 +322,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 aria-invalid={!!state.errors?.type}
                 aria-describedby="type-error"
                 className="w-full appearance-none rounded-md border border-input bg-background py-2 pl-3 pr-8 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                onChange={(e) => setSelectedType(e.target.value)}
               >
                 <option value="hotel">Hotel</option>
                 <option value="flight">Flight</option>
@@ -533,30 +554,11 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 aria-describedby="board-basis-error"
               >
                 <option value="">Select Board Basis</option>
-                <option value="room_only">
-                  {BOARD_BASIS_LABELS.room_only}
-                </option>
-                <option value="self_catering">
-                  {BOARD_BASIS_LABELS.self_catering}
-                </option>
-                <option value="bed_and_breakfast">
-                  {BOARD_BASIS_LABELS.bed_and_breakfast}
-                </option>
-                <option value="half_board">
-                  {BOARD_BASIS_LABELS.half_board}
-                </option>
-                <option value="full_board">
-                  {BOARD_BASIS_LABELS.full_board}
-                </option>
-                <option value="all_inclusive">
-                  {BOARD_BASIS_LABELS.all_inclusive}
-                </option>
-                <option value="ultra_all_inclusive">
-                  {BOARD_BASIS_LABELS.ultra_all_inclusive}
-                </option>
-                <option value="flight_only">
-                  {BOARD_BASIS_LABELS.flight_only}
-                </option>
+                {getFilteredBoardBasisOptions().map((key) => (
+                  <option key={key} value={key}>
+                    {BOARD_BASIS_LABELS[key as keyof typeof BOARD_BASIS_LABELS]}
+                  </option>
+                ))}
               </select>
               {state.errors?.board_basis && (
                 <p

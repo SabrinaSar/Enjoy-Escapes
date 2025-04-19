@@ -131,8 +131,11 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
               </div>
             )}
             {escape.nights && (
-              <div className="text-sm text-muted-foreground mt-1">
-                {escape.nights} {escape.nights === 1 ? "night" : "nights"}
+              <div className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+                <Moon className="h-4 w-4 text-accent" />
+                <span>
+                  {escape.nights} {escape.nights === 1 ? "night" : "nights"}
+                </span>
               </div>
             )}
           </div>
