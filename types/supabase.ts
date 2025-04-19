@@ -16,7 +16,7 @@ export type Database = {
           id: number;
           image: string;
           link: string;
-          price: string;
+          price: number;
           subtitle: string;
           title: string;
           type: "hotel" | "flight" | "hotel+flight";
@@ -35,7 +35,7 @@ export type Database = {
             | null;
           star_rating: number | null;
           price_unit: "pp" | "pn" | "pr" | null;
-          deposit_price: string | null;
+          deposit_price: number | null;
           deposit_price_unit: "pp" | "pn" | "pr" | null;
           city: string | null;
         };
@@ -45,7 +45,7 @@ export type Database = {
           id?: number;
           image: string;
           link: string;
-          price: string;
+          price: number;
           subtitle: string;
           title: string;
           type: "hotel" | "flight" | "hotel+flight";
@@ -64,7 +64,7 @@ export type Database = {
             | null;
           star_rating?: number | null;
           price_unit?: "pp" | "pn" | "pr" | null;
-          deposit_price?: string | null;
+          deposit_price?: number | null;
           deposit_price_unit?: "pp" | "pn" | "pr" | null;
           city?: string | null;
         };
@@ -74,7 +74,7 @@ export type Database = {
           id?: number;
           image?: string;
           link?: string;
-          price?: string;
+          price?: number;
           subtitle?: string;
           title?: string;
           type?: "hotel" | "flight" | "hotel+flight";
@@ -93,7 +93,7 @@ export type Database = {
             | null;
           star_rating?: number | null;
           price_unit?: "pp" | "pn" | "pr" | null;
-          deposit_price?: string | null;
+          deposit_price?: number | null;
           deposit_price_unit?: "pp" | "pn" | "pr" | null;
           city?: string | null;
         };

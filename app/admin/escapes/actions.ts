@@ -41,7 +41,10 @@ const escapeFormSchema = z
     title: z.string().min(1, "Title is required."),
     subtitle: z.string().min(1, "Subtitle is required."),
     country: z.string().min(1, "Country is required."),
-    price: z.string().min(1, "Price is required."), // Keep as string based on previous findings
+    price: z
+      .string()
+      .min(1, "Price is required.")
+      .transform((val) => parseInt(val.replace(/[^0-9]/g, ""), 10)), // Transform string to number, removing non-digits
     link: z.string().url("Invalid URL format."),
     type: dealTypeEnum, // Add type validation
     // Optional fields
@@ -63,7 +66,13 @@ const escapeFormSchema = z
       ])
       .optional(),
     price_unit: priceUnitEnum.optional(),
-    deposit_price: z.string().optional(),
+    deposit_price: z
+      .string()
+      .optional()
+      .transform((val) => {
+        if (!val) return null;
+        return parseInt(val.replace(/[^0-9]/g, ""), 10);
+      }),
     deposit_price_unit: priceUnitEnum.optional(),
     city: z.string().optional(),
     // Exclude image_file from schema validation if handled separately
@@ -330,7 +339,10 @@ export async function updateEscape(
       title: z.string().min(1, "Title is required."),
       subtitle: z.string().min(1, "Subtitle is required."),
       country: z.string().min(1, "Country is required."),
-      price: z.string().min(1, "Price is required."),
+      price: z
+        .string()
+        .min(1, "Price is required.")
+        .transform((val) => parseInt(val.replace(/[^0-9]/g, ""), 10)), // Transform string to number, removing non-digits
       link: z.string().url("Invalid URL format."),
       type: dealTypeEnum, // Add type validation
       validFrom: z.string().optional(),
@@ -355,7 +367,13 @@ export async function updateEscape(
         ])
         .optional(),
       price_unit: priceUnitEnum.optional(),
-      deposit_price: z.string().optional(),
+      deposit_price: z
+        .string()
+        .optional()
+        .transform((val) => {
+          if (!val) return null;
+          return parseInt(val.replace(/[^0-9]/g, ""), 10);
+        }),
       deposit_price_unit: priceUnitEnum.optional(),
       city: z.string().optional(),
       // ID is handled separately, image_file is handled separately

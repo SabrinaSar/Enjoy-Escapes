@@ -4,6 +4,7 @@ import {
   getLatestEscapeTimestamp,
 } from "@/app/actions/fetchEscapes";
 
+import CategoryFilter from "@/components/escapes/CategoryFilter";
 import EscapeGrid from "@/components/escapes/EscapeGrid";
 import { Terminal } from "lucide-react";
 import { format } from "date-fns"; // Using date-fns for formatting
@@ -19,7 +20,10 @@ export default async function Home() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Banner Area */}
+      {/* Category Filters */}
+      <div className="mb-8">
+        <CategoryFilter />
+      </div>
 
       {/* Last Updated Info */}
       <div className="mb-6 text-sm text-muted-foreground text-center md:text-right">

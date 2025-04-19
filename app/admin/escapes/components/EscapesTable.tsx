@@ -95,7 +95,7 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
               <TableCell className="font-medium">{escape.id}</TableCell>
               <TableCell>{escape.title}</TableCell>
               <TableCell>{escape.country}</TableCell>
-              <TableCell>{escape.price}</TableCell>
+              <TableCell>£{escape.price}</TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

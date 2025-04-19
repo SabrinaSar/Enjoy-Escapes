@@ -403,16 +403,22 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="price">Price</Label>
-              <Input
-                ref={priceRef}
-                id="price"
-                name="price"
-                placeholder="e.g., £599"
-                defaultValue={defaultValues.price}
-                aria-invalid={!!state.errors?.price}
-                aria-describedby="price-error"
-              />
+              <Label htmlFor="price">Price (£)</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                  £
+                </span>
+                <Input
+                  ref={priceRef}
+                  id="price"
+                  name="price"
+                  placeholder="e.g., 599"
+                  defaultValue={defaultValues.price}
+                  className="pl-7"
+                  aria-invalid={!!state.errors?.price}
+                  aria-describedby="price-error"
+                />
+              </div>
               {state.errors?.price && (
                 <p
                   id="price-error"
@@ -450,16 +456,22 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="deposit_price">Deposit Price</Label>
-              <Input
-                ref={depositPriceRef}
-                id="deposit_price"
-                name="deposit_price"
-                placeholder="e.g., £75"
-                defaultValue={defaultValues.deposit_price}
-                aria-invalid={!!state.errors?.deposit_price}
-                aria-describedby="deposit-price-error"
-              />
+              <Label htmlFor="deposit_price">Deposit Price (£)</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                  £
+                </span>
+                <Input
+                  ref={depositPriceRef}
+                  id="deposit_price"
+                  name="deposit_price"
+                  placeholder="e.g., 75"
+                  defaultValue={defaultValues.deposit_price}
+                  className="pl-7"
+                  aria-invalid={!!state.errors?.deposit_price}
+                  aria-describedby="deposit-price-error"
+                />
+              </div>
               {state.errors?.deposit_price && (
                 <p
                   id="deposit-price-error"

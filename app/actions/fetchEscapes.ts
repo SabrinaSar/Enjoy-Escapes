@@ -30,13 +30,23 @@ export type EscapeData = {
     | null;
   star_rating: number | null;
   price_unit: "pp" | "pn" | "pr" | null;
-  deposit_price: string | null;
+  deposit_price: number | null;
   deposit_price_unit: "pp" | "pn" | "pr" | null;
   city: string | null;
 };
 
+// Define a type for category filters
+export type CategoryFilter = {
+  type?: "hotel" | "flight" | "hotel+flight";
+  board_basis?: string;
+  last_minute?: boolean;
+  price_under?: number;
+  city_break?: boolean;
+};
+
 export async function fetchEscapes(
-  page: number = 1
+  page: number = 1,
+  category?: string
 ): Promise<{ escapes: EscapeData[]; hasMore: boolean; error: string | null }> {
   const cookieStore = cookies();
   const supabase = await createClient();
@@ -44,12 +54,45 @@ export async function fetchEscapes(
   const startIndex = (page - 1) * PAGE_LIMIT;
   const endIndex = page * PAGE_LIMIT - 1;
 
+  // Initialize the query
+  let query = supabase.from("escapes_data").select("*", { count: "exact" }); // Request count for pagination logic
+
+  // Apply filters based on the selected category
+  if (category) {
+    switch (category) {
+      case "holidays":
+        query = query.eq("type", "hotel+flight");
+        break;
+      case "all-inclusive":
+        query = query.eq("board_basis", "all_inclusive");
+        break;
+      case "last-minute":
+        // For last-minute, filter deals that expire within 7 days
+        const oneWeekFromNow = new Date();
+        oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
+        query = query
+          .not("validTo", "is", null)
+          .lt("validTo", oneWeekFromNow.toISOString());
+        break;
+      case "breaks-under-100":
+        // For breaks under £100, filter by price
+        query = query.lt("price", 100);
+        break;
+      case "city-breaks":
+        // For city breaks, we'll consider a deal a city break if it has a city value
+        // and doesn't include flights (typically hotel only in a city)
+        query = query.not("city", "is", null).eq("type", "hotel");
+        break;
+    }
+  }
+
+  // Add ordering and pagination
+  query = query
+    .order("created_at", { ascending: false })
+    .range(startIndex, endIndex);
+
   try {
-    const { data, error, count } = await supabase
-      .from("escapes_data")
-      .select("*", { count: "exact" }) // Request count for pagination logic
-      .order("created_at", { ascending: false })
-      .range(startIndex, endIndex);
+    const { data, error, count } = await query;
 
     if (error) {
       console.error("Error fetching escapes:", error);

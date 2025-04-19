@@ -9,12 +9,12 @@ import Link from "next/link"; // Use next/link for internal links if needed, but
 import NewDealTag from "./NewDealTag";
 import React from "react";
 
-// Format price with unit
-const formatPrice = (price?: string | null, unit?: string | null) => {
-  if (!price) return null;
+// Format price with unit and £ symbol
+const formatPrice = (price?: number | null, unit?: string | null) => {
+  if (price === null || price === undefined) return null;
 
   const unitDisplay = unit ? ` ${unit}` : "";
-  return `${price}${unitDisplay}`;
+  return `£${price}${unitDisplay}`;
 };
 
 // Star Rating component
@@ -149,7 +149,7 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
             <span className="whitespace-nowrap text-right">
               <span className="text-base text-muted-foreground mr-1">from</span>
               <span className="text-2xl font-bold text-accent align-middle">
-                {escape.price}
+                £{escape.price}
               </span>
               {escape.price_unit && (
                 <span className="text-base text-muted-foreground ml-1">
@@ -159,10 +159,10 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
             </span>
           )}
           {escape.deposit_price && (
-            <span className="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full mt-1">
-              Book for {escape.deposit_price}
+            <span className="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+              Book for £{escape.deposit_price}
               {escape.deposit_price_unit
-                ? `${escape.deposit_price_unit}`
+                ? ` ${escape.deposit_price_unit}`
                 : ""}{" "}
               deposit
             </span>

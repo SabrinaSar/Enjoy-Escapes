@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useInView } from "react-intersection-observer";
+import { useSearchParams } from "next/navigation";
 import { fetchEscapes, type EscapeData } from "@/app/actions/fetchEscapes";
 import EscapeCard from "./EscapeCard";
 import { Loader2 } from "lucide-react"; // Loading spinner
@@ -15,6 +16,9 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
   initialEscapes,
   initialHasMore,
 }) => {
+  const searchParams = useSearchParams();
+  const category = searchParams.get("category");
+
   const [escapes, setEscapes] = useState<EscapeData[]>(initialEscapes);
   const [page, setPage] = useState<number>(2); // Start loading from page 2
   const [hasMore, setHasMore] = useState<boolean>(initialHasMore);
@@ -25,6 +29,29 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
     triggerOnce: false, // Keep triggering as user scrolls up and down (if needed)
   });
 
+  // Reset grid when category changes
+  useEffect(() => {
+    const loadInitialEscapes = async () => {
+      setLoading(true);
+      try {
+        const result = await fetchEscapes(1, category || undefined);
+        if (result.error) {
+          throw new Error(result.error);
+        }
+        setEscapes(result.escapes);
+        setHasMore(result.hasMore);
+        setPage(2); // Reset to page 2 for infinite loading
+      } catch (err) {
+        console.error("Failed to load escapes:", err);
+        setError(err instanceof Error ? err.message : "Failed to load deals.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadInitialEscapes();
+  }, [category]);
+
   const loadMoreEscapes = useCallback(async () => {
     if (loading || !hasMore) return; // Don't fetch if already loading or no more data
 
@@ -32,7 +59,7 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
     setError(null); // Clear previous errors
 
     try {
-      const result = await fetchEscapes(page);
+      const result = await fetchEscapes(page, category || undefined);
       if (result.error) {
         throw new Error(result.error);
       }
@@ -49,7 +76,7 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [page, loading, hasMore]);
+  }, [page, loading, hasMore, category]);
 
   useEffect(() => {
     // If the trigger element is in view and there's more data, load more
