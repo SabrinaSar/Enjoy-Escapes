@@ -27,11 +27,14 @@ type EscapeStats = {
 export default async function EscapesPage({
   searchParams,
 }: {
-  searchParams: { q?: string; page?: string };
+  searchParams: Promise<{ q?: string; page?: string }>;
 }) {
+  // Resolve searchParams Promise
+  const resolvedSearchParams = await searchParams;
+
   // Get search query and page from URL parameters
-  const query = searchParams.q || "";
-  const currentPage = Number(searchParams.page) || 1;
+  const query = resolvedSearchParams.q || "";
+  const currentPage = Number(resolvedSearchParams.page) || 1;
   const pageSize = 10; // Items per page
 
   // Fetch paginated and filtered escapes
