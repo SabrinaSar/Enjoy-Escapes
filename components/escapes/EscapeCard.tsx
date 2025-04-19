@@ -1,4 +1,5 @@
 import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
+import { Hotel, PackageCheck, Plane } from "lucide-react"; // Import icons for deal types
 
 import { AspectRatio } from "@/components/ui/aspect-ratio"; // For consistent image size
 import CountdownTimer from "./CountdownTimer";
@@ -14,6 +15,41 @@ const Tag = ({ text }: { text: string }) => (
     {text}
   </span>
 );
+
+// Deal Type Tag component
+const DealTypeTag = ({
+  type,
+}: {
+  type: "hotel" | "flight" | "hotel+flight";
+}) => {
+  let icon = null;
+  let label = "";
+  let bgColor = "";
+
+  // Define icon and label based on type
+  if (type === "hotel") {
+    icon = <Hotel className="h-3 w-3 mr-1" />;
+    label = "Hotel";
+    bgColor = "bg-blue-100 text-blue-800";
+  } else if (type === "flight") {
+    icon = <Plane className="h-3 w-3 mr-1" />;
+    label = "Flight";
+    bgColor = "bg-purple-100 text-purple-800";
+  } else if (type === "hotel+flight") {
+    icon = <PackageCheck className="h-3 w-3 mr-1" />;
+    label = "Hotel + Flight";
+    bgColor = "bg-green-100 text-green-800";
+  }
+
+  return (
+    <span
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${bgColor}`}
+    >
+      {icon}
+      {label}
+    </span>
+  );
+};
 
 interface EscapeCardProps {
   escape: EscapeData;
@@ -40,7 +76,7 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
             priority={false} // Set to true for above-the-fold images if needed, false for lazy loading
           />
         </div>
-        <CardContent className="p-4 pt-0 flex-grow">
+        <CardContent className="p-4">
           <div className="flex justify-between items-start gap-2 mb-2">
             <CardTitle className="text-lg font-semibold leading-tight group-hover:text-primary transition-colors">
               {escape.title || "Untitled Escape"}
@@ -56,8 +92,8 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
             {escape.country || "Unknown Location"}
           </p>
           <div className="flex flex-wrap gap-2 items-center">
+            {escape.type && <DealTypeTag type={escape.type} />}
             <NewDealTag validFrom={escape.validFrom} />
-            {/* Countdown timer might be better placed in footer or here */}
           </div>
 
           {/* Display tags if available */}

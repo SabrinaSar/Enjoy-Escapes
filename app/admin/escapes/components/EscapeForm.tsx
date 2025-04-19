@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
 import { Database } from "@/types/supabase";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -80,6 +81,10 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     if (linkRef.current) linkRef.current.value = "https://prf.hn/l/xEeBPeN/";
     if (tagsRef.current)
       tagsRef.current.value = "beach, all-inclusive, flights";
+
+    // Find the type select element and set its value to 'hotel+flight'
+    const typeSelect = document.getElementById("type") as HTMLSelectElement;
+    if (typeSelect) typeSelect.value = "hotel+flight";
   };
 
   const fillTestData2 = () => {
@@ -93,6 +98,10 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
       linkRef.current.value = "https://tui-uk.7cnq.net/gOqEoO";
     if (tagsRef.current)
       tagsRef.current.value = "beach, all-inclusive, flights";
+
+    // Find the type select element and set its value to 'hotel'
+    const typeSelect = document.getElementById("type") as HTMLSelectElement;
+    if (typeSelect) typeSelect.value = "hotel";
   };
 
   const initialState: FormState = {
@@ -141,6 +150,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
         link: "",
         image: "",
         tags: "",
+        type: "hotel",
         validFrom: "",
         validTo: "",
       };
@@ -260,6 +270,33 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 Include currency and duration if applicable.
               </p>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="type">Deal Type</Label>
+            <div className="relative">
+              <select
+                id="type"
+                name="type"
+                defaultValue={defaultValues.type}
+                aria-invalid={!!state.errors?.type}
+                aria-describedby="type-error"
+                className="w-full appearance-none rounded-md border border-input bg-background py-2 pl-3 pr-8 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="hotel">Hotel</option>
+                <option value="flight">Flight</option>
+                <option value="hotel+flight">Hotel + Flight</option>
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            </div>
+            {state.errors?.type && (
+              <p
+                id="type-error"
+                className="text-sm font-medium text-destructive"
+              >
+                {state.errors.type.join(", ")}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">

@@ -20,6 +20,7 @@ export type Database = {
           subtitle: string;
           tags: string[] | null;
           title: string;
+          type: "hotel" | "flight" | "hotel+flight";
           validFrom: string | null;
           validTo: string | null;
         };
@@ -33,6 +34,7 @@ export type Database = {
           subtitle: string;
           tags?: string[] | null;
           title: string;
+          type: "hotel" | "flight" | "hotel+flight";
           validFrom?: string | null;
           validTo?: string | null;
         };
@@ -46,6 +48,7 @@ export type Database = {
           subtitle?: string;
           tags?: string[] | null;
           title?: string;
+          type?: "hotel" | "flight" | "hotel+flight";
           validFrom?: string | null;
           validTo?: string | null;
         };

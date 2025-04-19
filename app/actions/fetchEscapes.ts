@@ -14,6 +14,7 @@ export type EscapeData = {
   price: number | null;
   link: string | null;
   image: string | null;
+  type: "hotel" | "flight" | "hotel+flight" | null;
   validFrom: string | null;
   validTo: string | null;
   tags: string[] | null;

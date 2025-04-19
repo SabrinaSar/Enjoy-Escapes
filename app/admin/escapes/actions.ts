@@ -17,6 +17,24 @@ interface FormState {
 type EscapeInsert = Database["public"]["Tables"]["escapes_data"]["Insert"];
 type EscapeUpdate = Database["public"]["Tables"]["escapes_data"]["Update"];
 
+// Define a type validator for the deal type enum
+const dealTypeEnum = z.enum(["hotel", "flight", "hotel+flight"]);
+
+// Updated Zod schema with the new type field
+const escapeFormSchema = z.object({
+  title: z.string().min(1, "Title is required."),
+  subtitle: z.string().min(1, "Subtitle is required."),
+  country: z.string().min(1, "Country is required."),
+  price: z.string().min(1, "Price is required."), // Keep as string based on previous findings
+  link: z.string().url("Invalid URL format."),
+  type: dealTypeEnum, // Add type validation
+  // Optional fields
+  tags: z.string().optional(),
+  validFrom: z.string().optional(),
+  validTo: z.string().optional(),
+  // Exclude image_file from schema validation if handled separately
+});
+
 // Updated function signature for createEscape
 export async function createEscape(
   prevState: FormState, // Added prevState
@@ -65,27 +83,13 @@ export async function createEscape(
     }
   }
 
-  // --- Add Zod Validation (Example) ---
-  // Define Zod schema (should match your form needs)
-  const escapeFormSchema = z.object({
-    title: z.string().min(1, "Title is required."),
-    subtitle: z.string().min(1, "Subtitle is required."),
-    country: z.string().min(1, "Country is required."),
-    price: z.string().min(1, "Price is required."), // Keep as string based on previous findings
-    link: z.string().url("Invalid URL format."),
-    // Optional fields
-    tags: z.string().optional(),
-    validFrom: z.string().optional(),
-    validTo: z.string().optional(),
-    // Exclude image_file from schema validation if handled separately
-  });
-
   const validatedFields = escapeFormSchema.safeParse({
     title: rawFormData.title,
     subtitle: rawFormData.subtitle,
     country: rawFormData.country,
     price: rawFormData.price,
     link: rawFormData.link,
+    type: rawFormData.type, // Add the type field to validation
     tags: rawFormData.tags,
     validFrom: rawFormData.validFrom,
     validTo: rawFormData.validTo,
@@ -105,8 +109,17 @@ export async function createEscape(
   }
 
   // Use validated data for insertion
-  const { title, subtitle, country, price, link, tags, validFrom, validTo } =
-    validatedFields.data;
+  const {
+    title,
+    subtitle,
+    country,
+    price,
+    link,
+    type,
+    tags,
+    validFrom,
+    validTo,
+  } = validatedFields.data;
 
   // Prepare data for database insertion
   const escapeDataToInsert: EscapeInsert = {
@@ -115,6 +128,7 @@ export async function createEscape(
     country,
     price, // Already validated as string
     link,
+    type, // Add the type field to the data being inserted
     // Handle tags: Convert comma-separated string to array for DB if needed
     tags: tags
       ? tags
@@ -256,6 +270,7 @@ export async function updateEscape(
     country: z.string().min(1, "Country is required."),
     price: z.string().min(1, "Price is required."),
     link: z.string().url("Invalid URL format."),
+    type: dealTypeEnum, // Add type validation
     tags: z.string().optional(),
     validFrom: z.string().optional(),
     validTo: z.string().optional(),
@@ -290,8 +305,17 @@ export async function updateEscape(
   }
 
   // Use validated data for update
-  const { title, subtitle, country, price, link, tags, validFrom, validTo } =
-    validatedFields.data;
+  const {
+    title,
+    subtitle,
+    country,
+    price,
+    link,
+    type,
+    tags,
+    validFrom,
+    validTo,
+  } = validatedFields.data;
 
   // Prepare data for database update
   const escapeDataToUpdate: EscapeUpdate = {
@@ -300,6 +324,7 @@ export async function updateEscape(
     country,
     price,
     link,
+    type, // Add the type field to the update data
     tags: tags
       ? tags
           .split(",")
