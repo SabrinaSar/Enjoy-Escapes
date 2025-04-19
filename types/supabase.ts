@@ -18,7 +18,6 @@ export type Database = {
           link: string;
           price: string;
           subtitle: string;
-          tags: string[] | null;
           title: string;
           type: "hotel" | "flight" | "hotel+flight";
           validFrom: string | null;
@@ -48,7 +47,6 @@ export type Database = {
           link: string;
           price: string;
           subtitle: string;
-          tags?: string[] | null;
           title: string;
           type: "hotel" | "flight" | "hotel+flight";
           validFrom?: string | null;
@@ -78,7 +76,6 @@ export type Database = {
           link?: string;
           price?: string;
           subtitle?: string;
-          tags?: string[] | null;
           title?: string;
           type?: "hotel" | "flight" | "hotel+flight";
           validFrom?: string | null;

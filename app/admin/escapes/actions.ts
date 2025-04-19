@@ -174,8 +174,6 @@ export async function createEscape(
     price, // Already validated as string
     link,
     type, // Add the type field to the data being inserted
-    // Set tags to null since we removed the field
-    tags: null,
     // Handle dates: Convert date string to ISO format for DB if needed
     validFrom: validFrom ? validFrom : null,
     validTo: validTo ? validTo : null,
@@ -395,7 +393,6 @@ export async function updateEscape(
     price,
     link,
     type, // Add the type field to the update data
-    tags: null, // Set tags to null since we removed the field
     validFrom: validFrom ? validFrom : null,
     validTo: validTo ? validTo : null,
     nights: nights,

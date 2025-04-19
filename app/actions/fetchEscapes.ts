@@ -17,7 +17,6 @@ export type EscapeData = {
   type: "hotel" | "flight" | "hotel+flight" | null;
   validFrom: string | null;
   validTo: string | null;
-  tags: string[] | null;
   nights: number | null;
   board_basis:
     | "room_only"
