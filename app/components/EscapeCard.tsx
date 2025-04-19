@@ -91,7 +91,7 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
       aria-label={`View details for ${escape.title}`}
       className="block w-full h-full group cursor-pointer"
     >
-      <Card className="overflow-hidden border hover:shadow-md dark:hover:shadow-black/30 transition-shadow duration-200 p-0 group-hover:shadow-lg dark:group-hover:shadow-black/40">
+      <Card className="overflow-hidden border hover:shadow-md dark:hover:shadow-black/30 transition-shadow duration-200 p-0 group-hover:shadow-lg dark:group-hover:shadow-black/40 flex flex-col h-full">
         {/* Image section */}
         <div className="relative h-48 w-full">
           <Image
@@ -120,48 +120,55 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
             )}
           </div>
         </div>
-        <CardContent className="relative z-10 mt-[-1.25rem] bg-white dark:bg-card rounded-tr-3xl pt-6 px-4 pb-0">
-          <div>
+        <CardContent className="relative z-10 mt-[-1.25rem] bg-white dark:bg-card rounded-tr-3xl pt-6 px-4 pb-0 flex-1">
+          <div className="h-full flex flex-col">
             <CardTitle className="text-lg font-semibold leading-tight group-hover:text-primary transition-colors">
               {escape.country || "Unknown Location"}
               {escape.city ? `, ${escape.city}` : ""}
             </CardTitle>
-            {escape.star_rating && (
-              <div className="mt-1">
-                <StarRating rating={escape.star_rating} />
-              </div>
-            )}
-            {escape.board_basis && (
-              <div className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
-                <span>
-                  {BOARD_BASIS_LABELS[escape.board_basis] || escape.board_basis}
-                </span>
-                {escape.type && (
-                  <>
-                    <span className="text-xs">•</span>
-                    <span>
-                      {escape.type === "hotel"
-                        ? "Hotel"
-                        : escape.type === "flight"
-                          ? "Flight"
-                          : "Hotel + Flight"}
-                    </span>
-                  </>
-                )}
-              </div>
-            )}
-            {escape.nights && (
-              <div className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
-                <Moon className="h-4 w-4 text-accent" />
-                <span>
-                  {escape.nights} {escape.nights === 1 ? "night" : "nights"}
-                </span>
-              </div>
-            )}
+            <div className="min-h-[1.5rem]">
+              {escape.star_rating && (
+                <div className="mt-1">
+                  <StarRating rating={escape.star_rating} />
+                </div>
+              )}
+            </div>
+            <div className="min-h-[1.5rem]">
+              {escape.board_basis && (
+                <div className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
+                  <span>
+                    {BOARD_BASIS_LABELS[escape.board_basis] ||
+                      escape.board_basis}
+                  </span>
+                  {escape.type && (
+                    <>
+                      <span className="text-xs">•</span>
+                      <span>
+                        {escape.type === "hotel"
+                          ? "Hotel"
+                          : escape.type === "flight"
+                            ? "Flight"
+                            : "Hotel + Flight"}
+                      </span>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="min-h-[1.5rem] mt-auto">
+              {escape.nights && (
+                <div className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+                  <Moon className="h-4 w-4 text-accent" />
+                  <span>
+                    {escape.nights} {escape.nights === 1 ? "night" : "nights"}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         </CardContent>
-        <CardFooter className="p-4 pt-0 flex flex-col items-end gap-1 bg-white dark:bg-card">
-          {escape.price && (
+        <CardFooter className="p-4 pt-2 flex flex-col items-end gap-1 bg-white dark:bg-card">
+          {escape.price ? (
             <span className="whitespace-nowrap text-right">
               <span className="text-base text-muted-foreground mr-1">from</span>
               <span className="text-2xl font-bold text-accent align-middle">
@@ -173,16 +180,25 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
                 </span>
               )}
             </span>
-          )}
-          {escape.deposit_price && (
-            <span className="inline-block bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs font-medium px-2.5 py-0.5 rounded-full">
-              Book for £{escape.deposit_price}
-              {escape.deposit_price_unit
-                ? ` ${escape.deposit_price_unit}`
-                : ""}{" "}
-              deposit
+          ) : (
+            <span className="whitespace-nowrap text-right opacity-0">
+              <span className="text-base text-muted-foreground mr-1">from</span>
+              <span className="text-2xl font-bold text-accent align-middle">
+                £0
+              </span>
             </span>
           )}
+          <div className="min-h-[1.75rem]">
+            {escape.deposit_price && (
+              <span className="inline-block bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                Book for £{escape.deposit_price}
+                {escape.deposit_price_unit
+                  ? ` ${escape.deposit_price_unit}`
+                  : ""}{" "}
+                deposit
+              </span>
+            )}
+          </div>
         </CardFooter>
       </Card>
     </a>
