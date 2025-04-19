@@ -147,7 +147,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     if (state.message) {
       if (state.success) {
         toast.success(state.message);
-        router.push("/admin/escapes");
+        router.push("/admin");
         router.refresh();
       } else {
         let errorMessage = state.message;

@@ -107,9 +107,7 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                     <DropdownMenuItem asChild>
-                      <Link href={`/admin/escapes/${escape.id}/edit`}>
-                        Edit
-                      </Link>
+                      <Link href={`/admin/${escape.id}/edit`}>Edit</Link>
                     </DropdownMenuItem>
                     {/* Use AlertDialogTrigger within the item to control the dialog */}
                     <AlertDialogTrigger asChild>

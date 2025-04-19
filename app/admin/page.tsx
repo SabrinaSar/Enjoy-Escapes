@@ -1,27 +1,38 @@
-import FetchDataSteps from "@/components/tutorial/fetch-data-steps";
-import { InfoIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Database } from "@/types/supabase";
+import EscapesTable from "./components/EscapesTable"; // We will create this next
+import Link from "next/link";
+import { PlusCircle } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
 
-export default async function AdminPage() {
+export default async function EscapesPage() {
   const supabase = await createClient();
+  const { data: escapes, error } = await supabase
+    .from("escapes_data")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return redirect("/sign-in");
+  if (error) {
+    console.error("Error fetching escapes:", error);
+    // TODO: Add better error handling, maybe show a toast or message
+    return <p>Error loading escapes. Please try again later.</p>;
   }
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-12">
-      <div className="w-full">
-        <div className="bg-accent text-sm p-3 px-5 rounded-md text-foreground flex gap-3 items-center">
-          <InfoIcon size="16" strokeWidth={2} />
-          This is a Admin page that you can only see as an authenticated user
-        </div>
+    <>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
+          Manage Escapes
+        </h1>
+        <Button asChild>
+          <Link href="/admin/create">
+            <PlusCircle className="mr-2 h-4 w-4" /> Create New Escape
+          </Link>
+        </Button>
       </div>
-    </div>
+
+      {/* Pass the fetched escapes to the table component */}
+      <EscapesTable escapes={escapes || []} />
+    </>
   );
 }

@@ -235,10 +235,10 @@ export async function createEscape(
   }
 
   // Revalidate the path to update the escapes list
-  revalidatePath("/admin/escapes");
+  revalidatePath("/admin");
 
   // Optional: Redirect to the main escapes list page after creation
-  // redirect('/admin/escapes');
+  // redirect('/admin');
   // Or just return success
   return {
     success: true,
@@ -492,8 +492,8 @@ export async function updateEscape(
   }
 
   // Revalidate paths where this data might be shown
-  revalidatePath("/admin/escapes");
-  revalidatePath(`/admin/escapes/${id}/edit`);
+  revalidatePath("/admin");
+  revalidatePath(`/admin/${id}/edit`);
 
   // Clean up old image if a new one was uploaded
   if (newImagePath && oldImagePath) {
@@ -531,7 +531,7 @@ export async function deleteEscape(id: number) {
   }
 
   // Revalidate the main escapes list path
-  revalidatePath("/admin/escapes");
+  revalidatePath("/admin");
 
   return {
     success: true,
