@@ -58,7 +58,14 @@ export default function RootLayout({
               </nav>
               <div className="w-full flex-1 flex flex-col">{children}</div>
 
-              <footer className="w-full border-t border-t-foreground/10 p-8 flex justify-center text-center text-xs">
+              <footer className="w-full border-t border-t-foreground/10 p-8 flex flex-col items-center text-center text-xs gap-2">
+                <div className="flex items-center justify-center text-muted-foreground/80 dark:text-muted-foreground/60 gap-2 text-[0.85em]">
+                  <span className="inline-flex items-center gap-1">
+                    Heads Up! These deals are updated frequently. Prices may
+                    change due to availability and demand. New deals pop up
+                    often!
+                  </span>
+                </div>
                 <div className="max-w-5xl w-full flex flex-col md:flex-row justify-between items-center gap-4">
                   <p>
                     &copy; {new Date().getFullYear()} Enjoy Escapes. All rights
