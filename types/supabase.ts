@@ -11,16 +11,13 @@ export type Database = {
     Tables: {
       escapes_data: {
         Row: {
-          country: string;
           created_at: string;
           id: number;
           image: string;
           link: string;
           price: number;
-          subtitle: string;
           title: string;
           type: "hotel" | "flight" | "hotel+flight";
-          validTo: string | null;
           nights: number | null;
           board_basis:
             | "room_only"
@@ -36,23 +33,20 @@ export type Database = {
           price_unit: "pp" | "pn" | "pr" | null;
           deposit_price: number | null;
           deposit_price_unit: "pp" | "pn" | "pr" | null;
-          city: string | null;
           school_holidays: boolean | null;
           long_haul: boolean | null;
           featured: boolean | null;
           hot_deal: boolean | null;
+          last_minute: boolean | null;
         };
         Insert: {
-          country: string;
           created_at?: string;
           id?: number;
           image: string;
           link: string;
           price: number;
-          subtitle: string;
           title: string;
           type: "hotel" | "flight" | "hotel+flight";
-          validTo?: string | null;
           nights?: number | null;
           board_basis?:
             | "room_only"
@@ -68,23 +62,20 @@ export type Database = {
           price_unit?: "pp" | "pn" | "pr" | null;
           deposit_price?: number | null;
           deposit_price_unit?: "pp" | "pn" | "pr" | null;
-          city?: string | null;
           school_holidays?: boolean | null;
           long_haul?: boolean | null;
           featured?: boolean | null;
           hot_deal?: boolean | null;
+          last_minute?: boolean | null;
         };
         Update: {
-          country?: string;
           created_at?: string;
           id?: number;
           image?: string;
           link?: string;
           price?: number;
-          subtitle?: string;
           title?: string;
           type?: "hotel" | "flight" | "hotel+flight";
-          validTo?: string | null;
           nights?: number | null;
           board_basis?:
             | "room_only"
@@ -100,11 +91,11 @@ export type Database = {
           price_unit?: "pp" | "pn" | "pr" | null;
           deposit_price?: number | null;
           deposit_price_unit?: "pp" | "pn" | "pr" | null;
-          city?: string | null;
           school_holidays?: boolean | null;
           long_haul?: boolean | null;
           featured?: boolean | null;
           hot_deal?: boolean | null;
+          last_minute?: boolean | null;
         };
         Relationships: [];
       };

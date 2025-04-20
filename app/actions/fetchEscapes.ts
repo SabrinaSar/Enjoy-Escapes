@@ -9,13 +9,10 @@ export type EscapeData = {
   id: number;
   created_at: string;
   title: string | null;
-  subtitle: string | null;
-  country: string | null;
   price: number | null;
   link: string | null;
   image: string | null;
   type: "hotel" | "flight" | "hotel+flight" | null;
-  validTo: string | null;
   nights: number | null;
   board_basis:
     | "room_only"
@@ -31,11 +28,11 @@ export type EscapeData = {
   price_unit: "pp" | "pn" | "pr" | null;
   deposit_price: number | null;
   deposit_price_unit: "pp" | "pn" | "pr" | null;
-  city: string | null;
   school_holidays: boolean | null;
   long_haul: boolean | null;
   featured: boolean | null;
   hot_deal: boolean | null;
+  last_minute: boolean | null;
 };
 
 // Define a type for category filters
@@ -75,12 +72,8 @@ export async function fetchEscapes(
         query = query.eq("school_holidays", true);
         break;
       case "last-minute":
-        // For last-minute, filter deals that expire within 48 hours
-        const fortyEightHoursFromNow = new Date();
-        fortyEightHoursFromNow.setHours(fortyEightHoursFromNow.getHours() + 48);
-        query = query
-          .not("validTo", "is", null)
-          .lt("validTo", fortyEightHoursFromNow.toISOString());
+        // For last-minute, use the last_minute boolean field
+        query = query.eq("last_minute", true);
         break;
       case "long-haul":
         query = query.eq("long_haul", true);

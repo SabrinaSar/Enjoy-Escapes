@@ -1,7 +1,6 @@
 import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { Flame, Moon, Star } from "lucide-react";
 
-import CountdownTimer from "../CountdownTimer";
 import type { EscapeData } from "@/app/actions/fetchEscapes"; // Import the type
 import Image from "next/image";
 import NewDealTag from "../NewDealTag";
@@ -40,7 +39,6 @@ interface HotDealCardProps {
 }
 
 const HotDealCard: React.FC<HotDealCardProps> = ({ escape }) => {
-  const location = `${escape.city ? `${escape.city}, ` : ""}${escape.country || "Unknown Location"}`;
   const dealType =
     escape.type === "hotel"
       ? "Hotel"
@@ -50,10 +48,8 @@ const HotDealCard: React.FC<HotDealCardProps> = ({ escape }) => {
           ? "Hotel + Flight Package"
           : "Travel Deal";
 
-  const dealTitle = escape.title || `${dealType} in ${location}`;
-  const fullDescription = escape.subtitle
-    ? escape.subtitle
-    : `${dealType} in ${location}${escape.nights ? ` for ${escape.nights} nights` : ""}${escape.board_basis ? `, ${BOARD_BASIS_LABELS[escape.board_basis] || escape.board_basis}` : ""}`;
+  const dealTitle = escape.title || `${dealType}`;
+  const fullDescription = `${dealType}${escape.nights ? ` for ${escape.nights} nights` : ""}${escape.board_basis ? `, ${BOARD_BASIS_LABELS[escape.board_basis] || escape.board_basis}` : ""}`;
 
   return (
     <a
@@ -71,9 +67,6 @@ const HotDealCard: React.FC<HotDealCardProps> = ({ escape }) => {
       {escape.image && <meta itemProp="image" content={escape.image} />}
       {escape.price && (
         <meta itemProp="price" content={escape.price.toString()} />
-      )}
-      {escape.country && (
-        <meta itemProp="addressCountry" content={escape.country} />
       )}
 
       <Card className="overflow-hidden border border-accent/40 dark:border-accent/50 shadow-lg shadow-accent/30 dark:shadow-accent/20 hover:shadow-md dark:hover:shadow-black/30 transition-shadow duration-200 p-0 group-hover:shadow-lg dark:group-hover:shadow-black/40 flex flex-col h-full">
@@ -99,9 +92,6 @@ const HotDealCard: React.FC<HotDealCardProps> = ({ escape }) => {
 
             {/* New Deal Tag */}
             {escape.created_at && <NewDealTag created_at={escape.created_at} />}
-
-            {/* Countdown timer */}
-            {escape.validTo && <CountdownTimer validTo={escape.validTo} />}
           </div>
 
           {/* Hot deal indicator on the top-right corner */}
@@ -123,11 +113,6 @@ const HotDealCard: React.FC<HotDealCardProps> = ({ escape }) => {
               )}
             </div>
             <div className="min-h-[1.5rem]">
-              {(escape.country || escape.city) && (
-                <div className="text-sm text-muted-foreground mt-1">
-                  {location}
-                </div>
-              )}
               {escape.board_basis && (
                 <div className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
                   <span>

@@ -1,7 +1,6 @@
 import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { Moon, Star } from "lucide-react";
 
-import CountdownTimer from "../CountdownTimer";
 import type { EscapeData } from "@/app/actions/fetchEscapes"; // Import the type
 import Image from "next/image";
 import NewDealTag from "../NewDealTag";
@@ -40,7 +39,6 @@ interface FeaturedCardProps {
 }
 
 const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
-  const location = `${escape.city ? `${escape.city}, ` : ""}${escape.country || "Unknown Location"}`;
   const dealType =
     escape.type === "hotel"
       ? "Hotel"
@@ -50,10 +48,8 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
           ? "Hotel + Flight Package"
           : "Travel Deal";
 
-  const dealTitle = escape.title || `${dealType} in ${location}`;
-  const fullDescription = escape.subtitle
-    ? escape.subtitle
-    : `${dealType} in ${location}${escape.nights ? ` for ${escape.nights} nights` : ""}${escape.board_basis ? `, ${BOARD_BASIS_LABELS[escape.board_basis] || escape.board_basis}` : ""}`;
+  const dealTitle = escape.title || `${dealType}`;
+  const fullDescription = `${dealType}${escape.nights ? ` for ${escape.nights} nights` : ""}${escape.board_basis ? `, ${BOARD_BASIS_LABELS[escape.board_basis] || escape.board_basis}` : ""}`;
 
   return (
     <a
@@ -71,9 +67,6 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
       {escape.image && <meta itemProp="image" content={escape.image} />}
       {escape.price && (
         <meta itemProp="price" content={escape.price.toString()} />
-      )}
-      {escape.country && (
-        <meta itemProp="addressCountry" content={escape.country} />
       )}
 
       <Card className="overflow-hidden border border-blue-300/50 dark:border-blue-500/40 hover:shadow-md dark:hover:shadow-black/30 transition-shadow duration-200 p-0 group-hover:shadow-lg dark:group-hover:shadow-black/40 flex flex-col h-full">
@@ -99,15 +92,12 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
 
             {/* New Deal Tag */}
             {escape.created_at && <NewDealTag created_at={escape.created_at} />}
-
-            {/* Countdown timer */}
-            {escape.validTo && <CountdownTimer validTo={escape.validTo} />}
           </div>
         </div>
 
         <CardContent className="relative z-10 mt-[-1.25rem] bg-blue-50 dark:bg-[#1a224b] rounded-tr-3xl pt-6 px-4 pb-0 flex-1">
           <div className="h-full flex flex-col">
-            <CardTitle className="text-lg font-semibold leading-tight group-hover:text-blue-600 transition-colors">
+            <CardTitle className="text-lg font-semibold leading-tight group-hover:text-primary transition-colors">
               {dealTitle}
             </CardTitle>
             <div className="min-h-[1.5rem]">
@@ -118,11 +108,6 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
               )}
             </div>
             <div className="min-h-[1.5rem]">
-              {(escape.country || escape.city) && (
-                <div className="text-sm text-muted-foreground mt-1">
-                  {location}
-                </div>
-              )}
               {escape.board_basis && (
                 <div className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
                   <span>
@@ -160,7 +145,7 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
           {escape.price ? (
             <span className="whitespace-nowrap text-right">
               <span className="text-base text-muted-foreground mr-1">from</span>
-              <span className="text-2xl font-bold text-blue-600 align-middle">
+              <span className="text-2xl font-bold text-blue-500 align-middle">
                 £{escape.price}
               </span>
               {escape.price_unit && (
@@ -172,7 +157,7 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
           ) : (
             <span className="whitespace-nowrap text-right opacity-0">
               <span className="text-base text-muted-foreground mr-1">from</span>
-              <span className="text-2xl font-bold text-blue-600 align-middle">
+              <span className="text-2xl font-bold text-blue-500 align-middle">
                 £0
               </span>
             </span>

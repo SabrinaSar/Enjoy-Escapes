@@ -25,12 +25,12 @@ type EscapeStats = {
   id: number;
   type: "hotel" | "flight" | "hotel+flight" | null;
   price: number | null;
-  validTo: string | null;
   created_at: string;
   featured: boolean | null;
   hot_deal: boolean | null;
   school_holidays: boolean | null;
   long_haul: boolean | null;
+  last_minute: boolean | null;
 };
 
 export default async function EscapesPage({
@@ -43,6 +43,7 @@ export default async function EscapesPage({
     hot_deal?: string;
     school_holidays?: string;
     long_haul?: string;
+    last_minute?: string;
     type?: string;
   }>;
 }) {
@@ -61,6 +62,7 @@ export default async function EscapesPage({
     school_holidays:
       resolvedSearchParams.school_holidays === "true" || undefined,
     long_haul: resolvedSearchParams.long_haul === "true" || undefined,
+    last_minute: resolvedSearchParams.last_minute === "true" || undefined,
     type: resolvedSearchParams.type as
       | "hotel"
       | "flight"
@@ -82,18 +84,14 @@ export default async function EscapesPage({
   const { data } = await supabase
     .from("escapes_data")
     .select(
-      "id, type, price, validTo, created_at, featured, hot_deal, school_holidays, long_haul"
+      "id, type, price, created_at, featured, hot_deal, school_holidays, long_haul, last_minute"
     );
 
   const allEscapes: EscapeStats[] = data || [];
 
   // Calculate some simple statistics
   const totalEscapes = totalCount;
-  const activeEscapes =
-    allEscapes?.filter((escape) => {
-      if (!escape.validTo) return true; // No end date means always active
-      return new Date(escape.validTo) > new Date();
-    }).length || 0;
+  const activeEscapes = totalCount; // All escapes are active now that we don't have validTo
 
   const packageDeals =
     allEscapes?.filter((escape) => escape.type === "hotel+flight").length || 0;
@@ -103,6 +101,8 @@ export default async function EscapesPage({
   const featuredEscapes =
     allEscapes?.filter((escape) => escape.featured).length || 0;
   const hotDeals = allEscapes?.filter((escape) => escape.hot_deal).length || 0;
+  const lastMinuteDeals =
+    allEscapes?.filter((escape) => escape.last_minute).length || 0;
 
   const averagePrice =
     allEscapes?.reduce((sum, escape) => sum + (escape.price || 0), 0) /

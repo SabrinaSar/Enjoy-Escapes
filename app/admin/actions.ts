@@ -126,6 +126,19 @@ const escapeFormSchema = z
       .transform((val) => val === true || val === "on" || val === "true")
       .optional()
       .default(false),
+    last_minute: z
+      .union([
+        z.boolean(),
+        z.literal("on"),
+        z.literal("true"),
+        z.literal(true),
+        z.literal(""),
+        z.literal(undefined),
+        z.null(),
+      ])
+      .transform((val) => val === true || val === "on" || val === "true")
+      .optional()
+      .default(false),
     // Exclude image_file from schema validation if handled separately
   })
   .refine(
@@ -195,19 +208,15 @@ export async function createEscape(
 
   const validatedFields = escapeFormSchema.safeParse({
     title: rawFormData.title,
-    subtitle: rawFormData.subtitle,
-    country: rawFormData.country,
     price: rawFormData.price,
     link: rawFormData.link,
     type: rawFormData.type,
-    validTo: rawFormData.validTo,
     nights: rawFormData.nights,
     board_basis: rawFormData.board_basis,
     star_rating: rawFormData.star_rating,
     price_unit: rawFormData.price_unit,
     deposit_price: rawFormData.deposit_price,
     deposit_price_unit: rawFormData.deposit_price_unit,
-    city: rawFormData.city,
     school_holidays:
       rawFormData.school_holidays === "on" ||
       rawFormData.school_holidays === "true" ||
@@ -220,6 +229,10 @@ export async function createEscape(
       rawFormData.featured === "on" || rawFormData.featured === "true" || false,
     hot_deal:
       rawFormData.hot_deal === "on" || rawFormData.hot_deal === "true" || false,
+    last_minute:
+      rawFormData.last_minute === "on" ||
+      rawFormData.last_minute === "true" ||
+      false,
   });
 
   // If validation fails, return errors
@@ -238,46 +251,39 @@ export async function createEscape(
   // Use validated data for insertion
   const {
     title,
-    subtitle,
-    country,
     price,
     link,
     type,
-    validTo,
     nights,
     board_basis,
     star_rating,
     price_unit,
     deposit_price,
     deposit_price_unit,
-    city,
     school_holidays,
     long_haul,
     featured,
     hot_deal,
+    last_minute,
   } = validatedFields.data;
 
   // Prepare data for database insertion
   const escapeDataToInsert: EscapeInsert = {
     title,
-    subtitle,
-    country,
     price, // Already validated as string
     link,
     type, // Add the type field to the data being inserted
-    // Handle dates: Convert date string to ISO format for DB if needed
-    validTo: validTo ? validTo : null,
     nights: nights,
     board_basis: board_basis,
     star_rating: star_rating,
     price_unit: price_unit,
     deposit_price: deposit_price,
     deposit_price_unit: deposit_price_unit,
-    city: city,
     school_holidays: school_holidays || false,
     long_haul: long_haul || false,
     featured: featured || false,
     hot_deal: hot_deal || false,
+    last_minute: last_minute || false,
     image: imageUrl ?? "", // Use uploaded URL or empty string
   };
 
@@ -405,15 +411,12 @@ export async function updateEscape(
   const escapeUpdateFormSchema = z
     .object({
       title: z.string().min(1, "Title is required."),
-      subtitle: z.string().min(1, "Subtitle is required."),
-      country: z.string().min(1, "Country is required."),
       price: z
         .string()
         .min(1, "Price is required.")
         .transform((val) => parseInt(val.replace(/[^0-9]/g, ""), 10)), // Transform string to number, removing non-digits
       link: z.string().url("Invalid URL format."),
       type: dealTypeEnum, // Add type validation
-      validTo: z.string().optional(),
       nights: z
         .union([
           z
@@ -442,7 +445,6 @@ export async function updateEscape(
           return parseInt(val.replace(/[^0-9]/g, ""), 10);
         }),
       deposit_price_unit: priceUnitEnum.optional(),
-      city: z.string().optional(),
       school_holidays: z
         .union([
           z.boolean(),
@@ -495,6 +497,19 @@ export async function updateEscape(
         .transform((val) => val === true || val === "on" || val === "true")
         .optional()
         .default(false),
+      last_minute: z
+        .union([
+          z.boolean(),
+          z.literal("on"),
+          z.literal("true"),
+          z.literal(true),
+          z.literal(""),
+          z.literal(undefined),
+          z.null(),
+        ])
+        .transform((val) => val === true || val === "on" || val === "true")
+        .optional()
+        .default(false),
       // ID is handled separately, image_file is handled separately
     })
     .refine(
@@ -520,19 +535,15 @@ export async function updateEscape(
 
   const validatedFields = escapeUpdateFormSchema.safeParse({
     title: dataToValidate.title,
-    subtitle: dataToValidate.subtitle,
-    country: dataToValidate.country,
     price: dataToValidate.price,
     link: dataToValidate.link,
     type: dataToValidate.type,
-    validTo: dataToValidate.validTo,
     nights: dataToValidate.nights,
     board_basis: dataToValidate.board_basis,
     star_rating: dataToValidate.star_rating,
     price_unit: dataToValidate.price_unit,
     deposit_price: dataToValidate.deposit_price,
     deposit_price_unit: dataToValidate.deposit_price_unit,
-    city: dataToValidate.city,
     school_holidays:
       dataToValidate.school_holidays === "on" ||
       dataToValidate.school_holidays === "true" ||
@@ -548,6 +559,10 @@ export async function updateEscape(
     hot_deal:
       dataToValidate.hot_deal === "on" ||
       dataToValidate.hot_deal === "true" ||
+      false,
+    last_minute:
+      dataToValidate.last_minute === "on" ||
+      dataToValidate.last_minute === "true" ||
       false,
   });
 
@@ -576,45 +591,39 @@ export async function updateEscape(
   // Use validated data for update
   const {
     title,
-    subtitle,
-    country,
     price,
     link,
     type,
-    validTo,
     nights,
     board_basis,
     star_rating,
     price_unit,
     deposit_price,
     deposit_price_unit,
-    city,
     school_holidays,
     long_haul,
     featured,
     hot_deal,
+    last_minute,
   } = validatedFields.data;
 
   // Prepare data for database update
   const escapeDataToUpdate: EscapeUpdate = {
     title,
-    subtitle,
-    country,
     price,
     link,
     type, // Add the type field to the update data
-    validTo: validTo ? validTo : null,
     nights: nights,
     board_basis: board_basis,
     star_rating: star_rating,
     price_unit: price_unit,
     deposit_price: deposit_price,
     deposit_price_unit: deposit_price_unit,
-    city: city,
     school_holidays: school_holidays || false,
     long_haul: long_haul || false,
     featured: featured || false,
     hot_deal: hot_deal || false,
+    last_minute: last_minute || false,
 
     // Conditionally add the image field only if a new one was uploaded
     // Otherwise keep the existing image URL from currentEscapeData
@@ -705,6 +714,7 @@ export async function fetchEscapesWithPagination(
     hot_deal?: boolean;
     school_holidays?: boolean;
     long_haul?: boolean;
+    last_minute?: boolean;
     type?: "hotel" | "flight" | "hotel+flight";
   } = {}
 ): Promise<{
@@ -730,12 +740,7 @@ export async function fetchEscapesWithPagination(
     const searchQueryLower = searchQuery.toLowerCase();
 
     // Use ilike for case-insensitive partial matches
-    query = query.or(
-      `title.ilike.%${searchQueryLower}%,` +
-        `country.ilike.%${searchQueryLower}%,` +
-        `city.ilike.%${searchQueryLower}%,` +
-        `subtitle.ilike.%${searchQueryLower}%`
-    );
+    query = query.or(`title.ilike.%${searchQueryLower}%`);
   }
 
   // Apply filters for special attributes
@@ -755,6 +760,10 @@ export async function fetchEscapesWithPagination(
 
   if (filters.long_haul === true) {
     query = query.eq("long_haul", true);
+  }
+
+  if (filters.last_minute === true) {
+    query = query.eq("last_minute", true);
   }
 
   if (filters.type) {

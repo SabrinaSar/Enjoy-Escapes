@@ -73,9 +73,6 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
 
   // Add refs for form fields
   const titleRef = React.useRef<HTMLInputElement>(null);
-  const subtitleRef = React.useRef<HTMLTextAreaElement>(null);
-  const countryRef = React.useRef<HTMLInputElement>(null);
-  const cityRef = React.useRef<HTMLInputElement>(null);
   const priceRef = React.useRef<HTMLInputElement>(null);
   const linkRef = React.useRef<HTMLInputElement>(null);
   const nightsRef = React.useRef<HTMLInputElement>(null);
@@ -88,16 +85,12 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
   // Create form state to persist values between renders
   const [formData, setFormData] = React.useState({
     title: initialData?.title || "",
-    subtitle: initialData?.subtitle || "",
-    country: initialData?.country || "",
-    city: initialData?.city || "",
     price: initialData?.price || "",
     price_unit: initialData?.price_unit || "pp",
     deposit_price: initialData?.deposit_price || "",
     deposit_price_unit: initialData?.deposit_price_unit || "pp",
     link: initialData?.link || "",
     type: (initialData?.type as "hotel" | "flight" | "hotel+flight") || "hotel",
-    validTo: initialData?.validTo?.split("T")[0] || "",
     nights: initialData?.nights || "",
     board_basis: initialData?.board_basis || "",
     star_rating: initialData?.star_rating || "",
@@ -105,6 +98,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     long_haul: initialData?.long_haul || false,
     featured: initialData?.featured || false,
     hot_deal: initialData?.hot_deal || false,
+    last_minute: initialData?.last_minute || false,
   });
 
   // Handle input changes to update state
@@ -227,74 +221,6 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 {state.errors.title.join(", ")}
               </p>
             )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="subtitle">Subtitle</Label>
-            <Textarea
-              ref={subtitleRef}
-              id="subtitle"
-              name="subtitle"
-              placeholder="Short description of the escape..."
-              value={formData.subtitle}
-              onChange={handleInputChange}
-              aria-invalid={!!state.errors?.subtitle}
-              aria-describedby="subtitle-error"
-            />
-            {state.errors?.subtitle && (
-              <p
-                id="subtitle-error"
-                className="text-sm font-medium text-destructive"
-              >
-                {state.errors.subtitle.join(", ")}
-              </p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="country">Country</Label>
-              <Input
-                ref={countryRef}
-                id="country"
-                name="country"
-                placeholder="e.g., Maldives"
-                value={formData.country}
-                onChange={handleInputChange}
-                aria-invalid={!!state.errors?.country}
-                aria-describedby="country-error"
-              />
-              {state.errors?.country && (
-                <p
-                  id="country-error"
-                  className="text-sm font-medium text-destructive"
-                >
-                  {state.errors.country.join(", ")}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="city">City</Label>
-              <Input
-                ref={cityRef}
-                id="city"
-                name="city"
-                placeholder="e.g., Marrakech"
-                value={formData.city}
-                onChange={handleInputChange}
-                aria-invalid={!!state.errors?.city}
-                aria-describedby="city-error"
-              />
-              {state.errors?.city && (
-                <p
-                  id="city-error"
-                  className="text-sm font-medium text-destructive"
-                >
-                  {state.errors.city.join(", ")}
-                </p>
-              )}
-            </div>
           </div>
 
           <div className="space-y-2">
@@ -589,29 +515,6 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="validTo">Valid To (Optional)</Label>
-              <Input
-                id="validTo"
-                name="validTo"
-                type="date"
-                value={formData.validTo}
-                onChange={handleInputChange}
-                aria-invalid={!!state.errors?.validTo}
-                aria-describedby="validTo-error"
-              />
-              {state.errors?.validTo && (
-                <p
-                  id="validTo-error"
-                  className="text-sm font-medium text-destructive"
-                >
-                  {state.errors.validTo.join(", ")}
-                </p>
-              )}
-            </div>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
@@ -655,12 +558,10 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 <Label htmlFor="long_haul">Long Haul</Label>
               </div>
               <p className="text-xs text-gray-500">
-                Check if this is a long haul destination
+                Check if this is a long-haul destination
               </p>
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <input
@@ -677,10 +578,10 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   }
                   value="true"
                 />
-                <Label htmlFor="featured">Featured Escape</Label>
+                <Label htmlFor="featured">Featured</Label>
               </div>
               <p className="text-xs text-gray-500">
-                Check to mark as a featured escape (blue styling)
+                Check to make this a featured escape (special blue styling)
               </p>
             </div>
 
@@ -703,7 +604,30 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 <Label htmlFor="hot_deal">Hot Deal</Label>
               </div>
               <p className="text-xs text-gray-500">
-                Check to mark as a hot deal (accent colors and flame icons)
+                Check to mark this as a hot deal (special styling)
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="last_minute"
+                  name="last_minute"
+                  className="h-4 w-4 rounded border-gray-300"
+                  checked={formData.last_minute}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      last_minute: e.target.checked,
+                    }))
+                  }
+                  value="true"
+                />
+                <Label htmlFor="last_minute">Last Minute</Label>
+              </div>
+              <p className="text-xs text-gray-500">
+                Check to mark this as a last minute deal
               </p>
             </div>
           </div>
