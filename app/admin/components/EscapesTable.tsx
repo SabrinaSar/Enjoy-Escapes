@@ -61,7 +61,7 @@ const BOARD_BASIS_LABELS: Record<string, string> = {
   half_board: "Half Board",
   full_board: "Full Board",
   all_inclusive: "All Inclusive",
-  ultra_all_inclusive: "Ultra All Inclusive (AI+)",
+  ultra_all_inclusive: "Ultra All Inclusive",
   flight_only: "Flight Only",
 };
 

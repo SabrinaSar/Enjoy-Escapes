@@ -40,7 +40,7 @@ const BOARD_BASIS_LABELS: Record<string, string> = {
   half_board: "Half Board",
   full_board: "Full Board",
   all_inclusive: "All Inclusive",
-  ultra_all_inclusive: "Ultra All Inclusive (AI+)",
+  ultra_all_inclusive: "Ultra All Inclusive",
   flight_only: "Flight Only",
 };
 
@@ -191,7 +191,7 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
                 </div>
               )}
             </div>
-            <div className="min-h-[1.5rem] mt-1">
+            <div className="min-h-[1.5rem] mt-auto">
               {escape.nights && (
                 <div className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
                   <Moon className="h-4 w-4 text-accent" aria-hidden="true" />
