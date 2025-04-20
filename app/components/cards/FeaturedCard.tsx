@@ -69,14 +69,14 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
         <meta itemProp="price" content={escape.price.toString()} />
       )}
 
-      <Card className="overflow-hidden border border-blue-300/50 dark:border-blue-500/40 hover:shadow-md dark:hover:shadow-black/30 transition-shadow duration-200 p-0 group-hover:shadow-lg dark:group-hover:shadow-black/40 flex flex-col h-full">
+      <Card className="overflow-hidden border border-blue-300/50 dark:border-blue-500/40 hover:shadow-md dark:hover:shadow-black/30 transition-all duration-300 p-0 group-hover:shadow-lg dark:group-hover:shadow-black/40 flex flex-col h-full group-hover:translate-y-[-8px] group-hover:scale-[1.02] group-hover:border-blue-400/70 dark:group-hover:border-blue-500/60">
         {/* Image section */}
-        <div className="relative h-48 w-full">
+        <div className="relative h-48 w-full overflow-hidden">
           <Image
             src={escape.image!}
             alt={dealTitle}
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority={false}
           />
@@ -97,7 +97,7 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
 
         <CardContent className="relative z-10 mt-[-1.25rem] bg-blue-50 dark:bg-[#1a224b] rounded-tr-3xl pt-6 px-4 pb-0 flex-1">
           <div className="h-full flex flex-col">
-            <CardTitle className="text-lg font-semibold leading-tight group-hover:text-primary transition-colors">
+            <CardTitle className="text-lg font-semibold leading-tight group-hover:text-primary transition-colors duration-300">
               {dealTitle}
             </CardTitle>
             <div className="min-h-[1.5rem]">

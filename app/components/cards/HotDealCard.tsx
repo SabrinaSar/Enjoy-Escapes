@@ -69,14 +69,14 @@ const HotDealCard: React.FC<HotDealCardProps> = ({ escape }) => {
         <meta itemProp="price" content={escape.price.toString()} />
       )}
 
-      <Card className="overflow-hidden border border-accent/40 dark:border-accent/50 shadow-lg shadow-accent/30 dark:shadow-accent/20 hover:shadow-md dark:hover:shadow-black/30 transition-shadow duration-200 p-0 group-hover:shadow-lg dark:group-hover:shadow-black/40 flex flex-col h-full">
+      <Card className="overflow-hidden border border-accent/40 dark:border-accent/50 shadow-lg shadow-accent/30 dark:shadow-accent/20 hover:shadow-md dark:hover:shadow-black/30 transition-all duration-300 p-0 group-hover:shadow-xl dark:group-hover:shadow-black/40 flex flex-col h-full group-hover:translate-y-[-10px] group-hover:scale-[1.03] group-hover:border-accent/70 dark:group-hover:border-accent/80">
         {/* Image section */}
-        <div className="relative h-48 w-full">
+        <div className="relative h-48 w-full overflow-hidden">
           <Image
             src={escape.image!}
             alt={dealTitle}
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.07]"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority={false}
           />
@@ -95,14 +95,14 @@ const HotDealCard: React.FC<HotDealCardProps> = ({ escape }) => {
           </div>
 
           {/* Hot deal indicator on the top-right corner */}
-          <div className="absolute top-2 right-2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-md">
+          <div className="absolute top-2 right-2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
             <Flame className="h-5 w-5" />
           </div>
         </div>
 
         <CardContent className="relative z-10 mt-[-1.25rem] bg-[#fefaf1] dark:bg-[#37343c] rounded-tr-3xl pt-6 px-4 pb-0 flex-1">
           <div className="h-full flex flex-col">
-            <CardTitle className="text-lg font-semibold leading-tight group-hover:text-primary transition-colors">
+            <CardTitle className="text-lg font-semibold leading-tight group-hover:text-primary transition-colors duration-300">
               {dealTitle}
             </CardTitle>
             <div className="min-h-[1.5rem]">
