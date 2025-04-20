@@ -175,11 +175,33 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && file.size > MAX_FILE_SIZE_BYTES) {
+    if (!file) return;
+
+    // Check file size
+    if (file.size > MAX_FILE_SIZE_BYTES) {
       toast.error(`File size exceeds the limit of ${MAX_FILE_SIZE_MB} MB.`);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+      return;
+    }
+
+    // Check if file has a valid name
+    if (!file.name || file.name.trim() === "") {
+      toast.error("File must have a valid name.");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      return;
+    }
+
+    // Verify it's a valid image file
+    if (!file.type.startsWith("image/")) {
+      toast.error("File must be a valid image.");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      return;
     }
   };
 

@@ -172,18 +172,49 @@ export async function createEscape(
   // Handle image upload
   let imageUrl: string | null = null;
   const imageFile = formData.get("image_file") as File | null;
-  if (imageFile) {
-    const imagePath = `escapes/${Date.now()}-${imageFile.name}`;
+
+  // Enhanced validation for image file
+  if (imageFile && imageFile.size > 0) {
+    // Validate image has a name
+    if (!imageFile.name || imageFile.name.trim() === "") {
+      return {
+        success: false,
+        message: "Image file must have a valid name.",
+        errors: {
+          image_file: ["Image file must have a valid name."],
+        },
+      };
+    }
+
+    // Validate it's an actual image file
+    if (!imageFile.type.startsWith("image/")) {
+      return {
+        success: false,
+        message: "Uploaded file must be an image.",
+        errors: {
+          image_file: ["Uploaded file must be an image."],
+        },
+      };
+    }
+
+    // Generate a safe filename with a timestamp
+    const safeFileName = imageFile.name.replace(/[^\w\d.-]/g, "_");
+    const imagePath = `escapes/${Date.now()}-${safeFileName}`;
+
     const { error: uploadError } = await supabase.storage
       .from("enjoy-escapes-assets")
-      .upload(imagePath, imageFile);
+      .upload(imagePath, imageFile, {
+        contentType: imageFile.type, // Explicitly set the content type
+      });
 
     if (uploadError) {
       console.error("Error uploading image:", uploadError);
       return {
         success: false,
         message: "Failed to upload image. " + uploadError.message,
-        // Add errors field if needed for specific validation errors
+        errors: {
+          image_file: ["Failed to upload image: " + uploadError.message],
+        },
       };
     }
 
@@ -366,11 +397,40 @@ export async function updateEscape(
   let newImageUrl: string | null = null;
   let newImagePath: string | null = null;
   const imageFile = formData.get("image_file") as File | null;
-  if (imageFile && imageFile.size > 0 && imageFile.name) {
-    newImagePath = `escapes/${Date.now()}-${imageFile.name}`;
+
+  // Enhanced validation for image file
+  if (imageFile && imageFile.size > 0) {
+    // Validate image has a name
+    if (!imageFile.name || imageFile.name.trim() === "") {
+      return {
+        success: false,
+        message: "Image file must have a valid name.",
+        errors: {
+          image_file: ["Image file must have a valid name."],
+        },
+      };
+    }
+
+    // Validate it's an actual image file
+    if (!imageFile.type.startsWith("image/")) {
+      return {
+        success: false,
+        message: "Uploaded file must be an image.",
+        errors: {
+          image_file: ["Uploaded file must be an image."],
+        },
+      };
+    }
+
+    // Generate a safe filename with a timestamp
+    const safeFileName = imageFile.name.replace(/[^\w\d.-]/g, "_");
+    newImagePath = `escapes/${Date.now()}-${safeFileName}`;
+
     const { error: uploadError } = await supabase.storage
       .from("enjoy-escapes-assets")
-      .upload(newImagePath, imageFile);
+      .upload(newImagePath, imageFile, {
+        contentType: imageFile.type, // Explicitly set the content type
+      });
 
     if (uploadError) {
       console.error("Error uploading new image:", uploadError);

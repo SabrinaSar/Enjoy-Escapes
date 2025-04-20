@@ -7,7 +7,6 @@ import CategoryFilter from "@/app/components/CategoryFilter";
 import EscapeGrid from "@/app/components/EscapeGrid";
 import { Metadata } from "next";
 import { format } from "date-fns"; // Using date-fns for formatting
-import { headers } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Latest Travel Deals & Escapes | Enjoy Escapes",
@@ -62,7 +61,7 @@ export default async function Home() {
       item: {
         "@type": "TravelAction",
         name: escape.title,
-        description: escape.subtitle,
+        description: escape.title || "Travel escape",
         image: escape.image,
         url: escape.link,
         priceSpecification: {
@@ -72,10 +71,12 @@ export default async function Home() {
         },
         destination: {
           "@type": "Place",
-          name: escape.city || escape.country,
+          name: escape.title ? escape.title.split(" - ").pop() : "Destination",
           address: {
             "@type": "PostalAddress",
-            addressCountry: escape.country,
+            addressCountry: escape.title
+              ? escape.title.split(" - ").pop()
+              : "Destination",
           },
         },
       },
