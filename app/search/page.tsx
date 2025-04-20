@@ -2,16 +2,24 @@ import EscapeGrid from "@/app/components/EscapeGrid";
 import { Metadata } from "next";
 import { fetchEscapes } from "@/app/actions/fetchEscapes";
 
-interface SearchPageProps {
-  searchParams: {
-    q?: string;
-  };
-}
+type SearchParams = {
+  q?: string;
+};
 
+// The correct type for pages in Next.js 14+
+type PageProps = {
+  params: Record<string, string>;
+  searchParams: Record<string, string | string[] | undefined>;
+};
+
+// Following the pattern in forgot-password page
 export async function generateMetadata({
   searchParams,
-}: SearchPageProps): Promise<Metadata> {
-  const query = searchParams.q || "";
+}: {
+  searchParams: Promise<SearchParams>;
+}): Promise<Metadata> {
+  const resolvedParams = await searchParams;
+  const query = resolvedParams.q || "";
 
   return {
     title: query
@@ -21,8 +29,13 @@ export async function generateMetadata({
   };
 }
 
-export default async function SearchPage({ searchParams }: SearchPageProps) {
-  const query = searchParams.q || "";
+export default async function SearchPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const resolvedParams = await searchParams;
+  const query = resolvedParams.q || "";
 
   // Fetch initial data on the server with search query
   const initialData = await fetchEscapes(1, undefined, query);
