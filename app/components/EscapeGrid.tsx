@@ -18,6 +18,7 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
 }) => {
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
+  const searchQuery = searchParams.get("q");
 
   const [escapes, setEscapes] = useState<EscapeData[]>(initialEscapes);
   const [page, setPage] = useState<number>(2); // Start loading from page 2
@@ -25,12 +26,16 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Reset grid when category changes
+  // Reset grid when category or search query changes
   useEffect(() => {
     const loadInitialEscapes = async () => {
       setLoading(true);
       try {
-        const result = await fetchEscapes(1, category || undefined);
+        const result = await fetchEscapes(
+          1,
+          category || undefined,
+          searchQuery || undefined
+        );
         if (result.error) {
           throw new Error(result.error);
         }
@@ -46,7 +51,7 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
     };
 
     loadInitialEscapes();
-  }, [category]);
+  }, [category, searchQuery]);
 
   const loadMoreEscapes = useCallback(async () => {
     if (loading || !hasMore) return; // Don't fetch if already loading or no more data
@@ -55,7 +60,11 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
     setError(null); // Clear previous errors
 
     try {
-      const result = await fetchEscapes(page, category || undefined);
+      const result = await fetchEscapes(
+        page,
+        category || undefined,
+        searchQuery || undefined
+      );
       if (result.error) {
         throw new Error(result.error);
       }
@@ -70,7 +79,7 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [page, loading, hasMore, category]);
+  }, [page, loading, hasMore, category, searchQuery]);
 
   return (
     <div>

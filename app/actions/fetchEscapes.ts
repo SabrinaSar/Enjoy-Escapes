@@ -47,7 +47,8 @@ export type CategoryFilter = {
 
 export async function fetchEscapes(
   page: number = 1,
-  category?: string
+  category?: string,
+  search?: string
 ): Promise<{ escapes: EscapeData[]; hasMore: boolean; error: string | null }> {
   const cookieStore = cookies();
   const supabase = await createClient();
@@ -57,6 +58,11 @@ export async function fetchEscapes(
 
   // Initialize the query
   let query = supabase.from("escapes_data").select("*", { count: "exact" }); // Request count for pagination logic
+
+  // Apply search filter if provided
+  if (search && search.trim() !== "") {
+    query = query.ilike("title", `%${search.trim()}%`);
+  }
 
   // Apply filters based on the selected category
   if (category) {

@@ -1,7 +1,7 @@
 import "./globals.css";
 
 import { Geist } from "next/font/google";
-import Navbar from "@/app/components/Navbar";
+import Navbar from "@/app/components/navbar";
 import { ThemeProvider } from "next-themes";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 
