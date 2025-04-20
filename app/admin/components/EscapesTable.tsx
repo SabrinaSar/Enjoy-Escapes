@@ -19,12 +19,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Flame,
   Hotel,
   Moon,
   MoreHorizontal,
   PackageCheck,
   Plane,
+  PlaneTakeoff,
+  School,
   Search,
+  Sparkles,
   Star,
 } from "lucide-react";
 import {
@@ -36,6 +40,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -45,7 +50,6 @@ import Link from "next/link";
 import { deleteEscape } from "../actions"; // Import the delete action
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
 
 type Escape = Database["public"]["Tables"]["escapes_data"]["Row"];
 
@@ -71,6 +75,60 @@ const formatPrice = (price?: number | null, unit?: string | null) => {
 
   const unitDisplay = unit ? ` ${unit}` : "";
   return `£${price}${unitDisplay}`;
+};
+
+// Feature Badges component to handle special attributes
+const FeatureBadges = ({ escape }: { escape: Escape }) => {
+  // Helper function to check if a boolean value from Supabase is true
+  // This handles various ways booleans can be represented in responses
+  const isTrue = (value: any): boolean => {
+    // Check explicitly for all possible true representations
+    if (value === true) return true;
+    if (value === "true") return true;
+    if (value === 1) return true;
+    if (value === "1") return true;
+
+    // Otherwise, assume it's not true
+    return false;
+  };
+
+  return (
+    <div className="flex flex-wrap gap-1 mt-1">
+      {isTrue(escape.featured) && (
+        <Badge
+          variant="secondary"
+          className="flex items-center gap-1 text-blue-600 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400"
+        >
+          <Sparkles className="h-3 w-3" />
+          <span className="text-xs">Featured</span>
+        </Badge>
+      )}
+
+      {isTrue(escape.hot_deal) && (
+        <Badge
+          variant="secondary"
+          className="flex items-center gap-1 text-orange-600 bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400"
+        >
+          <Flame className="h-3 w-3" />
+          <span className="text-xs">Hot Deal</span>
+        </Badge>
+      )}
+
+      {isTrue(escape.school_holidays) && (
+        <Badge variant="outline" className="flex items-center gap-1 text-xs">
+          <School className="h-3 w-3" />
+          <span className="text-xs">School Hols</span>
+        </Badge>
+      )}
+
+      {isTrue(escape.long_haul) && (
+        <Badge variant="outline" className="flex items-center gap-1 text-xs">
+          <PlaneTakeoff className="h-3 w-3" />
+          <span className="text-xs">Long Haul</span>
+        </Badge>
+      )}
+    </div>
+  );
 };
 
 export default function EscapesTable({ escapes }: EscapesTableProps) {
@@ -220,6 +278,7 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
                     {escape.title}
                   </span>
                   <StarRating rating={escape.star_rating} />
+                  <FeatureBadges escape={escape} />
                 </div>
               </TableCell>
               <TableCell>

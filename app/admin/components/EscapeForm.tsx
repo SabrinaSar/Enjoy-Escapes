@@ -104,6 +104,8 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     star_rating: initialData?.star_rating || "",
     school_holidays: initialData?.school_holidays || false,
     long_haul: initialData?.long_haul || false,
+    featured: initialData?.featured || false,
+    hot_deal: initialData?.hot_deal || false,
   });
 
   // Handle input changes to update state
@@ -675,6 +677,54 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
               </div>
               <p className="text-xs text-gray-500">
                 Check if this is a long haul destination
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="featured"
+                  name="featured"
+                  className="h-4 w-4 rounded border-gray-300"
+                  checked={formData.featured}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      featured: e.target.checked,
+                    }))
+                  }
+                  value="true"
+                />
+                <Label htmlFor="featured">Featured Escape</Label>
+              </div>
+              <p className="text-xs text-gray-500">
+                Check to mark as a featured escape (blue styling)
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="hot_deal"
+                  name="hot_deal"
+                  className="h-4 w-4 rounded border-gray-300"
+                  checked={formData.hot_deal}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      hot_deal: e.target.checked,
+                    }))
+                  }
+                  value="true"
+                />
+                <Label htmlFor="hot_deal">Hot Deal</Label>
+              </div>
+              <p className="text-xs text-gray-500">
+                Check to mark as a hot deal (accent colors and flame icons)
               </p>
             </div>
           </div>

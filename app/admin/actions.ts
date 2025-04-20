@@ -707,7 +707,14 @@ export async function deleteEscape(id: number) {
 export async function fetchEscapesWithPagination(
   page: number = 1,
   pageSize: number = 10,
-  searchQuery: string = ""
+  searchQuery: string = "",
+  filters: {
+    featured?: boolean;
+    hot_deal?: boolean;
+    school_holidays?: boolean;
+    long_haul?: boolean;
+    type?: "hotel" | "flight" | "hotel+flight";
+  } = {}
 ): Promise<{
   escapes: Database["public"]["Tables"]["escapes_data"]["Row"][];
   totalCount: number;
@@ -716,6 +723,8 @@ export async function fetchEscapesWithPagination(
   error: string | null;
 }> {
   const supabase = await createClient();
+
+  // Remove debug logging
 
   // Calculate pagination limits
   const from = (page - 1) * pageSize;
@@ -737,6 +746,29 @@ export async function fetchEscapesWithPagination(
     );
   }
 
+  // Apply filters for special attributes
+  // Only apply filter if it's explicitly set to true
+  // We want to see ALL items (including featured ones) when not filtering
+  if (filters.featured === true) {
+    query = query.eq("featured", true);
+  }
+
+  if (filters.hot_deal === true) {
+    query = query.eq("hot_deal", true);
+  }
+
+  if (filters.school_holidays === true) {
+    query = query.eq("school_holidays", true);
+  }
+
+  if (filters.long_haul === true) {
+    query = query.eq("long_haul", true);
+  }
+
+  if (filters.type) {
+    query = query.eq("type", filters.type);
+  }
+
   // Apply pagination and ordering
   const { data, error, count } = await query
     .order("created_at", { ascending: false })
@@ -752,6 +784,8 @@ export async function fetchEscapesWithPagination(
       error: error.message,
     };
   }
+
+  // Remove debug logging
 
   // Calculate total pages
   const totalCount = count || 0;

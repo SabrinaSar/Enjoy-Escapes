@@ -1,12 +1,17 @@
 import {
   CalendarIcon,
+  Flame,
   PackageCheck,
+  PlaneTakeoff,
   PlusCircle,
+  School,
+  Sparkles,
   Star,
   TrendingUp,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+import { AdminFilterBar } from "./components/AdminFilterBar";
 import { AdminPagination } from "./components/AdminPagination";
 import { AdminSearchBar } from "./components/AdminSearchBar";
 import { Button } from "@/components/ui/button";
@@ -22,12 +27,24 @@ type EscapeStats = {
   price: number | null;
   validTo: string | null;
   created_at: string;
+  featured: boolean | null;
+  hot_deal: boolean | null;
+  school_holidays: boolean | null;
+  long_haul: boolean | null;
 };
 
 export default async function EscapesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; page?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    page?: string;
+    featured?: string;
+    hot_deal?: string;
+    school_holidays?: string;
+    long_haul?: string;
+    type?: string;
+  }>;
 }) {
   // Resolve searchParams Promise
   const resolvedSearchParams = await searchParams;
@@ -37,9 +54,23 @@ export default async function EscapesPage({
   const currentPage = Number(resolvedSearchParams.page) || 1;
   const pageSize = 10; // Items per page
 
+  // Get filter parameters
+  const filters = {
+    featured: resolvedSearchParams.featured === "true" || undefined,
+    hot_deal: resolvedSearchParams.hot_deal === "true" || undefined,
+    school_holidays:
+      resolvedSearchParams.school_holidays === "true" || undefined,
+    long_haul: resolvedSearchParams.long_haul === "true" || undefined,
+    type: resolvedSearchParams.type as
+      | "hotel"
+      | "flight"
+      | "hotel+flight"
+      | undefined,
+  };
+
   // Fetch paginated and filtered escapes
   const { escapes, totalCount, totalPages, error } =
-    await fetchEscapesWithPagination(currentPage, pageSize, query);
+    await fetchEscapesWithPagination(currentPage, pageSize, query, filters);
 
   if (error) {
     console.error("Error fetching escapes:", error);
@@ -50,7 +81,9 @@ export default async function EscapesPage({
   const supabase = await createClient();
   const { data } = await supabase
     .from("escapes_data")
-    .select("id, type, price, validTo, created_at");
+    .select(
+      "id, type, price, validTo, created_at, featured, hot_deal, school_holidays, long_haul"
+    );
 
   const allEscapes: EscapeStats[] = data || [];
 
@@ -66,6 +99,10 @@ export default async function EscapesPage({
     allEscapes?.filter((escape) => escape.type === "hotel+flight").length || 0;
   const hotelOnlyDeals =
     allEscapes?.filter((escape) => escape.type === "hotel").length || 0;
+
+  const featuredEscapes =
+    allEscapes?.filter((escape) => escape.featured).length || 0;
+  const hotDeals = allEscapes?.filter((escape) => escape.hot_deal).length || 0;
 
   const averagePrice =
     allEscapes?.reduce((sum, escape) => sum + (escape.price || 0), 0) /
@@ -96,8 +133,8 @@ export default async function EscapesPage({
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card>
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6">
+        <Card className="md:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Total Escapes
@@ -111,7 +148,7 @@ export default async function EscapesPage({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="md:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Package Deals
@@ -123,7 +160,7 @@ export default async function EscapesPage({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="md:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Hotel Only
@@ -135,10 +172,34 @@ export default async function EscapesPage({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="md:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Average Price
+              Featured
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex items-center justify-between">
+            <div className="text-2xl font-bold">{featuredEscapes}</div>
+            <Sparkles className="h-4 w-4 text-blue-500" />
+          </CardContent>
+        </Card>
+
+        <Card className="md:col-span-1">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Hot Deals
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex items-center justify-between">
+            <div className="text-2xl font-bold">{hotDeals}</div>
+            <Flame className="h-4 w-4 text-orange-500" />
+          </CardContent>
+        </Card>
+
+        <Card className="md:col-span-1">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Avg. Price
             </CardTitle>
           </CardHeader>
           <CardContent className="flex items-center justify-between">
@@ -148,9 +209,12 @@ export default async function EscapesPage({
         </Card>
       </div>
 
-      {/* Search Bar */}
+      {/* Search Bar and Filters */}
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <AdminSearchBar />
+        <div className="flex flex-wrap items-center gap-2">
+          <AdminSearchBar />
+          <AdminFilterBar />
+        </div>
         <div className="text-sm text-muted-foreground">
           {query ? (
             <span>
