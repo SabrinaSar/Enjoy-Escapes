@@ -1,9 +1,7 @@
 import "./globals.css";
 
-import AuthButton from "@/components/header-auth";
 import { Geist } from "next/font/google";
-import Image from "next/image";
-import Link from "next/link";
+import Navbar from "@/app/components/Navbar";
 import { ThemeProvider } from "next-themes";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 
@@ -36,24 +34,7 @@ export default function RootLayout({
         >
           <main className="min-h-screen flex flex-col">
             <div className="flex-1 w-full flex flex-col">
-              <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-                <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-                  <Link
-                    href={"/"}
-                    className="flex items-center gap-2 font-semibold"
-                  >
-                    <Image
-                      src="/logo.png"
-                      alt="Enjoy Escapes Logo"
-                      width={40}
-                      height={40}
-                      className="h-8 w-auto"
-                    />
-                    <span>Enjoy Escapes</span>
-                  </Link>
-                  <AuthButton />
-                </div>
-              </nav>
+              <Navbar />
               <div className="w-full flex-1 flex flex-col">{children}</div>
 
               <footer className="w-full border-t border-t-foreground/10 p-8 flex flex-col items-center text-center text-xs gap-2">
