@@ -2,7 +2,6 @@ import AuthButton from "@/components/header-auth";
 import Image from "next/image";
 import Link from "next/link";
 import NavbarSearchForm from "@/app/components/NavbarSearchForm";
-import { cookies } from "next/headers";
 
 export default function Navbar() {
   // Using cookies.get to retrieve the search query from headers is not reliable
@@ -20,15 +19,18 @@ export default function Navbar() {
               height={40}
               className="h-8 w-auto"
             />
-            <span>Enjoy Escapes</span>
+            <span className="hidden sm:inline">Enjoy Escapes</span>
           </Link>
 
-          {/* Search bar */}
-          <div className="flex-grow mx-4 max-w-md">
+          {/* Search bar - expanded on mobile */}
+          <div className="flex-grow mx-1 sm:mx-4 max-w-full sm:max-w-md">
             <NavbarSearchForm />
           </div>
 
-          <AuthButton />
+          {/* Auth button (dropdown menu on mobile, normal buttons on desktop) */}
+          <div className="ml-1 sm:ml-0">
+            <AuthButton />
+          </div>
         </div>
       </nav>
 

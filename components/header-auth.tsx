@@ -1,5 +1,6 @@
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import HeaderAuthClient from "./header-auth-client";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
@@ -48,14 +49,28 @@ export default async function AuthButton() {
       </>
     );
   }
-  return user ? (
-    <form action={signOutAction}>
-      <Link className="mr-2" href="/admin">
-        <Button variant={"outline"}>Admin</Button>
-      </Link>
-      <Button type="submit" variant={"outline"}>
-        Sign out
-      </Button>
-    </form>
-  ) : null;
+
+  // For logged in users
+  if (user) {
+    return (
+      <>
+        {/* Mobile view - Dropdown Menu */}
+        <div className="sm:hidden">
+          <HeaderAuthClient />
+        </div>
+
+        {/* Desktop view - Normal buttons */}
+        <form action={signOutAction} className="hidden sm:flex">
+          <Link className="mr-2" href="/admin">
+            <Button variant={"outline"}>Admin</Button>
+          </Link>
+          <Button type="submit" variant={"outline"}>
+            Sign out
+          </Button>
+        </form>
+      </>
+    );
+  }
+
+  return null;
 }
