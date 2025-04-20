@@ -117,55 +117,6 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     }));
   };
 
-  // Add test data functions
-  const fillTestData1 = () => {
-    const newData = {
-      ...formData,
-      title: "Morocco 🌴 All inclusive",
-      subtitle: "All inclusive hotel stay with return flights",
-      country: "Morocco",
-      price: "£339",
-      link: "https://prf.hn/l/xEeBPeN/",
-      type: "hotel+flight" as const,
-    };
-
-    setFormData(newData);
-
-    if (titleRef.current) titleRef.current.value = newData.title;
-    if (subtitleRef.current) subtitleRef.current.value = newData.subtitle;
-    if (countryRef.current) countryRef.current.value = newData.country;
-    if (priceRef.current) priceRef.current.value = newData.price;
-    if (linkRef.current) linkRef.current.value = newData.link;
-
-    // Find the type select element and set its value
-    const typeSelect = document.getElementById("type") as HTMLSelectElement;
-    if (typeSelect) typeSelect.value = newData.type;
-  };
-
-  const fillTestData2 = () => {
-    const newData = {
-      ...formData,
-      title: "5* Platinum Cape Verde",
-      subtitle: "Everything included! Get yourself beach side!",
-      country: "Cape Verde",
-      price: "£705",
-      link: "https://tui-uk.7cnq.net/gOqEoO",
-      type: "hotel" as const,
-    };
-
-    setFormData(newData);
-
-    if (titleRef.current) titleRef.current.value = newData.title;
-    if (subtitleRef.current) subtitleRef.current.value = newData.subtitle;
-    if (countryRef.current) countryRef.current.value = newData.country;
-    if (priceRef.current) priceRef.current.value = newData.price;
-    if (linkRef.current) linkRef.current.value = newData.link;
-
-    // Find the type select element and set its value
-    const typeSelect = document.getElementById("type") as HTMLSelectElement;
-    if (typeSelect) typeSelect.value = newData.type;
-  };
-
   const initialState: FormState = {
     success: false,
     message: "",
@@ -679,27 +630,6 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
           </div>
 
           <SubmitButton formType={formType} />
-
-          {process.env.NODE_ENV !== "production" && (
-            <div className="flex space-x-2 mt-4 border-t pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={fillTestData1}
-                className="px-2 py-1 bg-secondary text-secondary-foreground border-0 rounded"
-              >
-                Debug: Morocco All-inclusive
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={fillTestData2}
-                className="px-2 py-1 bg-secondary text-secondary-foreground border-0 rounded"
-              >
-                Debug: 5* Platinum Cape Verde
-              </Button>
-            </div>
-          )}
         </form>
       </CardContent>
     </Card>
