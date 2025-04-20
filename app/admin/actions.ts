@@ -75,6 +75,32 @@ const escapeFormSchema = z
       }),
     deposit_price_unit: priceUnitEnum.optional(),
     city: z.string().optional(),
+    school_holidays: z
+      .union([
+        z.boolean(),
+        z.literal("on"),
+        z.literal("true"),
+        z.literal(true),
+        z.literal(""),
+        z.literal(undefined),
+        z.null(),
+      ])
+      .transform((val) => val === true || val === "on" || val === "true")
+      .optional()
+      .default(false),
+    long_haul: z
+      .union([
+        z.boolean(),
+        z.literal("on"),
+        z.literal("true"),
+        z.literal(true),
+        z.literal(""),
+        z.literal(undefined),
+        z.null(),
+      ])
+      .transform((val) => val === true || val === "on" || val === "true")
+      .optional()
+      .default(false),
     // Exclude image_file from schema validation if handled separately
   })
   .refine(
@@ -148,7 +174,7 @@ export async function createEscape(
     country: rawFormData.country,
     price: rawFormData.price,
     link: rawFormData.link,
-    type: rawFormData.type, // Add the type field to validation
+    type: rawFormData.type,
     validFrom: rawFormData.validFrom,
     validTo: rawFormData.validTo,
     nights: rawFormData.nights,
@@ -158,6 +184,14 @@ export async function createEscape(
     deposit_price: rawFormData.deposit_price,
     deposit_price_unit: rawFormData.deposit_price_unit,
     city: rawFormData.city,
+    school_holidays:
+      rawFormData.school_holidays === "on" ||
+      rawFormData.school_holidays === "true" ||
+      false,
+    long_haul:
+      rawFormData.long_haul === "on" ||
+      rawFormData.long_haul === "true" ||
+      false,
   });
 
   // If validation fails, return errors
@@ -190,6 +224,8 @@ export async function createEscape(
     deposit_price,
     deposit_price_unit,
     city,
+    school_holidays,
+    long_haul,
   } = validatedFields.data;
 
   // Prepare data for database insertion
@@ -210,6 +246,8 @@ export async function createEscape(
     deposit_price: deposit_price,
     deposit_price_unit: deposit_price_unit,
     city: city,
+    school_holidays: school_holidays || false,
+    long_haul: long_haul || false,
     image: imageUrl ?? "", // Use uploaded URL or empty string
   };
 
@@ -376,6 +414,32 @@ export async function updateEscape(
         }),
       deposit_price_unit: priceUnitEnum.optional(),
       city: z.string().optional(),
+      school_holidays: z
+        .union([
+          z.boolean(),
+          z.literal("on"),
+          z.literal("true"),
+          z.literal(true),
+          z.literal(""),
+          z.literal(undefined),
+          z.null(),
+        ])
+        .transform((val) => val === true || val === "on" || val === "true")
+        .optional()
+        .default(false),
+      long_haul: z
+        .union([
+          z.boolean(),
+          z.literal("on"),
+          z.literal("true"),
+          z.literal(true),
+          z.literal(""),
+          z.literal(undefined),
+          z.null(),
+        ])
+        .transform((val) => val === true || val === "on" || val === "true")
+        .optional()
+        .default(false),
       // ID is handled separately, image_file is handled separately
     })
     .refine(
@@ -399,7 +463,31 @@ export async function updateEscape(
   // Exclude file and id before validation
   const { image_file, id: removedId, ...dataToValidate } = rawFormData;
 
-  const validatedFields = escapeUpdateFormSchema.safeParse(dataToValidate);
+  const validatedFields = escapeUpdateFormSchema.safeParse({
+    title: dataToValidate.title,
+    subtitle: dataToValidate.subtitle,
+    country: dataToValidate.country,
+    price: dataToValidate.price,
+    link: dataToValidate.link,
+    type: dataToValidate.type,
+    validFrom: dataToValidate.validFrom,
+    validTo: dataToValidate.validTo,
+    nights: dataToValidate.nights,
+    board_basis: dataToValidate.board_basis,
+    star_rating: dataToValidate.star_rating,
+    price_unit: dataToValidate.price_unit,
+    deposit_price: dataToValidate.deposit_price,
+    deposit_price_unit: dataToValidate.deposit_price_unit,
+    city: dataToValidate.city,
+    school_holidays:
+      dataToValidate.school_holidays === "on" ||
+      dataToValidate.school_holidays === "true" ||
+      false,
+    long_haul:
+      dataToValidate.long_haul === "on" ||
+      dataToValidate.long_haul === "true" ||
+      false,
+  });
 
   // If validation fails, return errors
   if (!validatedFields.success) {
@@ -440,6 +528,8 @@ export async function updateEscape(
     deposit_price,
     deposit_price_unit,
     city,
+    school_holidays,
+    long_haul,
   } = validatedFields.data;
 
   // Prepare data for database update
@@ -459,6 +549,8 @@ export async function updateEscape(
     deposit_price: deposit_price,
     deposit_price_unit: deposit_price_unit,
     city: city,
+    school_holidays: school_holidays || false,
+    long_haul: long_haul || false,
 
     // Conditionally add the image field only if a new one was uploaded
     // Otherwise keep the existing image URL from currentEscapeData

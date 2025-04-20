@@ -33,6 +33,8 @@ export type EscapeData = {
   deposit_price: number | null;
   deposit_price_unit: "pp" | "pn" | "pr" | null;
   city: string | null;
+  school_holidays: boolean | null;
+  long_haul: boolean | null;
 };
 
 // Define a type for category filters
@@ -41,7 +43,8 @@ export type CategoryFilter = {
   board_basis?: string;
   last_minute?: boolean;
   price_under?: number;
-  city_break?: boolean;
+  school_holidays?: boolean;
+  long_haul?: boolean;
 };
 
 export async function fetchEscapes(
@@ -66,13 +69,23 @@ export async function fetchEscapes(
       case "all-inclusive":
         query = query.eq("board_basis", "all_inclusive");
         break;
+      case "deals-under-300":
+        // For deals under £300, filter by price
+        query = query.lt("price", 300);
+        break;
+      case "school-holidays":
+        query = query.eq("school_holidays", true);
+        break;
       case "last-minute":
-        // For last-minute, filter deals that expire within 7 days
-        const oneWeekFromNow = new Date();
-        oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
+        // For last-minute, filter deals that expire within 48 hours
+        const fortyEightHoursFromNow = new Date();
+        fortyEightHoursFromNow.setHours(fortyEightHoursFromNow.getHours() + 48);
         query = query
           .not("validTo", "is", null)
-          .lt("validTo", oneWeekFromNow.toISOString());
+          .lt("validTo", fortyEightHoursFromNow.toISOString());
+        break;
+      case "long-haul":
+        query = query.eq("long_haul", true);
         break;
       case "breaks-under-100":
         // For breaks under £100, filter by price

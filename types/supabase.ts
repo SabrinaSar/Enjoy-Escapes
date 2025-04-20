@@ -38,6 +38,8 @@ export type Database = {
           deposit_price: number | null;
           deposit_price_unit: "pp" | "pn" | "pr" | null;
           city: string | null;
+          school_holidays: boolean | null;
+          long_haul: boolean | null;
         };
         Insert: {
           country: string;
@@ -67,6 +69,8 @@ export type Database = {
           deposit_price?: number | null;
           deposit_price_unit?: "pp" | "pn" | "pr" | null;
           city?: string | null;
+          school_holidays?: boolean | null;
+          long_haul?: boolean | null;
         };
         Update: {
           country?: string;
@@ -96,6 +100,8 @@ export type Database = {
           deposit_price?: number | null;
           deposit_price_unit?: "pp" | "pn" | "pr" | null;
           city?: string | null;
+          school_holidays?: boolean | null;
+          long_haul?: boolean | null;
         };
         Relationships: [];
       };

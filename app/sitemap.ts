@@ -7,11 +7,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Fetch all available categories
   const categories = [
-    "holidays",
     "all-inclusive",
+    "deals-under-300",
+    "school-holidays",
     "last-minute",
-    "breaks-under-100",
-    "city-breaks",
+    "long-haul",
   ];
 
   // Fetch some escapes to include individual pages (if they exist)

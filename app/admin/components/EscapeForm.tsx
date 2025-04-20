@@ -102,6 +102,8 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     nights: initialData?.nights || "",
     board_basis: initialData?.board_basis || "",
     star_rating: initialData?.star_rating || "",
+    school_holidays: initialData?.school_holidays || false,
+    long_haul: initialData?.long_haul || false,
   });
 
   // Handle input changes to update state
@@ -626,6 +628,54 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   {state.errors.validTo.join(", ")}
                 </p>
               )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="school_holidays"
+                  name="school_holidays"
+                  className="h-4 w-4 rounded border-gray-300"
+                  checked={formData.school_holidays}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      school_holidays: e.target.checked,
+                    }))
+                  }
+                  value="true"
+                />
+                <Label htmlFor="school_holidays">School Holidays</Label>
+              </div>
+              <p className="text-xs text-gray-500">
+                Check if this escape is available during school holidays
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="long_haul"
+                  name="long_haul"
+                  className="h-4 w-4 rounded border-gray-300"
+                  checked={formData.long_haul}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      long_haul: e.target.checked,
+                    }))
+                  }
+                  value="true"
+                />
+                <Label htmlFor="long_haul">Long Haul</Label>
+              </div>
+              <p className="text-xs text-gray-500">
+                Check if this is a long haul destination
+              </p>
             </div>
           </div>
 

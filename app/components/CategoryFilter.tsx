@@ -9,34 +9,34 @@ import Image from "next/image";
 // Define the categories shown in the image
 const categories = [
   {
-    id: "holidays",
-    name: "Holidays",
-    icon: "/icons/holidays.svg",
-    filter: { type: "hotel+flight" },
-  },
-  {
     id: "all-inclusive",
-    name: "All-inclusive",
+    name: "All Inclusive",
     icon: "/icons/all-inclusive.svg",
     filter: { board_basis: "all_inclusive" },
   },
   {
+    id: "deals-under-300",
+    name: "Deals Under £300",
+    icon: "/icons/price.svg",
+    filter: { price_under: 300 },
+  },
+  {
+    id: "school-holidays",
+    name: "School Holidays",
+    icon: "/icons/holidays.svg",
+    filter: { school_holidays: true },
+  },
+  {
     id: "last-minute",
-    name: "Last-minute",
+    name: "Last Minute",
     icon: "/icons/last-minute.svg",
     filter: { last_minute: true },
   },
   {
-    id: "breaks-under-100",
-    name: "Breaks Under £100",
-    icon: "/icons/price.svg",
-    filter: { price_under: 100 },
-  },
-  {
-    id: "city-breaks",
-    name: "City Breaks",
-    icon: "/icons/city-breaks.svg",
-    filter: { city_break: true },
+    id: "long-haul",
+    name: "Long Haul",
+    icon: "/icons/city-breaks.svg", // Reusing existing icon, you may want to create a new one
+    filter: { long_haul: true },
   },
 ];
 
