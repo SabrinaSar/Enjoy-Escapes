@@ -40,6 +40,7 @@ export default function HeaderAuthClient() {
             </Button>
           </form>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild></DropdownMenuItem>
         <DropdownMenuSeparator />
         <div className="px-2 py-1">
           <ThemeSwitcher />

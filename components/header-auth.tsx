@@ -69,6 +69,7 @@ export default async function AuthButton() {
           <Button type="submit" variant={"outline"}>
             Sign out
           </Button>
+          <ThemeSwitcher />
         </form>
       </>
     );
