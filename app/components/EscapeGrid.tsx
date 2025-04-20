@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useInView } from "react-intersection-observer";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { fetchEscapes, type EscapeData } from "@/app/actions/fetchEscapes";
 import CardSelector from "./cards/CardSelector";
 import { Loader2 } from "lucide-react"; // Loading spinner
+import { Button } from "@/components/ui/button";
 
 interface EscapeGridProps {
   initialEscapes: EscapeData[];
@@ -24,10 +24,6 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
   const [hasMore, setHasMore] = useState<boolean>(initialHasMore);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { ref, inView } = useInView({
-    threshold: 0, // Trigger as soon as the element enters the viewport
-    triggerOnce: false, // Keep triggering as user scrolls up and down (if needed)
-  });
 
   // Reset grid when category changes
   useEffect(() => {
@@ -40,7 +36,7 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
         }
         setEscapes(result.escapes);
         setHasMore(result.hasMore);
-        setPage(2); // Reset to page 2 for infinite loading
+        setPage(2); // Reset to page 2 for loading more
       } catch (err) {
         console.error("Failed to load escapes:", err);
         setError(err instanceof Error ? err.message : "Failed to load deals.");
@@ -71,22 +67,10 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
     } catch (err) {
       console.error("Failed to load more escapes:", err);
       setError(err instanceof Error ? err.message : "Failed to load deals.");
-      // Optional: Stop trying to load more if there's an error?
-      // setHasMore(false);
     } finally {
       setLoading(false);
     }
   }, [page, loading, hasMore, category]);
-
-  useEffect(() => {
-    // If the trigger element is in view and there's more data, load more
-    if (inView && hasMore && !loading) {
-      loadMoreEscapes();
-    }
-  }, [inView, loadMoreEscapes, hasMore, loading]);
-
-  // Note: We don't need to sort escapes here as the API already returns them
-  // with featured items at the top (ordered by featured: false, then created_at)
 
   return (
     <div>
@@ -103,14 +87,19 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
         ))}
       </div>
 
-      {/* Sentinel Element for Intersection Observer */}
-      {/* Only render the loader and sentinel if there are more items potentially available */}
+      {/* Load More Button */}
       {hasMore && (
-        <div ref={ref} className="flex justify-center items-center h-20">
-          {loading && <Loader2 className="h-8 w-8 animate-spin text-primary" />}
-          {!loading && !error && hasMore && (
-            <span className="text-muted-foreground">Loading more...</span>
-          )}
+        <div className="flex justify-center mt-8 mb-6">
+          <Button onClick={loadMoreEscapes} disabled={loading} className="px-6">
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Loading...
+              </>
+            ) : (
+              "Load More"
+            )}
+          </Button>
         </div>
       )}
 
@@ -119,8 +108,14 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
         <div className="text-center text-red-600 dark:text-red-400 mt-4">
           <p>Oops! Something went wrong.</p>
           <p>{error}</p>
-          {/* Optional: Add a retry button */}
-          {/* <button onClick={loadMoreEscapes} disabled={loading}>Retry</button> */}
+          <Button
+            onClick={loadMoreEscapes}
+            disabled={loading}
+            variant="outline"
+            className="mt-2"
+          >
+            Try Again
+          </Button>
         </div>
       )}
 
