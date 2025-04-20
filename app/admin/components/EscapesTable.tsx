@@ -270,12 +270,10 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
               </TableCell>
               <TableCell>
                 <div className="flex flex-col gap-1">
-                  <span className="font-medium">
+                  <span className="font-medium">{escape.title}</span>
+                  <span className="text-xs text-muted-foreground">
                     {escape.country}
                     {escape.city ? `, ${escape.city}` : ""}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {escape.title}
                   </span>
                   <StarRating rating={escape.star_rating} />
                   <FeatureBadges escape={escape} />
@@ -318,11 +316,6 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
               </TableCell>
               <TableCell>
                 <div className="flex flex-col gap-1 text-xs text-muted-foreground">
-                  {escape.validFrom && (
-                    <span>
-                      From: {new Date(escape.validFrom).toLocaleDateString()}
-                    </span>
-                  )}
                   {escape.validTo && (
                     <span>
                       Until: {new Date(escape.validTo).toLocaleDateString()}
