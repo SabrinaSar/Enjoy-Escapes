@@ -110,7 +110,7 @@ const HotDealCard: React.FC<HotDealCardProps> = ({ escape }) => {
           </div>
         </div>
 
-        <CardContent className="relative z-10 mt-[-1.25rem] bg-[#fefaf1] dark:bg-card rounded-tr-3xl pt-6 px-4 pb-0 flex-1">
+        <CardContent className="relative z-10 mt-[-1.25rem] bg-[#fefaf1] dark:bg-[#37343c] rounded-tr-3xl pt-6 px-4 pb-0 flex-1">
           <div className="h-full flex flex-col">
             <CardTitle className="text-lg font-semibold leading-tight group-hover:text-primary transition-colors">
               {dealTitle}
@@ -161,7 +161,7 @@ const HotDealCard: React.FC<HotDealCardProps> = ({ escape }) => {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="p-4 pt-2 flex flex-col items-end gap-1 bg-[#fefaf1] dark:bg-accent/15">
+        <CardFooter className="p-4 pt-2 flex flex-col items-end gap-1 bg-[#fefaf1] dark:bg-[#37343c]">
           {escape.price ? (
             <span className="whitespace-nowrap text-right">
               <span className="text-base text-muted-foreground mr-1">from</span>

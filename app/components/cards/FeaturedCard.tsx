@@ -105,7 +105,7 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
           </div>
         </div>
 
-        <CardContent className="relative z-10 mt-[-1.25rem] bg-blue-50 dark:bg-blue-900/20 rounded-tr-3xl pt-6 px-4 pb-0 flex-1">
+        <CardContent className="relative z-10 mt-[-1.25rem] bg-blue-50 dark:bg-[#1a224b] rounded-tr-3xl pt-6 px-4 pb-0 flex-1">
           <div className="h-full flex flex-col">
             <CardTitle className="text-lg font-semibold leading-tight group-hover:text-blue-600 transition-colors">
               {dealTitle}
@@ -156,7 +156,7 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="p-4 pt-2 flex flex-col items-end gap-1 bg-blue-50 dark:bg-blue-900/20">
+        <CardFooter className="p-4 pt-2 flex flex-col items-end gap-1 bg-blue-50 dark:bg-[#1a224b]">
           {escape.price ? (
             <span className="whitespace-nowrap text-right">
               <span className="text-base text-muted-foreground mr-1">from</span>
