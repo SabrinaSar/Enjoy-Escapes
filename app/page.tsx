@@ -132,14 +132,14 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
       />
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-3">
         {/* Category Filters */}
-        <div className="mb-8">
+        <div className="mb-3">
           <CategoryFilter />
         </div>
 
         {/* Last Updated Info */}
-        <div className="mb-6 text-sm text-muted-foreground text-center md:text-right">
+        <div className="mb-2 text-sm text-muted-foreground text-center md:text-right">
           Last updated: {formattedTimestamp}
         </div>
 
