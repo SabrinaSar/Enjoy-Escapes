@@ -4,27 +4,23 @@ import React from "react";
 import { Sparkles } from "lucide-react";
 
 interface NewDealTagProps {
-  validFrom: string | null;
+  created_at: string;
 }
 
-const NewDealTag: React.FC<NewDealTagProps> = ({ validFrom }) => {
-  if (!validFrom) return null;
+const NewDealTag: React.FC<NewDealTagProps> = ({ created_at }) => {
+  if (!created_at) return null;
 
-  // Check if the deal is new based on the validFrom date
+  // Check if the deal is new based on the created_at date (within last 24 hours)
   const isNew = () => {
-    const today = new Date();
-    const validFromDate = new Date(validFrom);
+    const now = new Date();
+    const createdAtDate = new Date(created_at);
 
-    // Reset time part to compare dates only
-    today.setHours(0, 0, 0, 0);
-    validFromDate.setHours(0, 0, 0, 0);
+    // Calculate the difference in milliseconds
+    const diffTime = now.getTime() - createdAtDate.getTime();
+    const diffHours = diffTime / (1000 * 60 * 60);
 
-    // Calculate the difference in days
-    const diffTime = today.getTime() - validFromDate.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-    // Return true if today is 1 day after validFrom
-    return diffDays <= 1;
+    // Return true if the deal was created within the last 24 hours
+    return diffHours <= 24;
   };
 
   if (!isNew()) return null;

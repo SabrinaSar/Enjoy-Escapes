@@ -98,7 +98,7 @@ const HotDealCard: React.FC<HotDealCardProps> = ({ escape }) => {
             </div>
 
             {/* New Deal Tag */}
-            {escape.validFrom && <NewDealTag validFrom={escape.validFrom} />}
+            {escape.created_at && <NewDealTag created_at={escape.created_at} />}
 
             {/* Countdown timer */}
             {escape.validTo && <CountdownTimer validTo={escape.validTo} />}

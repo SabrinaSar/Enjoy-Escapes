@@ -97,7 +97,6 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     deposit_price_unit: initialData?.deposit_price_unit || "pp",
     link: initialData?.link || "",
     type: (initialData?.type as "hotel" | "flight" | "hotel+flight") || "hotel",
-    validFrom: initialData?.validFrom?.split("T")[0] || "",
     validTo: initialData?.validTo?.split("T")[0] || "",
     nights: initialData?.nights || "",
     board_basis: initialData?.board_basis || "",
@@ -591,26 +590,6 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="validFrom">Valid From (Optional)</Label>
-              <Input
-                id="validFrom"
-                name="validFrom"
-                type="date"
-                value={formData.validFrom}
-                onChange={handleInputChange}
-                aria-invalid={!!state.errors?.validFrom}
-                aria-describedby="validFrom-error"
-              />
-              {state.errors?.validFrom && (
-                <p
-                  id="validFrom-error"
-                  className="text-sm font-medium text-destructive"
-                >
-                  {state.errors.validFrom.join(", ")}
-                </p>
-              )}
-            </div>
             <div className="space-y-2">
               <Label htmlFor="validTo">Valid To (Optional)</Label>
               <Input

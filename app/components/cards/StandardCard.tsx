@@ -91,7 +91,7 @@ const StandardCard: React.FC<StandardCardProps> = ({ escape }) => {
           {/* Tags positioned at the top-left corner of the image */}
           <div className="absolute top-2 left-2 z-10 flex flex-col gap-1.5 items-start">
             {/* New Deal Tag */}
-            {escape.validFrom && <NewDealTag validFrom={escape.validFrom} />}
+            {escape.created_at && <NewDealTag created_at={escape.created_at} />}
 
             {/* Countdown timer */}
             {escape.validTo && <CountdownTimer validTo={escape.validTo} />}

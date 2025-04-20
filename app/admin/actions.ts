@@ -48,7 +48,6 @@ const escapeFormSchema = z
     link: z.string().url("Invalid URL format."),
     type: dealTypeEnum, // Add type validation
     // Optional fields
-    validFrom: z.string().optional(),
     validTo: z.string().optional(),
     nights: z
       .union([
@@ -201,7 +200,6 @@ export async function createEscape(
     price: rawFormData.price,
     link: rawFormData.link,
     type: rawFormData.type,
-    validFrom: rawFormData.validFrom,
     validTo: rawFormData.validTo,
     nights: rawFormData.nights,
     board_basis: rawFormData.board_basis,
@@ -245,7 +243,6 @@ export async function createEscape(
     price,
     link,
     type,
-    validFrom,
     validTo,
     nights,
     board_basis,
@@ -269,7 +266,6 @@ export async function createEscape(
     link,
     type, // Add the type field to the data being inserted
     // Handle dates: Convert date string to ISO format for DB if needed
-    validFrom: validFrom ? validFrom : null,
     validTo: validTo ? validTo : null,
     nights: nights,
     board_basis: board_basis,
@@ -417,7 +413,6 @@ export async function updateEscape(
         .transform((val) => parseInt(val.replace(/[^0-9]/g, ""), 10)), // Transform string to number, removing non-digits
       link: z.string().url("Invalid URL format."),
       type: dealTypeEnum, // Add type validation
-      validFrom: z.string().optional(),
       validTo: z.string().optional(),
       nights: z
         .union([
@@ -530,7 +525,6 @@ export async function updateEscape(
     price: dataToValidate.price,
     link: dataToValidate.link,
     type: dataToValidate.type,
-    validFrom: dataToValidate.validFrom,
     validTo: dataToValidate.validTo,
     nights: dataToValidate.nights,
     board_basis: dataToValidate.board_basis,
@@ -587,7 +581,6 @@ export async function updateEscape(
     price,
     link,
     type,
-    validFrom,
     validTo,
     nights,
     board_basis,
@@ -610,7 +603,6 @@ export async function updateEscape(
     price,
     link,
     type, // Add the type field to the update data
-    validFrom: validFrom ? validFrom : null,
     validTo: validTo ? validTo : null,
     nights: nights,
     board_basis: board_basis,

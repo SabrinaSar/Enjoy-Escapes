@@ -20,7 +20,6 @@ export type Database = {
           subtitle: string;
           title: string;
           type: "hotel" | "flight" | "hotel+flight";
-          validFrom: string | null;
           validTo: string | null;
           nights: number | null;
           board_basis:
@@ -53,7 +52,6 @@ export type Database = {
           subtitle: string;
           title: string;
           type: "hotel" | "flight" | "hotel+flight";
-          validFrom?: string | null;
           validTo?: string | null;
           nights?: number | null;
           board_basis?:
@@ -86,7 +84,6 @@ export type Database = {
           subtitle?: string;
           title?: string;
           type?: "hotel" | "flight" | "hotel+flight";
-          validFrom?: string | null;
           validTo?: string | null;
           nights?: number | null;
           board_basis?:
