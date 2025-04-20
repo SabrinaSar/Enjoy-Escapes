@@ -85,34 +85,85 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
   const MAX_FILE_SIZE_MB = 3;
   const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
+  // Create form state to persist values between renders
+  const [formData, setFormData] = React.useState({
+    title: initialData?.title || "",
+    subtitle: initialData?.subtitle || "",
+    country: initialData?.country || "",
+    city: initialData?.city || "",
+    price: initialData?.price || "",
+    price_unit: initialData?.price_unit || "pp",
+    deposit_price: initialData?.deposit_price || "",
+    deposit_price_unit: initialData?.deposit_price_unit || "pp",
+    link: initialData?.link || "",
+    type: (initialData?.type as "hotel" | "flight" | "hotel+flight") || "hotel",
+    validFrom: initialData?.validFrom?.split("T")[0] || "",
+    validTo: initialData?.validTo?.split("T")[0] || "",
+    nights: initialData?.nights || "",
+    board_basis: initialData?.board_basis || "",
+    star_rating: initialData?.star_rating || "",
+  });
+
+  // Handle input changes to update state
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   // Add test data functions
   const fillTestData1 = () => {
-    if (titleRef.current) titleRef.current.value = "Morocco 🌴 All inclusive";
-    if (subtitleRef.current)
-      subtitleRef.current.value =
-        "All inclusive hotel stay with return flights";
-    if (countryRef.current) countryRef.current.value = "Morocco";
-    if (priceRef.current) priceRef.current.value = "£339";
-    if (linkRef.current) linkRef.current.value = "https://prf.hn/l/xEeBPeN/";
+    const newData = {
+      ...formData,
+      title: "Morocco 🌴 All inclusive",
+      subtitle: "All inclusive hotel stay with return flights",
+      country: "Morocco",
+      price: "£339",
+      link: "https://prf.hn/l/xEeBPeN/",
+      type: "hotel+flight" as const,
+    };
 
-    // Find the type select element and set its value to 'hotel+flight'
+    setFormData(newData);
+
+    if (titleRef.current) titleRef.current.value = newData.title;
+    if (subtitleRef.current) subtitleRef.current.value = newData.subtitle;
+    if (countryRef.current) countryRef.current.value = newData.country;
+    if (priceRef.current) priceRef.current.value = newData.price;
+    if (linkRef.current) linkRef.current.value = newData.link;
+
+    // Find the type select element and set its value
     const typeSelect = document.getElementById("type") as HTMLSelectElement;
-    if (typeSelect) typeSelect.value = "hotel+flight";
+    if (typeSelect) typeSelect.value = newData.type;
   };
 
   const fillTestData2 = () => {
-    if (titleRef.current) titleRef.current.value = "5* Platinum Cape Verde";
-    if (subtitleRef.current)
-      subtitleRef.current.value =
-        "Everything included! Get yourself beach side!";
-    if (countryRef.current) countryRef.current.value = "Cape Verde";
-    if (priceRef.current) priceRef.current.value = "£705";
-    if (linkRef.current)
-      linkRef.current.value = "https://tui-uk.7cnq.net/gOqEoO";
+    const newData = {
+      ...formData,
+      title: "5* Platinum Cape Verde",
+      subtitle: "Everything included! Get yourself beach side!",
+      country: "Cape Verde",
+      price: "£705",
+      link: "https://tui-uk.7cnq.net/gOqEoO",
+      type: "hotel" as const,
+    };
 
-    // Find the type select element and set its value to 'hotel'
+    setFormData(newData);
+
+    if (titleRef.current) titleRef.current.value = newData.title;
+    if (subtitleRef.current) subtitleRef.current.value = newData.subtitle;
+    if (countryRef.current) countryRef.current.value = newData.country;
+    if (priceRef.current) priceRef.current.value = newData.price;
+    if (linkRef.current) linkRef.current.value = newData.link;
+
+    // Find the type select element and set its value
     const typeSelect = document.getElementById("type") as HTMLSelectElement;
-    if (typeSelect) typeSelect.value = "hotel";
+    if (typeSelect) typeSelect.value = newData.type;
   };
 
   const initialState: FormState = {
@@ -166,37 +217,13 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     }
   }, [state, router]);
 
-  const defaultValues = initialData
-    ? {
-        ...initialData,
-        validFrom: initialData.validFrom?.split("T")[0] ?? "",
-        validTo: initialData.validTo?.split("T")[0] ?? "",
-        nights: initialData.nights ?? "",
-        board_basis: initialData.board_basis ?? "",
-        star_rating: initialData.star_rating ?? "",
-        price_unit: initialData.price_unit ?? "pp",
-        deposit_price: initialData.deposit_price ?? "",
-        deposit_price_unit: initialData.deposit_price_unit ?? "pp",
-        city: initialData.city ?? "",
-      }
-    : {
-        title: "",
-        subtitle: "",
-        country: "",
-        city: "",
-        price: "",
-        price_unit: "pp",
-        deposit_price: "",
-        deposit_price_unit: "pp",
-        link: "",
-        image: "",
-        type: "hotel",
-        validFrom: "",
-        validTo: "",
-        nights: "",
-        board_basis: "",
-        star_rating: "",
-      };
+  // Synchronize type selection with formData
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      type: selectedType as "hotel" | "flight" | "hotel+flight",
+    }));
+  }, [selectedType]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -233,7 +260,8 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
               id="title"
               name="title"
               placeholder="e.g., Luxury Beach Resort"
-              defaultValue={defaultValues.title}
+              value={formData.title}
+              onChange={handleInputChange}
               aria-invalid={!!state.errors?.title}
               aria-describedby="title-error"
             />
@@ -254,7 +282,8 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
               id="subtitle"
               name="subtitle"
               placeholder="Short description of the escape..."
-              defaultValue={defaultValues.subtitle}
+              value={formData.subtitle}
+              onChange={handleInputChange}
               aria-invalid={!!state.errors?.subtitle}
               aria-describedby="subtitle-error"
             />
@@ -276,7 +305,8 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 id="country"
                 name="country"
                 placeholder="e.g., Maldives"
-                defaultValue={defaultValues.country}
+                value={formData.country}
+                onChange={handleInputChange}
                 aria-invalid={!!state.errors?.country}
                 aria-describedby="country-error"
               />
@@ -297,7 +327,8 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 id="city"
                 name="city"
                 placeholder="e.g., Marrakech"
-                defaultValue={defaultValues.city}
+                value={formData.city}
+                onChange={handleInputChange}
                 aria-invalid={!!state.errors?.city}
                 aria-describedby="city-error"
               />
@@ -318,11 +349,14 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
               <select
                 id="type"
                 name="type"
-                defaultValue={defaultValues.type}
+                value={selectedType}
                 aria-invalid={!!state.errors?.type}
                 aria-describedby="type-error"
                 className="w-full appearance-none rounded-md border border-input bg-background py-2 pl-3 pr-8 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                onChange={(e) => setSelectedType(e.target.value)}
+                onChange={(e) => {
+                  setSelectedType(e.target.value);
+                  handleInputChange(e);
+                }}
               >
                 <option value="hotel">Hotel</option>
                 <option value="flight">Flight</option>
@@ -348,7 +382,8 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
               name="link"
               type="url"
               placeholder="https://example.com/booking"
-              defaultValue={defaultValues.link}
+              value={formData.link}
+              onChange={handleInputChange}
               aria-invalid={!!state.errors?.link}
               aria-describedby="link-error"
             />
@@ -413,7 +448,18 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   id="price"
                   name="price"
                   placeholder="e.g., 599"
-                  defaultValue={defaultValues.price}
+                  value={
+                    typeof formData.price === "string" &&
+                    formData.price.startsWith("£")
+                      ? formData.price.substring(1)
+                      : formData.price
+                  }
+                  onChange={(e) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      price: e.target.value,
+                    }));
+                  }}
                   className="pl-7"
                   aria-invalid={!!state.errors?.price}
                   aria-describedby="price-error"
@@ -434,7 +480,8 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
               <select
                 id="price_unit"
                 name="price_unit"
-                defaultValue={defaultValues.price_unit}
+                value={formData.price_unit}
+                onChange={handleInputChange}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 aria-invalid={!!state.errors?.price_unit}
                 aria-describedby="price-unit-error"
@@ -466,7 +513,8 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   id="deposit_price"
                   name="deposit_price"
                   placeholder="e.g., 75"
-                  defaultValue={defaultValues.deposit_price}
+                  value={formData.deposit_price}
+                  onChange={handleInputChange}
                   className="pl-7"
                   aria-invalid={!!state.errors?.deposit_price}
                   aria-describedby="deposit-price-error"
@@ -487,7 +535,8 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
               <select
                 id="deposit_price_unit"
                 name="deposit_price_unit"
-                defaultValue={defaultValues.deposit_price_unit}
+                value={formData.deposit_price_unit}
+                onChange={handleInputChange}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 aria-invalid={!!state.errors?.deposit_price_unit}
                 aria-describedby="deposit-price-unit-error"
@@ -517,7 +566,8 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 type="number"
                 min="1"
                 placeholder="e.g., 7"
-                defaultValue={defaultValues.nights}
+                value={formData.nights}
+                onChange={handleInputChange}
                 aria-invalid={!!state.errors?.nights}
                 aria-describedby="nights-error"
               />
@@ -541,7 +591,8 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 min="1"
                 max="6"
                 placeholder="e.g., 5"
-                defaultValue={defaultValues.star_rating}
+                value={formData.star_rating}
+                onChange={handleInputChange}
                 aria-invalid={!!state.errors?.star_rating}
                 aria-describedby="star-rating-error"
               />
@@ -560,7 +611,8 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
               <select
                 id="board_basis"
                 name="board_basis"
-                defaultValue={defaultValues.board_basis}
+                value={formData.board_basis}
+                onChange={handleInputChange}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 aria-invalid={!!state.errors?.board_basis}
                 aria-describedby="board-basis-error"
@@ -590,7 +642,8 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 id="validFrom"
                 name="validFrom"
                 type="date"
-                defaultValue={defaultValues.validFrom}
+                value={formData.validFrom}
+                onChange={handleInputChange}
                 aria-invalid={!!state.errors?.validFrom}
                 aria-describedby="validFrom-error"
               />
@@ -609,7 +662,8 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 id="validTo"
                 name="validTo"
                 type="date"
-                defaultValue={defaultValues.validTo}
+                value={formData.validTo}
+                onChange={handleInputChange}
                 aria-invalid={!!state.errors?.validTo}
                 aria-describedby="validTo-error"
               />
