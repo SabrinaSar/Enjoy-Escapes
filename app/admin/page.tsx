@@ -1,5 +1,6 @@
 import {
   CalendarIcon,
+  Clock,
   Flame,
   PackageCheck,
   PlaneTakeoff,
@@ -199,12 +200,12 @@ export default async function EscapesPage({
         <Card className="md:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Avg. Price
+              Last Minute
             </CardTitle>
           </CardHeader>
           <CardContent className="flex items-center justify-between">
-            <div className="text-2xl font-bold">£{averagePrice.toFixed(2)}</div>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <div className="text-2xl font-bold">{lastMinuteDeals}</div>
+            <Clock className="h-4 w-4 text-red-500" />
           </CardContent>
         </Card>
       </div>

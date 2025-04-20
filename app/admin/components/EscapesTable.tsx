@@ -12,13 +12,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
+  Clock,
   Flame,
   Hotel,
   Moon,
@@ -31,6 +25,13 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -125,6 +126,16 @@ const FeatureBadges = ({ escape }: { escape: Escape }) => {
         <Badge variant="outline" className="flex items-center gap-1 text-xs">
           <PlaneTakeoff className="h-3 w-3" />
           <span className="text-xs">Long Haul</span>
+        </Badge>
+      )}
+
+      {isTrue(escape.last_minute) && (
+        <Badge
+          variant="secondary"
+          className="flex items-center gap-1 text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400"
+        >
+          <Clock className="h-3 w-3" />
+          <span className="text-xs">Last Minute</span>
         </Badge>
       )}
     </div>
@@ -248,7 +259,6 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
             <TableHead>Destination</TableHead>
             <TableHead>Details</TableHead>
             <TableHead>Price</TableHead>
-            <TableHead>Dates</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -271,10 +281,6 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
               <TableCell>
                 <div className="flex flex-col gap-1">
                   <span className="font-medium">{escape.title}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {escape.country}
-                    {escape.city ? `, ${escape.city}` : ""}
-                  </span>
                   <StarRating rating={escape.star_rating} />
                   <FeatureBadges escape={escape} />
                 </div>
@@ -310,15 +316,6 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
                   {escape.deposit_price && (
                     <span className="text-xs text-green-600 dark:text-green-400">
                       £{escape.deposit_price} deposit
-                    </span>
-                  )}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex flex-col gap-1 text-xs text-muted-foreground">
-                  {escape.validTo && (
-                    <span>
-                      Until: {new Date(escape.validTo).toLocaleDateString()}
                     </span>
                   )}
                 </div>

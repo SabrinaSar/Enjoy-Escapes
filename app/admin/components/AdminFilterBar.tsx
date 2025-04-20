@@ -1,6 +1,6 @@
 "use client";
 
-import { Flame, PlaneTakeoff, School, Sparkles } from "lucide-react";
+import { Clock, Flame, PlaneTakeoff, School, Sparkles } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -32,6 +32,7 @@ export function AdminFilterBar() {
   const hotDeal = searchParams.get("hot_deal") === "true";
   const schoolHolidays = searchParams.get("school_holidays") === "true";
   const longHaul = searchParams.get("long_haul") === "true";
+  const lastMinute = searchParams.get("last_minute") === "true";
   const dealType = searchParams.get("type") || "all";
 
   // Local state for filters
@@ -40,6 +41,7 @@ export function AdminFilterBar() {
     hotDeal,
     schoolHolidays,
     longHaul,
+    lastMinute,
     dealType,
   });
 
@@ -49,6 +51,7 @@ export function AdminFilterBar() {
     filters.hotDeal && "hotDeal",
     filters.schoolHolidays && "schoolHolidays",
     filters.longHaul && "longHaul",
+    filters.lastMinute && "lastMinute",
     filters.dealType !== "all" && filters.dealType,
   ].filter(Boolean).length;
 
@@ -72,6 +75,9 @@ export function AdminFilterBar() {
     if (filters.longHaul) params.set("long_haul", "true");
     else params.delete("long_haul");
 
+    if (filters.lastMinute) params.set("last_minute", "true");
+    else params.delete("last_minute");
+
     if (filters.dealType && filters.dealType !== "all")
       params.set("type", filters.dealType);
     else params.delete("type");
@@ -87,6 +93,7 @@ export function AdminFilterBar() {
       hotDeal: false,
       schoolHolidays: false,
       longHaul: false,
+      lastMinute: false,
       dealType: "all",
     });
   };
@@ -98,9 +105,10 @@ export function AdminFilterBar() {
       hotDeal,
       schoolHolidays,
       longHaul,
+      lastMinute,
       dealType: dealType || "all",
     });
-  }, [featured, hotDeal, schoolHolidays, longHaul, dealType]);
+  }, [featured, hotDeal, schoolHolidays, longHaul, lastMinute, dealType]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -220,6 +228,28 @@ export function AdminFilterBar() {
                 >
                   <PlaneTakeoff className="h-3.5 w-3.5" />
                   <span>Long Haul</span>
+                </Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="filter-last-minute"
+                  checked={filters.lastMinute}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      lastMinute: e.target.checked,
+                    }))
+                  }
+                  className="h-4 w-4 rounded border-gray-300"
+                />
+                <Label
+                  htmlFor="filter-last-minute"
+                  className="flex items-center gap-1"
+                >
+                  <Clock className="h-3.5 w-3.5 text-red-500" />
+                  <span>Last Minute</span>
                 </Label>
               </div>
             </div>
