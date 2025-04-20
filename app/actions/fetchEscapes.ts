@@ -64,9 +64,6 @@ export async function fetchEscapes(
   // Apply filters based on the selected category
   if (category) {
     switch (category) {
-      case "holidays":
-        query = query.eq("type", "hotel+flight");
-        break;
       case "all-inclusive":
         query = query.eq("board_basis", "all_inclusive");
         break;
@@ -87,15 +84,6 @@ export async function fetchEscapes(
         break;
       case "long-haul":
         query = query.eq("long_haul", true);
-        break;
-      case "breaks-under-100":
-        // For breaks under £100, filter by price
-        query = query.lt("price", 100);
-        break;
-      case "city-breaks":
-        // For city breaks, we'll consider a deal a city break if it has a city value
-        // and doesn't include flights (typically hotel only in a city)
-        query = query.not("city", "is", null).eq("type", "hotel");
         break;
     }
   }

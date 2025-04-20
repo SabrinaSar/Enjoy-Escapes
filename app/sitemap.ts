@@ -5,7 +5,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Use the production URL
   const baseUrl = "https://enjoyescapes.com";
 
-  // Fetch all available categories
+  // Updated categories based on fetchEscapes function filters
   const categories = [
     "all-inclusive",
     "deals-under-300",
@@ -27,13 +27,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Add category pages
-  const categoryRoutes = categories.map((category) => ({
-    url: `${baseUrl}?category=${category}`,
-    lastModified: new Date(),
-    changeFrequency: "daily" as const,
-    priority: 0.8,
-  }));
+  // Add category pages with appropriate priorities
+  const categoryRoutes = categories.map((category) => {
+    // Set different priorities based on category importance
+    let priority = 0.8;
+    if (category === "all-inclusive") {
+      priority = 0.9; // Higher priority for most popular categories
+    } else if (category === "deals-under-300" || category === "last-minute") {
+      priority = 0.85; // Medium-high priority for time-sensitive deals
+    }
+
+    return {
+      url: `${baseUrl}?category=${category}`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
+      priority,
+    };
+  });
 
   // If you have individual escape detail pages, you can add them here
   // const escapeRoutes = escapesData.escapes.map(escape => ({

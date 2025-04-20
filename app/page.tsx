@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   description:
     "Discover curated travel deals, last-minute escapes, all-inclusive holidays, city breaks, and budget-friendly getaways from Enjoy Escapes.",
   keywords:
-    "travel deals, hotel discounts, flight deals, all-inclusive holidays, last-minute travel, city breaks, budget travel",
+    "travel deals, hotel discounts, flight deals, all-inclusive holidays, last-minute travel, city breaks, budget travel, school holidays, long haul",
   alternates: {
     canonical: "https://enjoyescapes.com/",
   },
@@ -27,9 +27,9 @@ export const metadata: Metadata = {
     siteName: "Enjoy Escapes",
     images: [
       {
-        url: "https://enjoyescapes.com/og-image.jpg",
-        width: 1200,
-        height: 630,
+        url: "https://enjoyescapes.com/logo.png",
+        width: 735,
+        height: 735,
         alt: "Enjoy Escapes - Curated Travel Deals",
       },
     ],
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     title: "Latest Travel Deals & Escapes | Enjoy Escapes",
     description:
       "Discover curated travel deals, last-minute escapes, all-inclusive holidays, city breaks, and budget-friendly getaways.",
-    images: ["https://enjoyescapes.com/og-image.jpg"],
+    images: ["https://enjoyescapes.com/logo.png"],
   },
 };
 
