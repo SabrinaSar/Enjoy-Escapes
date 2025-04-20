@@ -3,7 +3,6 @@ import "./globals.css";
 import { Geist } from "next/font/google";
 import Navbar from "@/app/components/navbar";
 import { ThemeProvider } from "next-themes";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 
 const defaultUrl = "https://enjoyescapes.com";
 
@@ -45,30 +44,11 @@ export default function RootLayout({
                     often!
                   </span>
                 </div>
-                <div className="max-w-5xl w-full flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="max-w-5xl w-full flex justify-center">
                   <p>
                     &copy; {new Date().getFullYear()} Enjoy Escapes. All rights
                     reserved.
                   </p>
-                  <div className="flex gap-4 items-center">
-                    <a
-                      href="https://tiktok.com/@sabrinaescapes"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="hover:underline"
-                    >
-                      TikTok
-                    </a>
-                    <a
-                      href="https://instagram.com/sabrinaescapes"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="hover:underline"
-                    >
-                      Instagram
-                    </a>
-                    <ThemeSwitcher />
-                  </div>
                 </div>
               </footer>
             </div>

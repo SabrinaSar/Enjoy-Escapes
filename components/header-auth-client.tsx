@@ -4,12 +4,14 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Menu } from "lucide-react";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { signOutAction } from "@/app/actions";
 
 export default function HeaderAuthClient() {
@@ -38,6 +40,10 @@ export default function HeaderAuthClient() {
             </Button>
           </form>
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <div className="px-2 py-1">
+          <ThemeSwitcher />
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );
