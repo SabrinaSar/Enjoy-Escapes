@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Sparkles } from "lucide-react";
 
 interface NewDealTagProps {
   validFrom: string | null;
@@ -29,8 +30,9 @@ const NewDealTag: React.FC<NewDealTagProps> = ({ validFrom }) => {
   if (!isNew()) return null;
 
   return (
-    <span className="inline-flex items-center rounded-md bg-orange-50 dark:bg-orange-900/30 px-2 py-1 text-xs font-medium text-orange-600 dark:text-orange-400 ring-1 ring-inset ring-orange-500/10 dark:ring-orange-500/30">
-      New Deal 🔥
+    <span className="inline-flex items-center rounded-md bg-gradient-to-r from-amber-400 to-orange-500 px-3 py-1 text-xs font-medium text-white shadow-sm ring-1 ring-inset ring-orange-400/50">
+      <Sparkles className="h-3 w-3 mr-1" />
+      New Deal
     </span>
   );
 };

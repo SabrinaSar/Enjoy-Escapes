@@ -66,8 +66,27 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ validTo }) => {
     return parts.join(" ");
   };
 
+  // Determine urgency color based on time left
+  const getGradientColors = () => {
+    if (timeLeft.days === 0 && timeLeft.hours < 6) {
+      // Very urgent - red gradient
+      return "from-red-500 to-pink-600";
+    } else if (timeLeft.days === 0) {
+      // Somewhat urgent - orange gradient
+      return "from-orange-500 to-red-500";
+    } else if (timeLeft.days <= 1) {
+      // Approaching - amber gradient
+      return "from-amber-500 to-orange-500";
+    } else {
+      // Plenty of time - teal gradient
+      return "from-teal-500 to-emerald-600";
+    }
+  };
+
   return (
-    <span className="inline-flex items-center">
+    <span
+      className={`inline-flex items-center rounded-md bg-gradient-to-r ${getGradientColors()} px-3 py-1 text-xs font-medium text-white shadow-sm ring-1 ring-inset ring-gray-200/20`}
+    >
       <Clock className="h-3 w-3 mr-1" />
       <span>Expires {formatTime()}</span>
     </span>

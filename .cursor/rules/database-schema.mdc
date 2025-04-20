@@ -9,7 +9,7 @@ This guide outlines where database schema is defined and what files need to be u
 
 ## Type Definitions
 
-The Supabase database types are defined in [types/supabase.ts](mdc:types/supabase.ts). When adding or modifying tables or columns, this file should be updated first to ensure type safety throughout the application.
+The Supabase database types are defined in ](mdc:types/supabase.ts). When adding or modifying tables or columns, this file should be updated first to ensure type safety throughout the application.
 
 Example of a table definition:
 ```typescript
@@ -33,9 +33,7 @@ escapes_data: {
 
 ## Data Access Layer
 
-The data fetching logic that interacts with the database is contained in:
-
-- [app/actions/fetchEscapes.ts](mdc:app/actions/fetchEscapes.ts) - Server actions for fetching escape data
+The data fetching logic that interacts with the datab/actions/fetchEscapes.ts](mdc:app/actions/fetchEscapes.ts) - Server actions for fetching escape data
 
 When adding new fields or tables, ensure corresponding EscapeData type is updated here:
 
@@ -51,9 +49,9 @@ export type EscapeData = {
 
 ## Form Components
 
-Form components that create or update database records need to be updated when schema changes:
+Form components that create or update daa changes:
 
-- [app/admin/escapes/components/EscapeForm.tsx](mdc:app/admin/escapes/components/EscapeForm.tsx) - Form component for creating/editing escapes
+- [app/admin/escapes/components/Escappes/components/EscapeForm.tsx) - Form component for creating/editing escapes
 - [app/admin/escapes/actions.ts](mdc:app/admin/escapes/actions.ts) - Server actions for creating/updating escapes
 
 Important patterns to update in actions.ts:
@@ -65,17 +63,23 @@ Important patterns to update in actions.ts:
 // Example of schema validation
 const escapeFormSchema = z.object({
   // ... other fields
-  type: dealTypeEnum, // z.enum(["hotel", "flight", "hotel+flight"]),
-  // ...
-});
+  type: dealTypeEnum, // z.enum(["hotel", "fli);
 ```
 
 ## Display Components
 
 Components that display database content need updates when schema changes:
 
-- [components/escapes/EscapeCard.tsx](mdc:components/escapes/EscapeCard.tsx) - Card component showing escape details
-- [components/escapes/EscapeGrid.tsx](mdc:components/escapes/EscapeGrid.tsx) - Grid container for escape cards
+- [components/escapes/s/escapes/EscapeGrid.tsx) - Gronents
+
+The application uses differape data with various styles:
+
+- [app/components/cards/CardSelector.tsx](mdc:app/components/cards/CardSelector.tsx) - Logic for selecting which type of card to render based on escape properties
+- [app/components/cards/StandardCard.tsx](mdc:app/components/cards/StandardCard.tsx) - Default card style for regular escapes
+- [app/components/cards/FeaturedCard.tsx](mdc:app/components/cards/FeaturedCard.tsx) - Enhanced card style for featured escapes with blue styling
+- [app/components/cards/HotDealCard.tsx](mdc:app/components/cards/HotDealCard.tsx) - Special card style for hot deals with accent colors and flame icons
+
+When adding new fields to the database schema, all card components need to be checked and potentially updated to display the new data properly.
 
 ## Schema Change Checklist
 
@@ -85,5 +89,5 @@ When modifying the database schema:
 2. Update EscapeData type in [app/actions/fetchEscapes.ts](mdc:app/actions/fetchEscapes.ts)
 3. Update form validation in [app/admin/escapes/actions.ts](mdc:app/admin/escapes/actions.ts)
 4. Update form components in [app/admin/escapes/components/EscapeForm.tsx](mdc:app/admin/escapes/components/EscapeForm.tsx)
-5. Update display components like [components/escapes/EscapeCard.tsx](mdc:components/escapes/EscapeCard.tsx)
+5. Update all card components in [app/components/cards](mdc:app/components/cards) directory
 6. Test form submission and display with the new schema

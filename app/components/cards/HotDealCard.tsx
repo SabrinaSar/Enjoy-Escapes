@@ -1,20 +1,23 @@
 import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
-import { Hotel, Moon, PackageCheck, Plane, Star } from "lucide-react"; // Added Moon and Star icons
+import { Flame, Moon, Star } from "lucide-react";
 
-import { AspectRatio } from "@/components/ui/aspect-ratio"; // For consistent image size
-import CountdownTimer from "./CountdownTimer";
+import CountdownTimer from "../CountdownTimer";
 import type { EscapeData } from "@/app/actions/fetchEscapes"; // Import the type
 import Image from "next/image";
-import Link from "next/link"; // Use next/link for internal links if needed, but <a> for external
-import NewDealTag from "./NewDealTag";
+import NewDealTag from "../NewDealTag";
 import React from "react";
+import { cn } from "@/lib/utils";
 
-// Format price with unit and £ symbol
-const formatPrice = (price?: number | null, unit?: string | null) => {
-  if (price === null || price === undefined) return null;
-
-  const unitDisplay = unit ? ` ${unit}` : "";
-  return `£${price}${unitDisplay}`;
+// Board Basis labels
+const BOARD_BASIS_LABELS: Record<string, string> = {
+  room_only: "Room Only",
+  self_catering: "Self-Catering",
+  bed_and_breakfast: "Bed & Breakfast",
+  half_board: "Half Board",
+  full_board: "Full Board",
+  all_inclusive: "All Inclusive",
+  ultra_all_inclusive: "Ultra All Inclusive",
+  flight_only: "Flight Only",
 };
 
 // Star Rating component
@@ -32,61 +35,11 @@ const StarRating = ({ rating }: { rating: number }) => {
   );
 };
 
-// Board Basis labels
-const BOARD_BASIS_LABELS: Record<string, string> = {
-  room_only: "Room Only",
-  self_catering: "Self-Catering",
-  bed_and_breakfast: "Bed & Breakfast",
-  half_board: "Half Board",
-  full_board: "Full Board",
-  all_inclusive: "All Inclusive",
-  ultra_all_inclusive: "Ultra All Inclusive",
-  flight_only: "Flight Only",
-};
-
-// Deal Type Tag component
-const DealTypeTag = ({
-  type,
-}: {
-  type: "hotel" | "flight" | "hotel+flight";
-}) => {
-  let icon = null;
-  let label = "";
-  let bgColor = "";
-
-  // Define icon and label based on type
-  if (type === "hotel") {
-    icon = <Hotel className="h-3 w-3 mr-1" aria-hidden="true" />;
-    label = "Hotel";
-    bgColor =
-      "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
-  } else if (type === "flight") {
-    icon = <Plane className="h-3 w-3 mr-1" aria-hidden="true" />;
-    label = "Flight";
-    bgColor =
-      "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300";
-  } else if (type === "hotel+flight") {
-    icon = <PackageCheck className="h-3 w-3 mr-1" aria-hidden="true" />;
-    label = "Hotel + Flight";
-    bgColor =
-      "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-  }
-
-  return (
-    <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${bgColor}`}
-    >
-      {icon}
-      {label}
-    </span>
-  );
-};
-
-interface EscapeCardProps {
+interface HotDealCardProps {
   escape: EscapeData;
 }
 
-const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
+const HotDealCard: React.FC<HotDealCardProps> = ({ escape }) => {
   const location = `${escape.city ? `${escape.city}, ` : ""}${escape.country || "Unknown Location"}`;
   const dealType =
     escape.type === "hotel"
@@ -123,7 +76,7 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
         <meta itemProp="addressCountry" content={escape.country} />
       )}
 
-      <Card className="overflow-hidden border hover:shadow-md dark:hover:shadow-black/30 transition-shadow duration-200 p-0 group-hover:shadow-lg dark:group-hover:shadow-black/40 flex flex-col h-full">
+      <Card className="overflow-hidden border border-accent/40 dark:border-accent/50 shadow-lg shadow-accent/30 dark:shadow-accent/20 hover:shadow-md dark:hover:shadow-black/30 transition-shadow duration-200 p-0 group-hover:shadow-lg dark:group-hover:shadow-black/40 flex flex-col h-full">
         {/* Image section */}
         <div className="relative h-48 w-full">
           <Image
@@ -131,28 +84,33 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
             alt={dealTitle}
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // Optimize image loading
-            priority={false} // Set to true for above-the-fold images if needed, false for lazy loading
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            priority={false}
           />
 
           {/* Tags positioned at the top-left corner of the image */}
           <div className="absolute top-2 left-2 z-10 flex flex-col gap-1.5 items-start">
-            {/* Custom wrapper for NewDealTag to maintain original styling */}
-            {escape.validFrom && (
-              <div className="inline-flex rounded-md bg-orange-50 dark:bg-orange-900/30 px-2 py-0.5 text-xs font-medium text-orange-600 dark:text-orange-400 ring-1 ring-inset ring-orange-500/10 dark:ring-orange-500/30">
-                <span>New Deal 🔥</span>
-              </div>
-            )}
+            {/* Hot deal tag */}
+            <div className="inline-flex rounded-md bg-gradient-to-r from-rose-500 to-orange-500 px-3 py-1 text-xs font-medium text-white shadow-sm ring-1 ring-inset ring-orange-400/50">
+              <span className="flex items-center gap-1">
+                <Flame className="h-3 w-3" /> Hot Deal
+              </span>
+            </div>
 
-            {/* Countdown timer with consistent styling */}
-            {escape.validTo && (
-              <div className="inline-flex bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded">
-                <CountdownTimer validTo={escape.validTo} />
-              </div>
-            )}
+            {/* New Deal Tag */}
+            {escape.validFrom && <NewDealTag validFrom={escape.validFrom} />}
+
+            {/* Countdown timer */}
+            {escape.validTo && <CountdownTimer validTo={escape.validTo} />}
+          </div>
+
+          {/* Hot deal indicator on the top-right corner */}
+          <div className="absolute top-2 right-2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-md">
+            <Flame className="h-5 w-5" />
           </div>
         </div>
-        <CardContent className="relative z-10 mt-[-1.25rem] bg-white dark:bg-card rounded-tr-3xl pt-6 px-4 pb-0 flex-1">
+
+        <CardContent className="relative z-10 mt-[-1.25rem] bg-[#fefaf1] dark:bg-card rounded-tr-3xl pt-6 px-4 pb-0 flex-1">
           <div className="h-full flex flex-col">
             <CardTitle className="text-lg font-semibold leading-tight group-hover:text-primary transition-colors">
               {dealTitle}
@@ -203,7 +161,7 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="p-4 pt-2 flex flex-col items-end gap-1 bg-white dark:bg-card">
+        <CardFooter className="p-4 pt-2 flex flex-col items-end gap-1 bg-[#fefaf1] dark:bg-accent/15">
           {escape.price ? (
             <span className="whitespace-nowrap text-right">
               <span className="text-base text-muted-foreground mr-1">from</span>
@@ -242,4 +200,4 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
   );
 };
 
-export default EscapeCard;
+export default HotDealCard;

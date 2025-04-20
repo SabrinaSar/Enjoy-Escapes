@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useInView } from "react-intersection-observer";
 import { useSearchParams } from "next/navigation";
 import { fetchEscapes, type EscapeData } from "@/app/actions/fetchEscapes";
-import EscapeCard from "./EscapeCard";
+import CardSelector from "./cards/CardSelector";
 import { Loader2 } from "lucide-react"; // Loading spinner
 
 interface EscapeGridProps {
@@ -85,6 +85,9 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
     }
   }, [inView, loadMoreEscapes, hasMore, loading]);
 
+  // Note: We don't need to sort escapes here as the API already returns them
+  // with featured items at the top (ordered by featured: false, then created_at)
+
   return (
     <div>
       {escapes.length === 0 && !loading && !error && (
@@ -95,7 +98,7 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 auto-rows-fr">
         {escapes.map((escape) => (
           <div key={escape.id} className="h-full">
-            <EscapeCard escape={escape} />
+            <CardSelector escape={escape} />
           </div>
         ))}
       </div>

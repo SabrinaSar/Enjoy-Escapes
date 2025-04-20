@@ -35,6 +35,8 @@ export type EscapeData = {
   city: string | null;
   school_holidays: boolean | null;
   long_haul: boolean | null;
+  featured: boolean | null;
+  hot_deal: boolean | null;
 };
 
 // Define a type for category filters
@@ -101,7 +103,8 @@ export async function fetchEscapes(
 
   // Add ordering and pagination
   query = query
-    .order("created_at", { ascending: false })
+    .order("featured", { ascending: false }) // First order by featured
+    .order("created_at", { ascending: false }) // Then by creation date
     .range(startIndex, endIndex);
 
   try {

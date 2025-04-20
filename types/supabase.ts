@@ -40,6 +40,8 @@ export type Database = {
           city: string | null;
           school_holidays: boolean | null;
           long_haul: boolean | null;
+          featured: boolean | null;
+          hot_deal: boolean | null;
         };
         Insert: {
           country: string;
@@ -71,6 +73,8 @@ export type Database = {
           city?: string | null;
           school_holidays?: boolean | null;
           long_haul?: boolean | null;
+          featured?: boolean | null;
+          hot_deal?: boolean | null;
         };
         Update: {
           country?: string;
@@ -102,6 +106,8 @@ export type Database = {
           city?: string | null;
           school_holidays?: boolean | null;
           long_haul?: boolean | null;
+          featured?: boolean | null;
+          hot_deal?: boolean | null;
         };
         Relationships: [];
       };

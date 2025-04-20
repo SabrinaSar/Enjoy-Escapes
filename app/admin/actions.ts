@@ -101,6 +101,32 @@ const escapeFormSchema = z
       .transform((val) => val === true || val === "on" || val === "true")
       .optional()
       .default(false),
+    featured: z
+      .union([
+        z.boolean(),
+        z.literal("on"),
+        z.literal("true"),
+        z.literal(true),
+        z.literal(""),
+        z.literal(undefined),
+        z.null(),
+      ])
+      .transform((val) => val === true || val === "on" || val === "true")
+      .optional()
+      .default(false),
+    hot_deal: z
+      .union([
+        z.boolean(),
+        z.literal("on"),
+        z.literal("true"),
+        z.literal(true),
+        z.literal(""),
+        z.literal(undefined),
+        z.null(),
+      ])
+      .transform((val) => val === true || val === "on" || val === "true")
+      .optional()
+      .default(false),
     // Exclude image_file from schema validation if handled separately
   })
   .refine(
@@ -192,6 +218,10 @@ export async function createEscape(
       rawFormData.long_haul === "on" ||
       rawFormData.long_haul === "true" ||
       false,
+    featured:
+      rawFormData.featured === "on" || rawFormData.featured === "true" || false,
+    hot_deal:
+      rawFormData.hot_deal === "on" || rawFormData.hot_deal === "true" || false,
   });
 
   // If validation fails, return errors
@@ -226,6 +256,8 @@ export async function createEscape(
     city,
     school_holidays,
     long_haul,
+    featured,
+    hot_deal,
   } = validatedFields.data;
 
   // Prepare data for database insertion
@@ -248,6 +280,8 @@ export async function createEscape(
     city: city,
     school_holidays: school_holidays || false,
     long_haul: long_haul || false,
+    featured: featured || false,
+    hot_deal: hot_deal || false,
     image: imageUrl ?? "", // Use uploaded URL or empty string
   };
 
@@ -440,6 +474,32 @@ export async function updateEscape(
         .transform((val) => val === true || val === "on" || val === "true")
         .optional()
         .default(false),
+      featured: z
+        .union([
+          z.boolean(),
+          z.literal("on"),
+          z.literal("true"),
+          z.literal(true),
+          z.literal(""),
+          z.literal(undefined),
+          z.null(),
+        ])
+        .transform((val) => val === true || val === "on" || val === "true")
+        .optional()
+        .default(false),
+      hot_deal: z
+        .union([
+          z.boolean(),
+          z.literal("on"),
+          z.literal("true"),
+          z.literal(true),
+          z.literal(""),
+          z.literal(undefined),
+          z.null(),
+        ])
+        .transform((val) => val === true || val === "on" || val === "true")
+        .optional()
+        .default(false),
       // ID is handled separately, image_file is handled separately
     })
     .refine(
@@ -487,6 +547,14 @@ export async function updateEscape(
       dataToValidate.long_haul === "on" ||
       dataToValidate.long_haul === "true" ||
       false,
+    featured:
+      dataToValidate.featured === "on" ||
+      dataToValidate.featured === "true" ||
+      false,
+    hot_deal:
+      dataToValidate.hot_deal === "on" ||
+      dataToValidate.hot_deal === "true" ||
+      false,
   });
 
   // If validation fails, return errors
@@ -530,6 +598,8 @@ export async function updateEscape(
     city,
     school_holidays,
     long_haul,
+    featured,
+    hot_deal,
   } = validatedFields.data;
 
   // Prepare data for database update
@@ -551,6 +621,8 @@ export async function updateEscape(
     city: city,
     school_holidays: school_holidays || false,
     long_haul: long_haul || false,
+    featured: featured || false,
+    hot_deal: hot_deal || false,
 
     // Conditionally add the image field only if a new one was uploaded
     // Otherwise keep the existing image URL from currentEscapeData
