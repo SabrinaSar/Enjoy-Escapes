@@ -155,8 +155,7 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
         <CardContent className="relative z-10 mt-[-1.25rem] bg-white dark:bg-card rounded-tr-3xl pt-6 px-4 pb-0 flex-1">
           <div className="h-full flex flex-col">
             <CardTitle className="text-lg font-semibold leading-tight group-hover:text-primary transition-colors">
-              {escape.country || "Unknown Location"}
-              {escape.city ? `, ${escape.city}` : ""}
+              {dealTitle}
             </CardTitle>
             <div className="min-h-[1.5rem]">
               {escape.star_rating && (
@@ -166,6 +165,11 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
               )}
             </div>
             <div className="min-h-[1.5rem]">
+              {(escape.country || escape.city) && (
+                <div className="text-sm text-muted-foreground mt-1">
+                  {location}
+                </div>
+              )}
               {escape.board_basis && (
                 <div className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
                   <span>
@@ -187,7 +191,7 @@ const EscapeCard: React.FC<EscapeCardProps> = ({ escape }) => {
                 </div>
               )}
             </div>
-            <div className="min-h-[1.5rem] mt-auto">
+            <div className="min-h-[1.5rem] mt-1">
               {escape.nights && (
                 <div className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
                   <Moon className="h-4 w-4 text-accent" aria-hidden="true" />
