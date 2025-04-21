@@ -39,8 +39,6 @@ const priceUnitEnum = z.enum(["pp", "pn", "pr"]);
 const escapeFormSchema = z
   .object({
     title: z.string().min(1, "Title is required."),
-    subtitle: z.string().min(1, "Subtitle is required."),
-    country: z.string().min(1, "Country is required."),
     price: z
       .string()
       .min(1, "Price is required.")
@@ -48,7 +46,6 @@ const escapeFormSchema = z
     link: z.string().url("Invalid URL format."),
     type: dealTypeEnum, // Add type validation
     // Optional fields
-    validTo: z.string().optional(),
     nights: z
       .union([
         z.string().transform((val) => (val === "" ? null : parseInt(val, 10))),
@@ -73,7 +70,6 @@ const escapeFormSchema = z
         return parseInt(val.replace(/[^0-9]/g, ""), 10);
       }),
     deposit_price_unit: priceUnitEnum.optional(),
-    city: z.string().optional(),
     school_holidays: z
       .union([
         z.boolean(),
