@@ -12,6 +12,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
+  Calendar,
   Clock,
   Flame,
   Hotel,
@@ -92,9 +93,24 @@ const FeatureBadges = ({ escape }: { escape: Escape }) => {
     // Otherwise, assume it's not true
     return false;
   };
+  
+  // Check if this escape is scheduled for future publication
+  const isScheduled = escape.scheduled_for 
+    ? new Date(escape.scheduled_for) > new Date() 
+    : false;
 
   return (
     <div className="flex flex-wrap gap-1 mt-1">
+      {isScheduled && (
+        <Badge
+          variant="secondary"
+          className="flex items-center gap-1 text-purple-600 bg-purple-100 dark:bg-purple-900/30 dark:text-purple-400"
+        >
+          <Calendar className="h-3 w-3" />
+          <span className="text-xs">Scheduled</span>
+        </Badge>
+      )}
+    
       {isTrue(escape.featured) && (
         <Badge
           variant="secondary"
@@ -263,100 +279,136 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {escapes.map((escape) => (
-            <TableRow key={escape.id}>
-              <TableCell>
-                {escape.image && (
-                  <div className="relative h-10 w-14 overflow-hidden rounded">
-                    <Image
-                      src={escape.image}
-                      alt={escape.title || "Escape image"}
-                      fill
-                      className="object-cover"
-                      sizes="56px"
-                    />
-                  </div>
-                )}
-              </TableCell>
-              <TableCell>
-                <div className="flex flex-col gap-1">
-                  <span className="font-medium">{escape.title}</span>
-                  <StarRating rating={escape.star_rating} />
-                  <FeatureBadges escape={escape} />
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex flex-col gap-1">
-                  <DealTypeBadge type={escape.type} />
-
-                  {escape.board_basis && (
-                    <span className="text-xs text-muted-foreground">
-                      {BOARD_BASIS_LABELS[escape.board_basis] ||
-                        escape.board_basis}
-                    </span>
-                  )}
-
-                  {escape.nights && (
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Moon className="h-3 w-3" />
-                      <span>
-                        {escape.nights}{" "}
-                        {escape.nights === 1 ? "night" : "nights"}
-                      </span>
+          {escapes.map((escape) => {
+            // Check if scheduled for future
+            const isScheduled = escape.scheduled_for 
+              ? new Date(escape.scheduled_for) > new Date() 
+              : false;
+            
+            // Format the created date
+            const createdDate = new Date(escape.created_at).toLocaleDateString();
+            
+            // Format the scheduled date if it exists
+            const scheduledDate = escape.scheduled_for 
+              ? new Date(escape.scheduled_for).toLocaleString() 
+              : null;
+            
+            return (
+              <TableRow key={escape.id}>
+                <TableCell>
+                  {escape.image && (
+                    <div className="relative h-10 w-14 overflow-hidden rounded">
+                      <Image
+                        src={escape.image}
+                        alt={escape.title || "Escape image"}
+                        fill
+                        className="object-cover"
+                        sizes="56px"
+                      />
                     </div>
                   )}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex flex-col gap-1">
-                  <span className="font-semibold">
-                    {formatPrice(escape.price, escape.price_unit)}
-                  </span>
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-col gap-1">
+                    <span className="font-medium">{escape.title}</span>
+                    <StarRating rating={escape.star_rating} />
+                    <FeatureBadges escape={escape} />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-col gap-1">
+                    <DealTypeBadge type={escape.type} />
 
-                  {escape.deposit_price && (
-                    <span className="text-xs text-green-600 dark:text-green-400">
-                      £{escape.deposit_price} deposit
+                    {escape.board_basis && (
+                      <span className="text-xs text-muted-foreground">
+                        {BOARD_BASIS_LABELS[escape.board_basis] ||
+                          escape.board_basis}
+                      </span>
+                    )}
+
+                    {escape.nights && (
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Moon className="h-3 w-3" />
+                        <span>
+                          {escape.nights}{" "}
+                          {escape.nights === 1 ? "night" : "nights"}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-col gap-1">
+                    <span className="font-semibold">
+                      {formatPrice(escape.price, escape.price_unit)}
                     </span>
-                  )}
-                </div>
-              </TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <span className="sr-only">Open menu</span>
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/admin/${escape.id}/edit`}>Edit</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link
-                        href={escape.link || "#"}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        View Deal
-                      </Link>
-                    </DropdownMenuItem>
-                    {/* Use AlertDialogTrigger within the item to control the dialog */}
-                    <AlertDialogTrigger asChild>
-                      <DropdownMenuItem
-                        className="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-900/20"
-                        onSelect={(e) => e.preventDefault()} // Prevent menu close on select
-                        onClick={() => handleDeleteClick(escape.id)} // Set the ID to delete
-                      >
-                        Delete
+
+                    {escape.deposit_price && (
+                      <span className="text-xs text-green-600 dark:text-green-400">
+                        £{escape.deposit_price} deposit
+                      </span>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-col">
+                    <span>{createdDate}</span>
+                    {isScheduled && scheduledDate && (
+                      <span className="text-xs text-muted-foreground flex items-center mt-1">
+                        <Calendar className="h-3 w-3 mr-1 text-purple-500" />
+                        <span>
+                          Goes live: <span className="font-medium text-purple-600 dark:text-purple-400">
+                            {new Date(escape.scheduled_for!).toLocaleString(undefined, {
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              timeZoneName: 'short'
+                            })}
+                          </span>
+                        </span>
+                      </span>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/admin/${escape.id}/edit`}>Edit</Link>
                       </DropdownMenuItem>
-                    </AlertDialogTrigger>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-          ))}
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href={escape.link || "#"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View Deal
+                        </Link>
+                      </DropdownMenuItem>
+                      {/* Use AlertDialogTrigger within the item to control the dialog */}
+                      <AlertDialogTrigger asChild>
+                        <DropdownMenuItem
+                          className="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-900/20"
+                          onSelect={(e) => e.preventDefault()} // Prevent menu close on select
+                          onClick={() => handleDeleteClick(escape.id)} // Set the ID to delete
+                        >
+                          Delete
+                        </DropdownMenuItem>
+                      </AlertDialogTrigger>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
 

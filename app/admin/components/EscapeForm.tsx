@@ -14,6 +14,7 @@ import { useActionState } from "react";
 import { useEffect } from "react";
 import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
+import { CalendarIcon } from "lucide-react";
 
 type EscapeData = Database["public"]["Tables"]["escapes_data"]["Row"];
 
@@ -99,6 +100,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     featured: initialData?.featured || false,
     hot_deal: initialData?.hot_deal || false,
     last_minute: initialData?.last_minute || false,
+    scheduled_for: initialData?.scheduled_for || "",
   });
 
   // Handle input changes to update state
@@ -203,6 +205,42 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
       }
       return;
     }
+  };
+
+  // Add this helper function to convert between timezones properly
+  const formatDateForInput = (isoString: string | null | undefined) => {
+    if (!isoString) return '';
+    // This ensures the date is interpreted in the local timezone
+    const date = new Date(isoString);
+    // Format as YYYY-MM-DDThh:mm (required format for datetime-local input)
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}T${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+  };
+  
+  // Add this function to convert from local time to UTC when saving
+  const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const localDateTimeValue = e.target.value;
+    
+    if (!localDateTimeValue) {
+      // If the input is cleared, set scheduled_for to empty string
+      setFormData((prev) => ({
+        ...prev,
+        scheduled_for: "",
+      }));
+      return;
+    }
+    
+    // Create a date object from the local datetime input
+    // This will be interpreted as local time
+    const localDate = new Date(localDateTimeValue);
+    
+    // Convert to ISO string (which is in UTC)
+    const isoString = localDate.toISOString();
+    
+    // Update the form data with the ISO string
+    setFormData((prev) => ({
+      ...prev,
+      scheduled_for: isoString,
+    }));
   };
 
   return (
@@ -652,6 +690,34 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 Check to mark this as a last minute deal
               </p>
             </div>
+          </div>
+
+          <div className="mt-6 space-y-2">
+            <Label htmlFor="scheduled_for">Schedule Publication Date/Time</Label>
+            <div className="flex items-center space-x-2">
+              <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+              <Input
+                type="datetime-local"
+                id="scheduled_for"
+                name="scheduled_for"
+                value={formData.scheduled_for ? 
+                  formatDateForInput(formData.scheduled_for) : 
+                  ""}
+                onChange={handleDateTimeChange}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              />
+            </div>
+            <p className="text-xs text-gray-500">
+              Leave empty to publish immediately, or set a future date/time for when this deal should appear on the website.
+            </p>
+            {state.errors?.scheduled_for && (
+              <p
+                id="scheduled-for-error"
+                className="text-sm font-medium text-destructive"
+              >
+                {state.errors.scheduled_for.join(", ")}
+              </p>
+            )}
           </div>
 
           <SubmitButton formType={formType} />

@@ -33,6 +33,7 @@ export type EscapeData = {
   featured: boolean | null;
   hot_deal: boolean | null;
   last_minute: boolean | null;
+  scheduled_for: string | null;
 };
 
 // Define a type for category filters
@@ -58,6 +59,11 @@ export async function fetchEscapes(
 
   // Initialize the query
   let query = supabase.from("escapes_data").select("*", { count: "exact" }); // Request count for pagination logic
+
+  // Only show escapes that are scheduled to be published or have no scheduled date
+  // Use UTC format for consistent timezone handling in the database
+  const now = new Date().toISOString();
+  query = query.or(`scheduled_for.is.null,scheduled_for.lte.${now}`);
 
   // Apply search filter if provided
   if (search && search.trim() !== "") {

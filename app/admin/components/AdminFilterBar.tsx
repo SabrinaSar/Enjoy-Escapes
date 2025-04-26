@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, Flame, PlaneTakeoff, School, Sparkles } from "lucide-react";
+import { Clock, Flame, PlaneTakeoff, School, Sparkles, Calendar } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
 
 export function AdminFilterBar() {
   const router = useRouter();
@@ -33,6 +34,7 @@ export function AdminFilterBar() {
   const schoolHolidays = searchParams.get("school_holidays") === "true";
   const longHaul = searchParams.get("long_haul") === "true";
   const lastMinute = searchParams.get("last_minute") === "true";
+  const scheduled = searchParams.get("scheduled") === "true";
   const dealType = searchParams.get("type") || "all";
 
   // Local state for filters
@@ -42,6 +44,7 @@ export function AdminFilterBar() {
     schoolHolidays,
     longHaul,
     lastMinute,
+    scheduled,
     dealType,
   });
 
@@ -52,6 +55,7 @@ export function AdminFilterBar() {
     filters.schoolHolidays && "schoolHolidays",
     filters.longHaul && "longHaul",
     filters.lastMinute && "lastMinute",
+    filters.scheduled && "scheduled",
     filters.dealType !== "all" && filters.dealType,
   ].filter(Boolean).length;
 
@@ -77,6 +81,9 @@ export function AdminFilterBar() {
 
     if (filters.lastMinute) params.set("last_minute", "true");
     else params.delete("last_minute");
+    
+    if (filters.scheduled) params.set("scheduled", "true");
+    else params.delete("scheduled");
 
     if (filters.dealType && filters.dealType !== "all")
       params.set("type", filters.dealType);
@@ -94,6 +101,7 @@ export function AdminFilterBar() {
       schoolHolidays: false,
       longHaul: false,
       lastMinute: false,
+      scheduled: false,
       dealType: "all",
     });
   };
@@ -106,9 +114,10 @@ export function AdminFilterBar() {
       schoolHolidays,
       longHaul,
       lastMinute,
+      scheduled,
       dealType: dealType || "all",
     });
-  }, [featured, hotDeal, schoolHolidays, longHaul, lastMinute, dealType]);
+  }, [featured, hotDeal, schoolHolidays, longHaul, lastMinute, scheduled, dealType]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -252,6 +261,31 @@ export function AdminFilterBar() {
                   <span>Last Minute</span>
                 </Label>
               </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="filter-scheduled"
+                  checked={filters.scheduled}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      scheduled: e.target.checked,
+                    }))
+                  }
+                  className="h-4 w-4 rounded border-gray-300"
+                />
+                <Label
+                  htmlFor="filter-scheduled"
+                  className="flex items-center gap-1"
+                >
+                  <Calendar className="h-3.5 w-3.5 text-purple-500" />
+                  <span>Scheduled for Future</span>
+                </Label>
+              </div>
+              <p className="text-xs text-gray-500 ml-6">
+                Show only escapes scheduled for future publication
+              </p>
             </div>
           </div>
 

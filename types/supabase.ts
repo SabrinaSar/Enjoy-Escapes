@@ -38,6 +38,7 @@ export type Database = {
           featured: boolean | null;
           hot_deal: boolean | null;
           last_minute: boolean | null;
+          scheduled_for: string | null;
         };
         Insert: {
           created_at?: string;
@@ -67,6 +68,7 @@ export type Database = {
           featured?: boolean | null;
           hot_deal?: boolean | null;
           last_minute?: boolean | null;
+          scheduled_for?: string | null;
         };
         Update: {
           created_at?: string;
@@ -96,6 +98,7 @@ export type Database = {
           featured?: boolean | null;
           hot_deal?: boolean | null;
           last_minute?: boolean | null;
+          scheduled_for?: string | null;
         };
         Relationships: [];
       };

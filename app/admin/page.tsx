@@ -45,6 +45,7 @@ export default async function EscapesPage({
     school_holidays?: string;
     long_haul?: string;
     last_minute?: string;
+    scheduled?: string;
     type?: string;
   }>;
 }) {
@@ -69,6 +70,7 @@ export default async function EscapesPage({
       | "flight"
       | "hotel+flight"
       | undefined,
+    include_scheduled: resolvedSearchParams.scheduled === "true" || undefined,
   };
 
   // Fetch paginated and filtered escapes

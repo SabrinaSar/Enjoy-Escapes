@@ -35,7 +35,7 @@ const boardBasisEnum = z.enum([
 // Define a type validator for the price unit enum
 const priceUnitEnum = z.enum(["pp", "pn", "pr"]);
 
-// Updated Zod schema with the new type field
+// Updated Zod schema with the new scheduled_for field
 const escapeFormSchema = z
   .object({
     title: z.string().min(1, "Title is required."),
@@ -135,6 +135,23 @@ const escapeFormSchema = z
       .transform((val) => val === true || val === "on" || val === "true")
       .optional()
       .default(false),
+    scheduled_for: z
+      .string()
+      .optional()
+      .transform((val) => {
+        if (!val) return null;
+        // If it's already a valid ISO string, just return it
+        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/.test(val)) {
+          return val;
+        }
+        // Otherwise, try to parse it as a date and convert to ISO
+        try {
+          const date = new Date(val);
+          return date.toISOString();
+        } catch (e) {
+          return null;
+        }
+      }),
     // Exclude image_file from schema validation if handled separately
   })
   .refine(
@@ -260,6 +277,7 @@ export async function createEscape(
       rawFormData.last_minute === "on" ||
       rawFormData.last_minute === "true" ||
       false,
+    scheduled_for: rawFormData.scheduled_for,
   });
 
   // If validation fails, return errors
@@ -292,6 +310,7 @@ export async function createEscape(
     featured,
     hot_deal,
     last_minute,
+    scheduled_for,
   } = validatedFields.data;
 
   // Prepare data for database insertion
@@ -311,6 +330,7 @@ export async function createEscape(
     featured: featured || false,
     hot_deal: hot_deal || false,
     last_minute: last_minute || false,
+    scheduled_for: scheduled_for,
     image: imageUrl ?? "", // Use uploaded URL or empty string
   };
 
@@ -566,6 +586,23 @@ export async function updateEscape(
         .transform((val) => val === true || val === "on" || val === "true")
         .optional()
         .default(false),
+      scheduled_for: z
+        .string()
+        .optional()
+        .transform((val) => {
+          if (!val) return null;
+          // If it's already a valid ISO string, just return it
+          if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/.test(val)) {
+            return val;
+          }
+          // Otherwise, try to parse it as a date and convert to ISO
+          try {
+            const date = new Date(val);
+            return date.toISOString();
+          } catch (e) {
+            return null;
+          }
+        }),
       // ID is handled separately, image_file is handled separately
     })
     .refine(
@@ -620,6 +657,7 @@ export async function updateEscape(
       dataToValidate.last_minute === "on" ||
       dataToValidate.last_minute === "true" ||
       false,
+    scheduled_for: dataToValidate.scheduled_for,
   });
 
   // If validation fails, return errors
@@ -661,6 +699,7 @@ export async function updateEscape(
     featured,
     hot_deal,
     last_minute,
+    scheduled_for,
   } = validatedFields.data;
 
   // Prepare data for database update
@@ -680,6 +719,7 @@ export async function updateEscape(
     featured: featured || false,
     hot_deal: hot_deal || false,
     last_minute: last_minute || false,
+    scheduled_for: scheduled_for,
 
     // Conditionally add the image field only if a new one was uploaded
     // Otherwise keep the existing image URL from currentEscapeData
@@ -772,6 +812,7 @@ export async function fetchEscapesWithPagination(
     long_haul?: boolean;
     last_minute?: boolean;
     type?: "hotel" | "flight" | "hotel+flight";
+    include_scheduled?: boolean; // New filter to include scheduled escapes
   } = {}
 ): Promise<{
   escapes: Database["public"]["Tables"]["escapes_data"]["Row"][];
@@ -782,14 +823,24 @@ export async function fetchEscapesWithPagination(
 }> {
   const supabase = await createClient();
 
-  // Remove debug logging
-
   // Calculate pagination limits
   const from = (page - 1) * pageSize;
   const to = page * pageSize - 1;
 
   // Start with the base query
   let query = supabase.from("escapes_data").select("*", { count: "exact" });
+
+  // Filter by scheduled status
+  const now = new Date().toISOString();
+  if (filters.include_scheduled === true) {
+    // If include_scheduled is true, only show future scheduled escapes
+    // Using ISO string for consistent UTC timezone handling in the database
+    query = query.gt("scheduled_for", now);
+  } else if (filters.include_scheduled === false) {
+    // Don't show any scheduled escapes
+    query = query.or(`scheduled_for.is.null,scheduled_for.lte.${now}`);
+  }
+  // Default (undefined) - show all escapes
 
   // Add search filtering if a search query is provided
   if (searchQuery) {
@@ -841,8 +892,6 @@ export async function fetchEscapesWithPagination(
       error: error.message,
     };
   }
-
-  // Remove debug logging
 
   // Calculate total pages
   const totalCount = count || 0;
