@@ -5,6 +5,7 @@ import type { EscapeData } from "@/app/actions/fetchEscapes"; // Import the type
 import Image from "next/image";
 import NewDealTag from "../NewDealTag";
 import React from "react";
+import TrackableLink from "./TrackableLink"; // Import the TrackableLink component
 import { cn } from "@/lib/utils";
 
 // Board Basis labels
@@ -52,13 +53,12 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
   const fullDescription = `${dealType}${escape.nights ? ` for ${escape.nights} nights` : ""}${escape.board_basis ? `, ${BOARD_BASIS_LABELS[escape.board_basis] || escape.board_basis}` : ""}`;
 
   return (
-    <a
+    <TrackableLink
       href={escape.link ?? "#"}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={`View details for ${dealTitle} - ${fullDescription}`}
+      escapeId={escape.id}
+      ariaLabel={`View details for ${dealTitle} - ${fullDescription}`}
       className="block w-full h-full group cursor-pointer"
-      itemScope
+      itemScope={true}
       itemType="https://schema.org/TravelAction"
     >
       {/* Hidden semantic SEO elements */}
@@ -176,7 +176,7 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
           </div>
         </CardFooter>
       </Card>
-    </a>
+    </TrackableLink>
   );
 };
 
