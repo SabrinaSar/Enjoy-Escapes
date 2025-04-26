@@ -119,16 +119,16 @@ export default async function EscapesPage({
 
   return (
     <>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-200">
             Manage Escapes
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             {totalEscapes} total escapes, {activeEscapes} currently active
           </p>
         </div>
-        <Button asChild>
+        <Button asChild className="w-full sm:w-auto">
           <Link href="/admin/create">
             <PlusCircle className="mr-2 h-4 w-4" /> Create New Escape
           </Link>
@@ -136,89 +136,91 @@ export default async function EscapesPage({
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6">
-        <Card className="md:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+        <Card className="col-span-1">
+          <CardHeader className="pb-1 px-3 pt-3">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
               Total Escapes
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalEscapes}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Last updated: {latestUpdate}
+          <CardContent className="px-3 pb-3">
+            <div className="text-xl sm:text-2xl font-bold">{totalEscapes}</div>
+            <p className="text-xs text-muted-foreground">
+              Last: {latestUpdate}
             </p>
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+        <Card>
+          <CardHeader className="pb-1 px-3 pt-3">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
               Package Deals
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex items-center justify-between">
-            <div className="text-2xl font-bold">{packageDeals}</div>
+          <CardContent className="flex items-center justify-between px-3 pb-3">
+            <div className="text-xl sm:text-2xl font-bold">{packageDeals}</div>
             <PackageCheck className="h-4 w-4 text-muted-foreground" />
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+        <Card>
+          <CardHeader className="pb-1 px-3 pt-3">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
               Hotel Only
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex items-center justify-between">
-            <div className="text-2xl font-bold">{hotelOnlyDeals}</div>
+          <CardContent className="flex items-center justify-between px-3 pb-3">
+            <div className="text-xl sm:text-2xl font-bold">{hotelOnlyDeals}</div>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+        <Card>
+          <CardHeader className="pb-1 px-3 pt-3">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
               Featured
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex items-center justify-between">
-            <div className="text-2xl font-bold">{featuredEscapes}</div>
+          <CardContent className="flex items-center justify-between px-3 pb-3">
+            <div className="text-xl sm:text-2xl font-bold">{featuredEscapes}</div>
             <Sparkles className="h-4 w-4 text-blue-500" />
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+        <Card>
+          <CardHeader className="pb-1 px-3 pt-3">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
               Hot Deals
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex items-center justify-between">
-            <div className="text-2xl font-bold">{hotDeals}</div>
+          <CardContent className="flex items-center justify-between px-3 pb-3">
+            <div className="text-xl sm:text-2xl font-bold">{hotDeals}</div>
             <Flame className="h-4 w-4 text-orange-500" />
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+        <Card>
+          <CardHeader className="pb-1 px-3 pt-3">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
               Last Minute
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex items-center justify-between">
-            <div className="text-2xl font-bold">{lastMinuteDeals}</div>
+          <CardContent className="flex items-center justify-between px-3 pb-3">
+            <div className="text-xl sm:text-2xl font-bold">{lastMinuteDeals}</div>
             <Clock className="h-4 w-4 text-red-500" />
           </CardContent>
         </Card>
       </div>
 
       {/* Search Bar and Filters */}
-      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <AdminSearchBar />
+      <div className="mb-6 flex flex-col xs:flex-row justify-between items-start xs:items-center gap-2">
+        <div className="flex flex-row items-center gap-2 w-full xs:w-auto">
+          <div className="flex-1 xs:flex-auto">
+            <AdminSearchBar />
+          </div>
           <AdminFilterBar />
         </div>
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm text-muted-foreground mt-2 xs:mt-0">
           {query ? (
             <span>
               Found {totalCount} {totalCount === 1 ? "result" : "results"} for "
@@ -233,7 +235,11 @@ export default async function EscapesPage({
       </div>
 
       {/* Escapes Table */}
-      <EscapesTable escapes={escapes || []} />
+      <div className="overflow-x-auto -mx-4 sm:mx-0">
+        <div className="min-w-full px-4 sm:px-0">
+          <EscapesTable escapes={escapes || []} />
+        </div>
+      </div>
 
       {/* Pagination */}
       <div className="mt-6">

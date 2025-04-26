@@ -37,7 +37,7 @@ export function AdminSearchBar() {
   }, 500);
 
   return (
-    <div className="relative max-w-sm">
+    <div className="relative w-full">
       <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
       <Input
         type="search"

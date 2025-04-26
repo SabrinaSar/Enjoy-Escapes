@@ -271,10 +271,11 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
         </TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[60px]">Image</TableHead>
-            <TableHead>Destination</TableHead>
-            <TableHead>Details</TableHead>
-            <TableHead>Price</TableHead>
+            <TableHead className="w-[60px] hidden sm:table-cell">Image</TableHead>
+            <TableHead className="sm:w-[30%]">Destination</TableHead>
+            <TableHead className="hidden sm:table-cell">Details</TableHead>
+            <TableHead className="hidden sm:table-cell">Price</TableHead>
+            <TableHead className="hidden sm:table-cell">Date</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -295,7 +296,8 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
             
             return (
               <TableRow key={escape.id}>
-                <TableCell>
+                {/* Image cell - hidden on mobile */}
+                <TableCell className="hidden sm:table-cell">
                   {escape.image && (
                     <div className="relative h-10 w-14 overflow-hidden rounded">
                       <Image
@@ -308,21 +310,43 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
                     </div>
                   )}
                 </TableCell>
+
+                {/* Destination cell */}
                 <TableCell>
                   <div className="flex flex-col gap-1">
                     <span className="font-medium">{escape.title}</span>
-                    <StarRating rating={escape.star_rating} />
+                    
+                    {/* Star rating - visible on all screens */}
+                    <div className="flex items-center gap-1">
+                      <StarRating rating={escape.star_rating} />
+                      <span className="text-xs text-muted-foreground ml-1">
+                        {(escape as any).destination || ""}
+                      </span>
+                    </div>
+
+                    {/* Feature badges - visible on all screens */}
                     <FeatureBadges escape={escape} />
+                    
+                    {/* Mobile-only price display */}
+                    <div className="sm:hidden mt-1 font-semibold">
+                      {formatPrice(escape.price, escape.price_unit)}
+                      {escape.deposit_price && (
+                        <span className="block text-xs text-green-600 dark:text-green-400">
+                          £{escape.deposit_price} deposit
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </TableCell>
-                <TableCell>
+
+                {/* Details cell - hidden on mobile */}
+                <TableCell className="hidden sm:table-cell">
                   <div className="flex flex-col gap-1">
                     <DealTypeBadge type={escape.type} />
 
                     {escape.board_basis && (
                       <span className="text-xs text-muted-foreground">
-                        {BOARD_BASIS_LABELS[escape.board_basis] ||
-                          escape.board_basis}
+                        {BOARD_BASIS_LABELS[escape.board_basis] || escape.board_basis}
                       </span>
                     )}
 
@@ -330,14 +354,15 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Moon className="h-3 w-3" />
                         <span>
-                          {escape.nights}{" "}
-                          {escape.nights === 1 ? "night" : "nights"}
+                          {escape.nights} {escape.nights === 1 ? "night" : "nights"}
                         </span>
                       </div>
                     )}
                   </div>
                 </TableCell>
-                <TableCell>
+
+                {/* Price cell - hidden on mobile */}
+                <TableCell className="hidden sm:table-cell">
                   <div className="flex flex-col gap-1">
                     <span className="font-semibold">
                       {formatPrice(escape.price, escape.price_unit)}
@@ -350,7 +375,9 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
                     )}
                   </div>
                 </TableCell>
-                <TableCell>
+
+                {/* Date cell - hidden on mobile */}
+                <TableCell className="hidden sm:table-cell">
                   <div className="flex flex-col">
                     <span>{createdDate}</span>
                     {isScheduled && scheduledDate && (
@@ -362,8 +389,7 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
                               month: 'short',
                               day: 'numeric',
                               hour: '2-digit',
-                              minute: '2-digit',
-                              timeZoneName: 'short'
+                              minute: '2-digit'
                             })}
                           </span>
                         </span>
@@ -371,38 +397,34 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
                     )}
                   </div>
                 </TableCell>
+
+                {/* Actions cell */}
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
+                      <Button
+                        variant="ghost"
+                        className="h-8 w-8 p-0 data-[state=open]:bg-muted"
+                      >
                         <span className="sr-only">Open menu</span>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" className="w-[160px]">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuItem asChild>
-                        <Link href={`/admin/${escape.id}/edit`}>Edit</Link>
+                        <Link href={`/admin/edit/${escape.id}`}>Edit</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleDeleteClick(escape.id)}
+                      >
+                        Delete
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link
-                          href={escape.link || "#"}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          View Deal
+                        <Link href={escape.link || "#"} target="_blank">
+                          View Live
                         </Link>
                       </DropdownMenuItem>
-                      {/* Use AlertDialogTrigger within the item to control the dialog */}
-                      <AlertDialogTrigger asChild>
-                        <DropdownMenuItem
-                          className="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-900/20"
-                          onSelect={(e) => e.preventDefault()} // Prevent menu close on select
-                          onClick={() => handleDeleteClick(escape.id)} // Set the ID to delete
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </AlertDialogTrigger>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

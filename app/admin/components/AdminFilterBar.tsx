@@ -122,7 +122,7 @@ export function AdminFilterBar() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="h-9 border-dashed">
+        <Button variant="outline" className="h-9 border-dashed w-auto min-w-[80px]">
           <span>Filter</span>
           {activeFilterCount > 0 && (
             <Badge
