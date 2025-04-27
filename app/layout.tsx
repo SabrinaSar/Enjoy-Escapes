@@ -3,6 +3,7 @@ import "./globals.css";
 import { Geist } from "next/font/google";
 import Navbar from "@/app/components/navbar";
 import { ThemeProvider } from "next-themes";
+import Script from "next/script";
 
 const defaultUrl = "https://enjoyescapes.com";
 
@@ -25,6 +26,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={geistSans.className} suppressHydrationWarning>
       <body className="bg-background text-foreground">
+        <Script id="mcjs" strategy="afterInteractive">
+          {`!function(c,h,i,m,p){m=c.createElement(h),p=c.getElementsByTagName(h)[0],m.async=1,m.src=i,p.parentNode.insertBefore(m,p)}(document,"script","https://chimpstatic.com/mcjs-connected/js/users/d3bcdbb57f5cdebdcba284cd8/749dacf33394b8f5d665c45d2.js")`}
+        </Script>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
