@@ -159,7 +159,7 @@ const StandardCard: React.FC<StandardCardProps> = ({ escape }) => {
             {escape.deposit_price !== null &&
               escape.deposit_price !== undefined && (
                 <span className="inline-block bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                  Book for £{escape.deposit_price}
+                  £{escape.deposit_price}
                   {escape.deposit_price_unit
                     ? ` ${escape.deposit_price_unit}`
                     : ""}{" "}

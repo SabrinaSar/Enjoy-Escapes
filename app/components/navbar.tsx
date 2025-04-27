@@ -20,7 +20,7 @@ export default function Navbar() {
               height={40}
               className="h-8 w-auto"
             />
-            <span className="hidden sm:inline">Enjoy Escapes</span>
+            <span className="hidden sm:inline text-2xl">Enjoy Escapes</span>
           </Link>
 
           {/* Search bar - expanded on mobile */}
