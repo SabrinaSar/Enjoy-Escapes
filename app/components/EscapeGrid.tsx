@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { fetchEscapes, type EscapeData } from "@/app/actions/fetchEscapes";
 import CardSelector from "./cards/CardSelector";
@@ -10,11 +10,15 @@ import { Button } from "@/components/ui/button";
 interface EscapeGridProps {
   initialEscapes: EscapeData[];
   initialHasMore: boolean;
+  insertAfterItems?: number;
+  insertComponent?: ReactNode;
 }
 
 const EscapeGrid: React.FC<EscapeGridProps> = ({
   initialEscapes,
   initialHasMore,
+  insertAfterItems,
+  insertComponent,
 }) => {
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
@@ -81,6 +85,19 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
     }
   }, [page, loading, hasMore, category, searchQuery]);
 
+  // No need for the renderEscapes function - simply split the array if needed
+  let firstBatchEscapes: EscapeData[] = [];
+  let remainingEscapes: EscapeData[] = [];
+
+  if (insertAfterItems && insertComponent && escapes.length > 0) {
+    // Fix for the linter error by ensuring insertAfterItems is a number
+    const itemsToInsertAfter = insertAfterItems || 0;
+    firstBatchEscapes = escapes.slice(0, itemsToInsertAfter);
+    remainingEscapes = escapes.slice(itemsToInsertAfter);
+  } else {
+    firstBatchEscapes = escapes;
+  }
+
   return (
     <div>
       {escapes.length === 0 && !loading && !error && (
@@ -88,13 +105,31 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
           No escape deals found.
         </p>
       )}
+
+      {/* First batch of escapes */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 auto-rows-fr">
-        {escapes.map((escape) => (
+        {firstBatchEscapes.map((escape) => (
           <div key={escape.id} className="h-full">
             <CardSelector escape={escape} />
           </div>
         ))}
       </div>
+
+      {/* Inserted component */}
+      {insertComponent && insertAfterItems && firstBatchEscapes.length >= insertAfterItems && (
+        <div className="my-4">{insertComponent}</div>
+      )}
+
+      {/* Remaining escapes */}
+      {remainingEscapes.length > 0 && (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 auto-rows-fr mt-6">
+          {remainingEscapes.map((escape) => (
+            <div key={escape.id} className="h-full">
+              <CardSelector escape={escape} />
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Load More Button */}
       {hasMore && (

@@ -413,7 +413,7 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
                     <DropdownMenuContent align="end" className="w-[160px]">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuItem asChild>
-                        <Link href={`/admin/edit/${escape.id}`}>Edit</Link>
+                        <Link href={`/admin/${escape.id}/edit`}>Edit</Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => handleDeleteClick(escape.id)}
