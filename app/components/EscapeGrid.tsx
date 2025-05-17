@@ -6,6 +6,7 @@ import { fetchEscapes, type EscapeData } from "@/app/actions/fetchEscapes";
 import CardSelector from "./cards/CardSelector";
 import { Loader2 } from "lucide-react"; // Loading spinner
 import { Button } from "@/components/ui/button";
+import BannerContainer from "./BannerContainer";
 
 interface EscapeGridProps {
   initialEscapes: EscapeData[];
@@ -178,9 +179,16 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
 
       {/* Message when all items are loaded */}
       {!hasMore && escapes.length > 0 && (
-        <p className="text-center text-muted-foreground mt-6">
+        <p className="text-center text-muted-foreground mt-6 mb-10">
           You've reached the end! ✨
         </p>
+      )}
+
+      {/* Banner section at the bottom of the page */}
+      {(!error && escapes.length > 0) && (
+        <div className="mt-10">
+          <BannerContainer />
+        </div>
       )}
     </div>
   );

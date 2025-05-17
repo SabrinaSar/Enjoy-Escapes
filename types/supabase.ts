@@ -6,40 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-export type Database = {
-  public: {
-    Tables: {
-      escapes_data: {
-        Row: {
-          created_at: string;
-          id: number;
-          image: string;
-          link: string;
-          price: number;
-          title: string;
-          type: "hotel" | "flight" | "hotel+flight";
-          nights: number | null;
-          board_basis:
-            | "room_only"
-            | "self_catering"
-            | "bed_and_breakfast"
-            | "half_board"
-            | "full_board"
-            | "all_inclusive"
-            | "ultra_all_inclusive"
-            | "flight_only"
-            | null;
-          star_rating: number | null;
-          price_unit: "pp" | "pn" | "pr" | null;
-          deposit_price: number | null;
-          deposit_price_unit: "pp" | "pn" | "pr" | null;
-          school_holidays: boolean | null;
-          long_haul: boolean | null;
-          featured: boolean | null;
-          hot_deal: boolean | null;
-          last_minute: boolean | null;
-          scheduled_for: string | null;
-        };
+export type Database = {  public: {    Tables: {      banners: {        Row: {          id: number;          created_at: string;          title: string;          description: string | null;          image: string;          link: string | null;          active: boolean;          start_date: string | null;          end_date: string | null;          position: number;          background_color: string;          text_color: string;        };        Insert: {          id?: number;          created_at?: string;          title: string;          description?: string | null;          image: string;          link?: string | null;          active?: boolean;          start_date?: string | null;          end_date?: string | null;          position?: number;          background_color?: string;          text_color?: string;        };        Update: {          id?: number;          created_at?: string;          title?: string;          description?: string | null;          image?: string;          link?: string | null;          active?: boolean;          start_date?: string | null;          end_date?: string | null;          position?: number;          background_color?: string;          text_color?: string;        };        Relationships: [];      };      escapes_data: {        Row: {          created_at: string;          id: number;          image: string;          link: string;          price: number;          title: string;          type: "hotel" | "flight" | "hotel+flight";          nights: number | null;          board_basis:            | "room_only"            | "self_catering"            | "bed_and_breakfast"            | "half_board"            | "full_board"            | "all_inclusive"            | "ultra_all_inclusive"            | "flight_only"            | null;          star_rating: number | null;          price_unit: "pp" | "pn" | "pr" | null;          deposit_price: number | null;          deposit_price_unit: "pp" | "pn" | "pr" | null;          school_holidays: boolean | null;          long_haul: boolean | null;          featured: boolean | null;          hot_deal: boolean | null;          last_minute: boolean | null;          scheduled_for: string | null;        };
         Insert: {
           created_at?: string;
           id?: number;

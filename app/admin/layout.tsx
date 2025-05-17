@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart, Home, PackagePlus, Menu, X } from "lucide-react";
+import { BarChart, Home, PackagePlus, Menu, X, Image } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -88,6 +88,14 @@ export default function AdminLayout({
           >
             <BarChart className="h-4 w-4" />
             Escape Analytics
+          </Link>
+          <Link
+            href="/admin/banners"
+            className="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <Image className="h-4 w-4" />
+            Banner Management
           </Link>
           {/* Add other admin links here */}
         </nav>

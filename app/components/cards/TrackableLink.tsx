@@ -6,12 +6,13 @@ import { trackEscapeClick } from "@/app/actions/trackClick";
 
 interface TrackableLinkProps {
   href: string;
-  escapeId: number;
+  itemId: number;
+  itemType: "escape" | "banner"; // Type of item being tracked
   className?: string;
   children: React.ReactNode;
   ariaLabel?: string;
   itemScope?: boolean;
-  itemType?: string;
+  microDataItemType?: string; // Renamed to avoid conflicts
 }
 
 /**
@@ -19,12 +20,13 @@ interface TrackableLinkProps {
  */
 const TrackableLink: React.FC<TrackableLinkProps> = ({
   href,
-  escapeId,
+  itemId,
+  itemType = "escape", // Default to escape for backward compatibility
   className,
   children,
   ariaLabel,
   itemScope,
-  itemType,
+  microDataItemType,
 }) => {
   const pathname = usePathname();
 
@@ -40,10 +42,11 @@ const TrackableLink: React.FC<TrackableLinkProps> = ({
       try {
         // Track the click first
         await trackEscapeClick({
-          escape_id: escapeId,
+          escape_id: itemId, // We'll use the existing field name for backward compatibility
           source,
           user_agent: userAgent,
           referrer,
+          // Note: If item_type is added to the trackEscapeClick function params, add it here
         });
         
         // Then navigate to the destination
@@ -54,7 +57,7 @@ const TrackableLink: React.FC<TrackableLinkProps> = ({
         window.open(href, "_blank", "noopener,noreferrer");
       }
     },
-    [escapeId, href, pathname]
+    [itemId, href, pathname, itemType]
   );
 
   return (
@@ -66,7 +69,7 @@ const TrackableLink: React.FC<TrackableLinkProps> = ({
       target="_blank"
       rel="noopener noreferrer"
       itemScope={itemScope}
-      itemType={itemType}
+      itemType={microDataItemType}
     >
       {children}
     </a>
