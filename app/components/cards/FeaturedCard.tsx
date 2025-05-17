@@ -55,11 +55,12 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
   return (
     <TrackableLink
       href={escape.link ?? "#"}
-      escapeId={escape.id}
+      itemId={escape.id}
+      itemType="escape"
       ariaLabel={`View details for ${dealTitle} - ${fullDescription}`}
       className="block w-full h-full group cursor-pointer"
       itemScope={true}
-      itemType="https://schema.org/TravelAction"
+      microDataItemType="https://schema.org/TravelAction"
     >
       {/* Hidden semantic SEO elements */}
       <meta itemProp="name" content={dealTitle} />
@@ -71,7 +72,7 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
 
       <Card className="overflow-hidden border border-blue-300/50 dark:border-blue-500/40 hover:shadow-md dark:hover:shadow-black/30 transition-all duration-300 p-0 group-hover:shadow-lg dark:group-hover:shadow-black/40 flex flex-col h-full group-hover:translate-y-[-8px] group-hover:scale-[1.02] group-hover:border-blue-400/70 dark:group-hover:border-blue-500/60">
         {/* Image section */}
-        <div className="relative h-48 w-full overflow-hidden">
+        <div className="relative h-40 md:h-48 w-full overflow-hidden">
           <Image
             src={escape.image!}
             alt={dealTitle}
@@ -95,21 +96,19 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
           </div>
         </div>
 
-        <CardContent className="relative z-10 mt-[-1.25rem] bg-blue-50 dark:bg-[#1a224b] rounded-tr-3xl pt-6 px-4 pb-0 flex-1">
+        <CardContent className="relative z-10 mt-[-1rem] md:mt-[-1.25rem] bg-blue-50 dark:bg-[#1a224b] rounded-tr-3xl pt-4 md:pt-6 px-3 md:px-4 pb-0 flex-1">
           <div className="h-full flex flex-col">
             <CardTitle className="text-lg font-semibold leading-tight group-hover:text-primary transition-colors duration-300">
               {dealTitle}
             </CardTitle>
-            <div className="min-h-[1.5rem]">
+            
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1">
               {escape.star_rating && (
-                <div className="mt-1">
-                  <StarRating rating={escape.star_rating} />
-                </div>
+                <StarRating rating={escape.star_rating} />
               )}
-            </div>
-            <div className="min-h-[1.5rem]">
+              
               {escape.board_basis && (
-                <div className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
+                <div className="text-sm text-muted-foreground flex items-center gap-2">
                   <span>
                     {BOARD_BASIS_LABELS[escape.board_basis] ||
                       escape.board_basis}
@@ -128,10 +127,9 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
                   )}
                 </div>
               )}
-            </div>
-            <div className="min-h-[1.5rem] mt-auto">
+              
               {escape.nights && (
-                <div className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+                <div className="text-sm text-muted-foreground flex items-center gap-1">
                   <Moon className="h-4 w-4 text-blue-500" aria-hidden="true" />
                   <span>
                     {escape.nights} {escape.nights === 1 ? "night" : "nights"}
@@ -141,7 +139,7 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="p-4 pt-2 flex flex-col items-end gap-1 bg-blue-50 dark:bg-[#1a224b]">
+        <CardFooter className="p-3 md:p-4 pt-1 md:pt-2 flex flex-col items-end gap-1 bg-blue-50 dark:bg-[#1a224b]">
           {escape.price ? (
             <span className="whitespace-nowrap text-right">
               <span className="text-base text-muted-foreground mr-1">from</span>
@@ -162,18 +160,16 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
               </span>
             </span>
           )}
-          <div className="min-h-[1.75rem]">
-            {escape.deposit_price !== null &&
-              escape.deposit_price !== undefined && (
-                <span className="inline-block bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                  £{escape.deposit_price}
-                  {escape.deposit_price_unit
-                    ? ` ${escape.deposit_price_unit}`
-                    : ""}{" "}
-                  deposit
-                </span>
-              )}
-          </div>
+          {escape.deposit_price !== null &&
+            escape.deposit_price !== undefined && (
+              <span className="inline-block bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                £{escape.deposit_price}
+                {escape.deposit_price_unit
+                  ? ` ${escape.deposit_price_unit}`
+                  : ""}{" "}
+                deposit
+              </span>
+            )}
         </CardFooter>
       </Card>
     </TrackableLink>
