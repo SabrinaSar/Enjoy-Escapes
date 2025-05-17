@@ -5,39 +5,43 @@ import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Compass } from "lucide-react";
 
-// Destinations data
+// Destinations data with descriptions
 const destinations = [
   {
     name: "Greece",
     image: "/destinations/greece.jpg",
     query: "Greece",
+    description: "Steeped in history and blessed with golden beaches, Greece offers visitors the perfect blend of ancient culture, delicious cuisine, and breathtaking landscapes. It’s no wonder Greek holidays remain an enduring favourite among travellers.",
   },
   {
     name: "Dubai",
     image: "/destinations/dubai.jpg",
     query: "Dubai",
+    description: "With its dazzling skyscrapers, luxury shopping, and year-round sunshine, Dubai effortlessly blends opulence with adventure. Whether you're seeking relaxation or excitement, holidays to Dubai promise something extraordinary.",
   },
   {
     name: "Turkey",
     image: "/destinations/turkey.jpg",
     query: "Turkey",
+    description: "Rich in heritage, vibrant bazaars, and stunning coastlines, Turkey captivates visitors with its unique East-meets-West charm. It's clear why holidays here continue to draw travellers eager for both culture and sunshine.",
   },
   {
     name: "Egypt",
     image: "/destinations/egypt.jpg",
     query: "Egypt",
+    description: "Home to iconic ancient landmarks, vibrant markets, and the crystal-clear waters of the Red Sea, Egypt seamlessly combines historical wonders with beachside relaxation. Holidays to Egypt are a timeless choice for sun-seekers and explorers alike.",
   },
 ];
 
 export default function PopularDestinations() {
   return (
-    <div>
-      <div className="flex items-center justify-center gap-2 mb-3">
+    <div className="py-8 bg-muted/30 rounded-lg">
+      <div className="flex items-center justify-center gap-2 mb-6">
         <Compass className="h-5 w-5 text-primary" aria-hidden="true" />
         <h2 className="text-xl font-bold text-center">Popular Destinations</h2>
       </div>
       
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 px-4">
         {destinations.map((destination) => (
           <Link
             key={destination.name}
@@ -60,6 +64,11 @@ export default function PopularDestinations() {
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white font-semibold text-lg z-20">
                   {destination.name}
                 </div>
+              </div>
+              <div className="p-3 bg-white dark:bg-card">
+                <p className="text-sm text-muted-foreground">
+                  {destination.description}
+                </p>
               </div>
             </Card>
           </Link>

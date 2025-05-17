@@ -85,18 +85,31 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
     }
   }, [page, loading, hasMore, category, searchQuery]);
 
-  // No need for the renderEscapes function - simply split the array if needed
+  // Determine where to split based on available items
   let firstBatchEscapes: EscapeData[] = [];
   let remainingEscapes: EscapeData[] = [];
 
-  if (insertAfterItems && insertComponent && escapes.length > 0) {
-    // Fix for the linter error by ensuring insertAfterItems is a number
-    const itemsToInsertAfter = insertAfterItems || 0;
-    firstBatchEscapes = escapes.slice(0, itemsToInsertAfter);
-    remainingEscapes = escapes.slice(itemsToInsertAfter);
+  if (insertComponent && escapes.length > 0) {
+    // If we have fewer items than specified, show after all available items
+    if (insertAfterItems && escapes.length >= insertAfterItems) {
+      // We have at least the number of items requested, so split at the specified point
+      firstBatchEscapes = escapes.slice(0, insertAfterItems);
+      remainingEscapes = escapes.slice(insertAfterItems);
+    } else {
+      // We have fewer items than requested, so show all available items first
+      firstBatchEscapes = escapes;
+      remainingEscapes = [];
+    }
   } else {
+    // No insertion needed
     firstBatchEscapes = escapes;
+    remainingEscapes = [];
   }
+
+  // Determine if we should show the insert component
+  const shouldShowInsert = insertComponent && 
+    (firstBatchEscapes.length > 0) && 
+    (firstBatchEscapes.length === insertAfterItems || !hasMore);
 
   return (
     <div>
@@ -116,13 +129,13 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
       </div>
 
       {/* Inserted component */}
-      {insertComponent && insertAfterItems && firstBatchEscapes.length >= insertAfterItems && (
-        <div className="my-4">{insertComponent}</div>
+      {shouldShowInsert && (
+        <div className="my-10">{insertComponent}</div>
       )}
 
       {/* Remaining escapes */}
       {remainingEscapes.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 auto-rows-fr mt-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 auto-rows-fr mt-10">
           {remainingEscapes.map((escape) => (
             <div key={escape.id} className="h-full">
               <CardSelector escape={escape} />

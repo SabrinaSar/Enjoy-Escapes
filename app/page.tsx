@@ -144,7 +144,7 @@ export default async function Home() {
           Last updated: {formattedTimestamp}
         </div>
 
-        {/* Escape Grid with Popular Destinations inserted after the 10th item (2 rows of 5) */}
+        {/* Escape Grid with Popular Destinations inserted after the 20th item (4 rows of 5) */}
         {initialData.error ? (
           <div className="text-center text-red-600 dark:text-red-400">
             <p>Could not load initial escape deals:</p>
@@ -154,7 +154,7 @@ export default async function Home() {
           <EscapeGrid
             initialEscapes={initialData.escapes}
             initialHasMore={initialData.hasMore}
-            insertAfterItems={10}
+            insertAfterItems={20}
             insertComponent={<PopularDestinations />}
           />
         )}
