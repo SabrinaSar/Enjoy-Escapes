@@ -155,7 +155,7 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
                 Loading...
               </>
             ) : (
-              "Load More"
+              "See more deals"
             )}
           </Button>
         </div>
