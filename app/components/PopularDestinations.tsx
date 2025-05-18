@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Compass } from "lucide-react";
 
@@ -11,7 +12,7 @@ const destinations = [
     name: "Greece",
     image: "/destinations/greece.jpg",
     query: "Greece",
-    description: "Steeped in history and blessed with golden beaches, Greece offers visitors the perfect blend of ancient culture, delicious cuisine, and breathtaking landscapes. It’s no wonder Greek holidays remain an enduring favourite among travellers.",
+    description: "Steeped in history and blessed with golden beaches, Greece offers visitors the perfect blend of ancient culture, delicious cuisine, and breathtaking landscapes. It's no wonder Greek holidays remain an enduring favourite among travellers.",
   },
   {
     name: "Dubai",
@@ -32,6 +33,64 @@ const destinations = [
     description: "Home to iconic ancient landmarks, vibrant markets, and the crystal-clear waters of the Red Sea, Egypt seamlessly combines historical wonders with beachside relaxation. Holidays to Egypt are a timeless choice for sun-seekers and explorers alike.",
   },
 ];
+
+// Custom hook to detect mobile screen
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    // Set initial value
+    setIsMobile(window.innerWidth < 768);
+    
+    // Add event listener
+    function handleResize() {
+      setIsMobile(window.innerWidth < 768);
+    }
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  return isMobile;
+}
+
+// Component to display truncated text with Read More button on mobile only
+function TruncatedDescription({ text }: { text: string }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const isMobile = useIsMobile();
+  const limit = 80; // Character limit before truncation
+  const shouldTruncate = isMobile && text.length > limit;
+
+  // On desktop, always show full text
+  if (!isMobile) {
+    return <p className="text-sm text-muted-foreground">{text}</p>;
+  }
+
+  return (
+    <div className="text-sm text-muted-foreground">
+      {isExpanded || !shouldTruncate ? (
+        text
+      ) : (
+        <>
+          {text.slice(0, limit)}...
+        </>
+      )}
+      {shouldTruncate && (
+        <button 
+          onClick={(e) => {
+            e.preventDefault();
+            setIsExpanded(!isExpanded);
+          }}
+          className="text-primary font-medium ml-1 hover:underline"
+        >
+          {isExpanded ? "Show less" : "Read more"}
+        </button>
+      )}
+    </div>
+  );
+}
 
 export default function PopularDestinations() {
   return (
@@ -66,9 +125,7 @@ export default function PopularDestinations() {
                 </div>
               </div>
               <div className="p-3 bg-white dark:bg-card">
-                <p className="text-sm text-muted-foreground">
-                  {destination.description}
-                </p>
+                <TruncatedDescription text={destination.description} />
               </div>
             </Card>
           </Link>
