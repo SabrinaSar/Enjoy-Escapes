@@ -93,11 +93,11 @@ export default async function AuthButton() {
         </Button>
       </Link>
       {/* Work With Us Link */}
-      <Link href="/work-with-us" className="mr-1">
+      {/* <Link href="/work-with-us" className="mr-1">
         <Button variant="outline" size="sm">
           Work With Us
         </Button>
-      </Link>
+      </Link> */}
       {/* Theme Switcher */}
       <ThemeSwitcher />
     </div>
