@@ -66,6 +66,9 @@ export default async function AuthButton() {
           <Link className="mr-2" href="/about">
             <Button variant={"outline"}>About Us</Button>
           </Link>
+          <Link className="mr-2" href="/work-with-us">
+            <Button variant={"outline"}>Work With Us</Button>
+          </Link>
           <Link className="mr-2" href="/admin">
             <Button variant={"outline"}>Admin</Button>
           </Link>
@@ -87,6 +90,12 @@ export default async function AuthButton() {
       <Link href="/about" className="mr-1">
         <Button variant="outline" size="sm">
           About Us
+        </Button>
+      </Link>
+      {/* Work With Us Link */}
+      <Link href="/work-with-us" className="mr-1">
+        <Button variant="outline" size="sm">
+          Work With Us
         </Button>
       </Link>
       {/* Theme Switcher */}

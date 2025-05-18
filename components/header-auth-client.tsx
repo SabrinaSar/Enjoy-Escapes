@@ -25,10 +25,21 @@ export default function HeaderAuthClient() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
         <DropdownMenuItem asChild>
+          <Link href="/about" className="cursor-pointer">
+            About Us
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/work-with-us" className="cursor-pointer">
+            Work With Us
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href="/admin" className="cursor-pointer">
             Admin Dashboard
           </Link>
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <form action={signOutAction} className="w-full">
             <Button
@@ -40,7 +51,6 @@ export default function HeaderAuthClient() {
             </Button>
           </form>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild></DropdownMenuItem>
         <DropdownMenuSeparator />
         <div className="px-2 py-1">
           <ThemeSwitcher />
