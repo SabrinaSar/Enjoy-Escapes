@@ -24,7 +24,7 @@ export default function Navbar() {
           </Link>
 
           {/* Search bar - expanded on mobile */}
-          <div className="flex-grow mx-1 sm:mx-4 max-w-full sm:max-w-md">
+          <div className="flex-grow mx-1 sm:mx-4 max-w-full">
             <Suspense
               fallback={
                 <div className="relative w-full">
@@ -68,7 +68,6 @@ export default function Navbar() {
           <span className="hidden sm:inline">✈️</span>
           <p className="text-center">
             <span className="font-bold">Book with as low as £0 deposit</span> •
-            ATOL protected packages •
             <span className="text-accent underline ml-1 font-semibold">
               Book now pay later
             </span>
