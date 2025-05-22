@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap');
 @import 'tailwindcss';
 
 @custom-variant dark (&:is(.dark *));
@@ -9,6 +10,10 @@
   --color-delft-blue: #26346c;
   --color-blue-green: #139ec3;
   --color-sunglow: #fccc60;
+
+  /* Font Families */
+  --font-baloo: "Baloo 2", sans-serif;
+  --font-sans: var(--font-baloo);
 
   /* ShadCN/UI Base Variables */
   --color-border: hsl(var(--border));

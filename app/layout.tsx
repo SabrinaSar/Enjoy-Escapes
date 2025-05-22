@@ -1,6 +1,5 @@
 import "./globals.css";
 
-import { Geist } from "next/font/google";
 import Navbar from "@/app/components/navbar";
 import { ThemeProvider } from "next-themes";
 import Script from "next/script";
@@ -14,18 +13,13 @@ export const metadata = {
   description: "Discover unique travel escapes curated by Enjoy Escapes.",
 };
 
-const geistSans = Geist({
-  display: "swap",
-  subsets: ["latin"],
-});
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={geistSans.className} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className="bg-background text-foreground">
         <ThemeProvider
           attribute="class"
