@@ -88,7 +88,6 @@ const TrackableLink: React.FC<TrackableLinkProps> = ({
       itemType={microDataItemType}
       style={{ 
         touchAction: 'manipulation',
-        WebkitTouchCallout: 'none',
         WebkitUserSelect: 'none',
         userSelect: 'none'
       }}
