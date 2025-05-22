@@ -217,7 +217,7 @@ export default function WorkWithUsPage() {
               <div key={index} className="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md transition-all duration-300 grayscale hover:grayscale-0">
                 <div className="h-16 flex items-center justify-center">
                   <div className="text-center">
-                    <Image src={`/images/brands/${brand.toLowerCase().replace(/\s+/g, '-')}.png`} alt={brand} width={100} height={100} className="w-full h-8 bg-gray-200 rounded mb-2 flex items-center justify-center"/>
+                    <Image src={`/images/${brand.toLowerCase().replace(/\s+/g, '-')}.png`} alt={brand} width={100} height={100} className="w-full h-8 bg-gray-200 rounded mb-2 flex items-center justify-center"/>
                     <div className="text-sm font-medium text-gray-700">{brand}</div>
                   </div>
                 </div>
