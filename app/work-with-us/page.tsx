@@ -69,8 +69,6 @@ export default function WorkWithUsPage() {
                   <div className="text-sm opacity-80">Social followers</div>
                 </div>
               </div>
-              
-                            <Button size="lg" className="bg-white text-primary hover:bg-gray-100 font-semibold px-8">                Get in Touch              </Button>
             </div>
             
             {/* Hero Image Area */}
@@ -171,7 +169,7 @@ export default function WorkWithUsPage() {
             <p className="text-xl text-gray-600">See how we showcase travel deals across our platform</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* iPhone Mockup 1 */}
             <div className="flex flex-col items-center">
               <div className="relative">
@@ -200,20 +198,6 @@ export default function WorkWithUsPage() {
               <h3 className="text-lg font-semibold mt-4 text-gray-800">Website Features</h3>
               <p className="text-gray-600 text-center">Premium placement on our platform</p>
             </div>
-            
-            {/* iPhone Mockup 3 */}
-            <div className="flex flex-col items-center">
-              <div className="relative">
-                <div className="w-64 h-[500px] bg-gray-900 rounded-[3rem] p-2 shadow-2xl">
-                  <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden">
-                                        <div className="h-full bg-gradient-to-br from-accent/10 to-accent/30 flex flex-col items-center justify-center p-6">                      <Smartphone className="h-16 w-16 text-accent mb-4" />                      <p className="text-sm text-accent text-center">Insert iPhone mockup image 3 here<br/>(Email Campaigns)</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <h3 className="text-lg font-semibold mt-4 text-gray-800">Email Newsletters</h3>
-              <p className="text-gray-600 text-center">Direct access to engaged subscribers</p>
-            </div>
           </div>
         </div>
 
@@ -233,9 +217,7 @@ export default function WorkWithUsPage() {
               <div key={index} className="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md transition-all duration-300 grayscale hover:grayscale-0">
                 <div className="h-16 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="w-full h-8 bg-gray-200 rounded mb-2 flex items-center justify-center">
-                      <span className="text-xs text-gray-500">Logo</span>
-                    </div>
+                    <Image src={`/images/brands/${brand.toLowerCase().replace(/\s+/g, '-')}.png`} alt={brand} width={100} height={100} className="w-full h-8 bg-gray-200 rounded mb-2 flex items-center justify-center"/>
                     <div className="text-sm font-medium text-gray-700">{brand}</div>
                   </div>
                 </div>
@@ -328,7 +310,7 @@ export default function WorkWithUsPage() {
         </div>
 
         {/* Partnership Options */}
-        <div className="py-16 mb-16">
+        {/* <div className="py-16 mb-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Partnership Options</h2>
             <p className="text-xl text-gray-600">Flexible ways to work together</p>
@@ -341,7 +323,7 @@ export default function WorkWithUsPage() {
             
                         <Card className="border-2 border-accent/20 hover:border-accent/40 transition-all duration-300">              <CardContent className="p-8 text-center">                <div className="bg-accent/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">                  <Mail className="h-8 w-8 text-accent" />                </div>                <h3 className="text-xl font-bold mb-4 text-gray-800">Email Campaigns</h3>                <p className="text-gray-600 mb-6">                  Direct access to our highly engaged email subscribers with excellent open rates.                </p>                <ul className="text-left space-y-2 text-sm text-gray-600 mb-6">                  <li>• Dedicated sends</li>                  <li>• Newsletter inclusions</li>                  <li>• Audience segmentation</li>                  <li>• Conversion tracking</li>                </ul>                <Button className="w-full bg-accent hover:bg-accent/90">Learn More</Button>              </CardContent>            </Card>
           </div>
-        </div>
+        </div> */}
 
         {/* Final CTA */}
         <div className="py-16 mb-16">
@@ -359,10 +341,11 @@ export default function WorkWithUsPage() {
                 Join the brands that have already discovered the power of our engaged, travel-loving audience. Let's create something amazing together.
               </p>
               <div className="flex flex-col md:flex-row gap-4 justify-center">
-                                <Link href="mailto:partnerships@enjoyescapes.com">                  <Button size="lg" className="bg-white text-primary hover:bg-gray-100 font-semibold px-8">                    Get Started Today                  </Button>                </Link>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 font-semibold px-8">
-                  Download Media Kit
-                </Button>
+                <Link href="mailto:Sabrina@EnjoyEscapes.com">                  
+                  <Button size="lg" variant="outline" className="bg-white text-primary font-semibold px-8">                    
+                    Get Started Today                  
+                  </Button>                
+                </Link>
               </div>
             </div>
           </div>
