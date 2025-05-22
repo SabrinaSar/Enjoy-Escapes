@@ -8,6 +8,7 @@ import EscapeGrid from "@/app/components/EscapeGrid";
 import PopularDestinations from "@/app/components/PopularDestinations";
 import { Metadata } from "next";
 import { format } from "date-fns"; // Using date-fns for formatting
+import { Clock } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Latest Travel Deals & Escapes | Enjoy Escapes",
@@ -133,31 +134,37 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
       />
-      <div className="container mx-auto px-4 py-3">
-        {/* Category Filters */}
-        <div className="mb-3">
-          <CategoryFilter />
-        </div>
-
-        {/* Last Updated Info */}
-        <div className="mb-2 text-sm text-muted-foreground text-center md:text-right">
-          Last updated: {formattedTimestamp}
-        </div>
-
-        {/* Escape Grid with Popular Destinations inserted after the 20th item (4 rows of 5) */}
-        {initialData.error ? (
-          <div className="text-center text-red-600 dark:text-red-400">
-            <p>Could not load initial escape deals:</p>
-            <p>{initialData.error}</p>
+      
+      <div className="min-h-screen bg-gradient-to-br from-blue-50/20 via-white to-orange-50/20">
+        <div className="container mx-auto px-4 py-3">
+          {/* Category Filters */}
+          <div className="mb-3">
+            <CategoryFilter />
           </div>
-        ) : (
-          <EscapeGrid
-            initialEscapes={initialData.escapes}
-            initialHasMore={initialData.hasMore}
-            insertAfterItems={20}
-            insertComponent={<PopularDestinations />}
-          />
-        )}
+
+          {/* Last Updated Info */}
+          <div className="mb-2 text-center md:text-right">
+            <div className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+              <Clock className="h-3 w-3 text-secondary" />
+              <span>Last updated: {formattedTimestamp}</span>
+            </div>
+          </div>
+
+          {/* Escape Grid with Popular Destinations inserted after the 20th item (4 rows of 5) */}
+          {initialData.error ? (
+            <div className="text-center text-red-600 dark:text-red-400">
+              <p>Could not load initial escape deals:</p>
+              <p>{initialData.error}</p>
+            </div>
+          ) : (
+            <EscapeGrid
+              initialEscapes={initialData.escapes}
+              initialHasMore={initialData.hasMore}
+              insertAfterItems={20}
+              insertComponent={<PopularDestinations />}
+            />
+          )}
+        </div>
       </div>
     </>
   );
