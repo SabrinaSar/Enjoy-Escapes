@@ -30,46 +30,58 @@ const TrackableLink: React.FC<TrackableLinkProps> = ({
 }) => {
   const pathname = usePathname();
 
+  const handleNavigation = useCallback(async () => {
+    // Get browser data for better analytics
+    const source = pathname || "";
+    const userAgent = navigator.userAgent;
+    const referrer = document.referrer;
+    
+    try {
+      // Track the click first
+      await trackEscapeClick({
+        escape_id: itemId, // We'll use the existing field name for backward compatibility
+        source,
+        user_agent: userAgent,
+        referrer,
+        // Note: If item_type is added to the trackEscapeClick function params, add it here
+      });
+    } catch (error) {
+      console.error("Error tracking click:", error);
+      // Continue with navigation even if tracking fails
+    }
+    
+    // Navigate to the destination
+    window.open(href, "_blank", "noopener,noreferrer");
+  }, [itemId, href, pathname, itemType]);
+
   const handleClick = useCallback(
     async (e: React.MouseEvent<HTMLAnchorElement>) => {
       e.preventDefault(); // Prevent immediate navigation
-      
-      // Get browser data for better analytics
-      const source = pathname || "";
-      const userAgent = navigator.userAgent;
-      const referrer = document.referrer;
-      
-      try {
-        // Track the click first
-        await trackEscapeClick({
-          escape_id: itemId, // We'll use the existing field name for backward compatibility
-          source,
-          user_agent: userAgent,
-          referrer,
-          // Note: If item_type is added to the trackEscapeClick function params, add it here
-        });
-        
-        // Then navigate to the destination
-        window.open(href, "_blank", "noopener,noreferrer");
-      } catch (error) {
-        console.error("Error tracking click:", error);
-        // Navigate anyway even if tracking fails
-        window.open(href, "_blank", "noopener,noreferrer");
-      }
+      await handleNavigation();
     },
-    [itemId, href, pathname, itemType]
+    [handleNavigation]
+  );
+
+  const handleTouchEnd = useCallback(
+    async (e: React.TouchEvent<HTMLAnchorElement>) => {
+      e.preventDefault(); // Prevent immediate navigation
+      await handleNavigation();
+    },
+    [handleNavigation]
   );
 
   return (
     <a
       href={href}
       onClick={handleClick}
+      onTouchEnd={handleTouchEnd}
       className={className}
       aria-label={ariaLabel}
       target="_blank"
       rel="noopener noreferrer"
       itemScope={itemScope}
       itemType={microDataItemType}
+      style={{ touchAction: 'manipulation' }} // Improves touch responsiveness
     >
       {children}
     </a>
