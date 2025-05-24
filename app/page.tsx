@@ -135,36 +135,34 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
       />
       
-      <div className="min-h-screen bg-gradient-to-br from-blue-50/20 via-white to-orange-50/20">
-        <div className="container mx-auto px-4 py-3">
-          {/* Category Filters */}
-          <div className="mb-3">
-            <CategoryFilter />
-          </div>
-
-          {/* Last Updated Info */}
-          <div className="mb-2 text-center md:text-right">
-            <div className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-              <Clock className="h-3 w-3 text-secondary" />
-              <span>Last updated: {formattedTimestamp}</span>
-            </div>
-          </div>
-
-          {/* Escape Grid with Popular Destinations inserted after the 20th item (4 rows of 5) */}
-          {initialData.error ? (
-            <div className="text-center text-red-600 dark:text-red-400">
-              <p>Could not load initial escape deals:</p>
-              <p>{initialData.error}</p>
-            </div>
-          ) : (
-            <EscapeGrid
-              initialEscapes={initialData.escapes}
-              initialHasMore={initialData.hasMore}
-              insertAfterItems={20}
-              insertComponent={<PopularDestinations />}
-            />
-          )}
+      <div className="container mx-auto px-4 py-3 min-h-screen">
+        {/* Category Filters */}
+        <div className="mb-3">
+          <CategoryFilter />
         </div>
+
+        {/* Last Updated Info */}
+        <div className="mb-2 text-center md:text-right">
+          <div className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+            <Clock className="h-3 w-3 text-secondary" />
+            <span>Last updated: {formattedTimestamp}</span>
+          </div>
+        </div>
+
+        {/* Escape Grid with Popular Destinations inserted after the 20th item (4 rows of 5) */}
+        {initialData.error ? (
+          <div className="text-center text-red-600 dark:text-red-400">
+            <p>Could not load initial escape deals:</p>
+            <p>{initialData.error}</p>
+          </div>
+        ) : (
+          <EscapeGrid
+            initialEscapes={initialData.escapes}
+            initialHasMore={initialData.hasMore}
+            insertAfterItems={20}
+            insertComponent={<PopularDestinations />}
+          />
+        )}
       </div>
     </>
   );
