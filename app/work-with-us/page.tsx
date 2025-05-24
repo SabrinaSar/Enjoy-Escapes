@@ -279,7 +279,7 @@ export default function WorkWithUsPage() {
                   </div>
                 </div>
                 
-                <Button variant="outline" className="w-full mt-auto">Read Full Case Study</Button>
+                {/* <Button variant="outline" className="w-full mt-auto">Read Full Case Study</Button> */}
               </CardContent>
             </Card>
             
@@ -316,7 +316,7 @@ export default function WorkWithUsPage() {
                   </div>
                 </div>
                 
-                <Button variant="outline" className="w-full mt-auto">Read Full Case Study</Button>
+                {/* <Button variant="outline" className="w-full mt-auto">Read Full Case Study</Button> */}
               </CardContent>
             </Card>
             
@@ -357,7 +357,7 @@ export default function WorkWithUsPage() {
                   </div>
                 </div>
                 
-                <Button variant="outline" className="w-full mt-auto">Read Full Case Study</Button>
+                {/* <Button variant="outline" className="w-full mt-auto">Read Full Case Study</Button> */}
               </CardContent>
             </Card>
           </div>
