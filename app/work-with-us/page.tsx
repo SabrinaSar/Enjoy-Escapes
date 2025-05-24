@@ -255,13 +255,14 @@ export default function WorkWithUsPage() {
             {/* TUI Case Study */}
             <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full">
               <div className="h-48 bg-gradient-to-br from-primary to-primary/80 relative">
-                {/* Placeholder for case study image */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <div className="text-2xl font-bold mb-2">TUI</div>
-                    <p className="text-sm opacity-80">Insert case study image here</p>
-                  </div>
-                </div>
+                {/* TUI Case Study Image */}
+                <Image 
+                  src="/case-studies/tui.jpg" 
+                  alt="TUI January Sales Case Study" 
+                  width={400} 
+                  height={192} 
+                  className="w-full h-full object-bottom object-cover"
+                />
               </div>
               <CardContent className="p-6 flex flex-col flex-grow">
                 <h3 className="text-xl font-bold mb-3 text-foreground">TUI January Sales</h3>
@@ -293,12 +294,14 @@ export default function WorkWithUsPage() {
             {/* Norse Case Study */}
             <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full">
               <div className="h-48 bg-gradient-to-br from-secondary to-secondary/80 relative">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <div className="text-2xl font-bold mb-2">Norse</div>
-                    <p className="text-sm opacity-80">Insert case study image here</p>
-                  </div>
-                </div>
+                {/* Norse Case Study Image */}
+                <Image 
+                  src="/case-studies/norse.png" 
+                  alt="Norse New route to Barbados Case Study" 
+                  width={400} 
+                  height={192} 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <CardContent className="p-6 flex flex-col flex-grow">
                 <h3 className="text-xl font-bold mb-3 text-foreground">Norse New route to Barbados</h3>
@@ -330,12 +333,14 @@ export default function WorkWithUsPage() {
             {/* loveholidays Case Study */}
             <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full">
               <div className="h-48 bg-gradient-to-br from-accent to-accent/80 relative">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <div className="text-2xl font-bold mb-2">loveholidays</div>
-                    <p className="text-sm opacity-80">Insert case study image here</p>
-                  </div>
-                </div>
+                {/* loveholidays Case Study Image */}
+                <Image 
+                  src="/case-studies/loveholiday.png" 
+                  alt="Love holiday Peaks Sale Case Study" 
+                  width={400} 
+                  height={192} 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <CardContent className="p-6 flex flex-col flex-grow">
                 <h3 className="text-xl font-bold mb-3 text-foreground">Love holiday Peaks Sale</h3>
