@@ -223,9 +223,9 @@ export default function WorkWithUsPage() {
             {/* Brand Logo Placeholders */}
             {[
               "Gov.uk", "TUI", "loveholidays", "onthebeach", "Barbados", "Visit Portugal",
-              "Birmingham Airport", "KayKay", "Bandos Maldives", "Trip.com", "Samsung", "Norse"
+              "Birmingham Airport", "kayak", "Bandos Maldives", "Trip.com", "Samsung", "Norse"
             ].map((brand, index) => (
-              <div key={index} className="bg-card rounded-xl p-6 shadow-sm border border-border hover:shadow-md transition-all duration-300 grayscale hover:grayscale-0">
+              <div key={index} className="bg-card rounded-xl p-6 shadow-sm border border-border hover:shadow-md hover:scale-105 transition-all duration-300">
                 <div className="h-16 flex items-center justify-center">
                   <div className="text-center">
                     <Image src={`/images/${brand.toLowerCase().replace(/\s+/g, '-')}.png`} alt={brand} width={100} height={100} className="w-full h-8 bg-muted rounded mb-2 flex items-center justify-center"/>
