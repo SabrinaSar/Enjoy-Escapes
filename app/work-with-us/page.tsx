@@ -182,11 +182,14 @@ export default function WorkWithUsPage() {
               <div className="relative">
                 <div className="w-64 h-[500px] bg-gray-900 rounded-[3rem] p-2 shadow-2xl">
                   <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden">
-                    {/* Placeholder for iPhone content */}
-                    <div className="h-full bg-gradient-to-br from-primary/10 to-primary/30 flex flex-col items-center justify-center p-6">
-                      <Smartphone className="h-16 w-16 text-primary mb-4" />
-                      <p className="text-sm text-primary text-center">Insert iPhone mockup image 1 here<br/>(Social Media Content)</p>
-                    </div>
+                    {/* Social Media Content Image */}
+                    <Image 
+                      src="/Social.jpeg" 
+                      alt="Social Media Content" 
+                      width={250} 
+                      height={500} 
+                      className="object-cover"
+                    />
                   </div>
                 </div>
               </div>
@@ -199,10 +202,14 @@ export default function WorkWithUsPage() {
               <div className="relative">
                 <div className="w-64 h-[500px] bg-gray-900 rounded-[3rem] p-2 shadow-2xl">
                   <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden">
-                    <div className="h-full bg-gradient-to-br from-secondary/10 to-secondary/30 flex flex-col items-center justify-center p-6">
-                      <Smartphone className="h-16 w-16 text-secondary mb-4" />
-                      <p className="text-sm text-secondary text-center">Insert iPhone mockup image 2 here<br/>(Website Content)</p>
-                    </div>
+                    {/* Website Feature Image */}
+                    <Image 
+                      src="/website-features.png" 
+                      alt="Website Features" 
+                      width={300} 
+                      height={500} 
+                      className="object-cover"
+                    />
                   </div>
                 </div>
               </div>
