@@ -37,8 +37,10 @@ export const metadata: Metadata = {
 
 export default function WorkWithUsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
-                        {/* Hero Section */}      <div className="relative w-full bg-gradient-to-r from-primary via-secondary to-accent text-white overflow-hidden">        <div className="absolute inset-0 bg-black/20" />
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <div className="relative w-full bg-gradient-to-r from-primary via-secondary to-accent text-white overflow-hidden">
+        <div className="absolute inset-0 bg-black/20" />
         
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
@@ -83,7 +85,12 @@ export default function WorkWithUsPage() {
                 </div>
                 
                 {/* Floating elements */}
-                                <div className="absolute -top-4 -right-4 bg-accent text-white px-3 py-1 rounded-full text-sm font-semibold animate-bounce">                  £1M+ sold!                </div>                <div className="absolute -bottom-4 -left-4 bg-secondary text-white px-3 py-1 rounded-full text-sm font-semibold">                  95% UK                </div>
+                <div className="absolute -top-4 -right-4 bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-semibold animate-bounce">
+                  £1M+ sold!
+                </div>
+                <div className="absolute -bottom-4 -left-4 bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-sm font-semibold">
+                  95% UK
+                </div>
               </div>
             </div>
           </div>
@@ -93,10 +100,10 @@ export default function WorkWithUsPage() {
       <div className="container mx-auto px-4">
         {/* We are the UK's favourite section */}
         <div className="py-16 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-800 mb-6">
+          <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
             We are the UK's <span className="text-accent italic font-script">favourite</span> travel deals platform
           </h2>
-          <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
             We help boost views: With over 100 million viewers every year, our platform is the ultimate destination for travel inspiration and discovery. If you're looking to drive bookings, boost visibility, and connect directly with a highly engaged audience, we've got you covered.
           </p>
         </div>
@@ -165,8 +172,8 @@ export default function WorkWithUsPage() {
         {/* iPhone Mockups Section */}
         <div className="py-16 mb-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Content That Converts</h2>
-            <p className="text-xl text-gray-600">See how we showcase travel deals across our platform</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Content That Converts</h2>
+            <p className="text-xl text-muted-foreground">See how we showcase travel deals across our platform</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -176,13 +183,15 @@ export default function WorkWithUsPage() {
                 <div className="w-64 h-[500px] bg-gray-900 rounded-[3rem] p-2 shadow-2xl">
                   <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden">
                     {/* Placeholder for iPhone content */}
-                                        <div className="h-full bg-gradient-to-br from-primary/10 to-primary/30 flex flex-col items-center justify-center p-6">                      <Smartphone className="h-16 w-16 text-primary mb-4" />                      <p className="text-sm text-primary text-center">Insert iPhone mockup image 1 here<br/>(Social Media Content)</p>
+                    <div className="h-full bg-gradient-to-br from-primary/10 to-primary/30 flex flex-col items-center justify-center p-6">
+                      <Smartphone className="h-16 w-16 text-primary mb-4" />
+                      <p className="text-sm text-primary text-center">Insert iPhone mockup image 1 here<br/>(Social Media Content)</p>
                     </div>
                   </div>
                 </div>
               </div>
-              <h3 className="text-lg font-semibold mt-4 text-gray-800">Social Media Posts</h3>
-              <p className="text-gray-600 text-center">Engaging visual content that drives clicks</p>
+              <h3 className="text-lg font-semibold mt-4 text-foreground">Social Media Posts</h3>
+              <p className="text-muted-foreground text-center">Engaging visual content that drives clicks</p>
             </div>
             
             {/* iPhone Mockup 2 */}
@@ -190,13 +199,15 @@ export default function WorkWithUsPage() {
               <div className="relative">
                 <div className="w-64 h-[500px] bg-gray-900 rounded-[3rem] p-2 shadow-2xl">
                   <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden">
-                                        <div className="h-full bg-gradient-to-br from-secondary/10 to-secondary/30 flex flex-col items-center justify-center p-6">                      <Smartphone className="h-16 w-16 text-secondary mb-4" />                      <p className="text-sm text-secondary text-center">Insert iPhone mockup image 2 here<br/>(Website Content)</p>
+                    <div className="h-full bg-gradient-to-br from-secondary/10 to-secondary/30 flex flex-col items-center justify-center p-6">
+                      <Smartphone className="h-16 w-16 text-secondary mb-4" />
+                      <p className="text-sm text-secondary text-center">Insert iPhone mockup image 2 here<br/>(Website Content)</p>
                     </div>
                   </div>
                 </div>
               </div>
-              <h3 className="text-lg font-semibold mt-4 text-gray-800">Website Features</h3>
-              <p className="text-gray-600 text-center">Premium placement on our platform</p>
+              <h3 className="text-lg font-semibold mt-4 text-foreground">Website Features</h3>
+              <p className="text-muted-foreground text-center">Premium placement on our platform</p>
             </div>
           </div>
         </div>
@@ -204,8 +215,8 @@ export default function WorkWithUsPage() {
         {/* Brands We Work With */}
         <div className="py-16 mb-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Brands We've Worked With</h2>
-            <p className="text-xl text-gray-600">Trusted by leading travel and lifestyle brands</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Brands We've Worked With</h2>
+            <p className="text-xl text-muted-foreground">Trusted by leading travel and lifestyle brands</p>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center">
@@ -214,11 +225,11 @@ export default function WorkWithUsPage() {
               "Gov.uk", "TUI", "loveholidays", "onthebeach", "Barbados", "Visit Portugal",
               "Birmingham Airport", "KayKay", "Bandos Maldives", "Trip.com", "Samsung", "Norse"
             ].map((brand, index) => (
-              <div key={index} className="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md transition-all duration-300 grayscale hover:grayscale-0">
+              <div key={index} className="bg-card rounded-xl p-6 shadow-sm border border-border hover:shadow-md transition-all duration-300 grayscale hover:grayscale-0">
                 <div className="h-16 flex items-center justify-center">
                   <div className="text-center">
-                    <Image src={`/images/${brand.toLowerCase().replace(/\s+/g, '-')}.png`} alt={brand} width={100} height={100} className="w-full h-8 bg-gray-200 rounded mb-2 flex items-center justify-center"/>
-                    <div className="text-sm font-medium text-gray-700">{brand}</div>
+                    <Image src={`/images/${brand.toLowerCase().replace(/\s+/g, '-')}.png`} alt={brand} width={100} height={100} className="w-full h-8 bg-muted rounded mb-2 flex items-center justify-center"/>
+                    <div className="text-sm font-medium text-foreground">{brand}</div>
                   </div>
                 </div>
               </div>
@@ -229,8 +240,8 @@ export default function WorkWithUsPage() {
         {/* Case Studies */}
         <div className="py-16 mb-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Case Studies</h2>
-            <p className="text-xl text-gray-600">Real results from our brand partnerships</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Case Studies</h2>
+            <p className="text-xl text-muted-foreground">Real results from our brand partnerships</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -246,14 +257,14 @@ export default function WorkWithUsPage() {
                 </div>
               </div>
               <CardContent className="p-6">
-                <h3 className="text-xl font-bold mb-2 text-gray-800">TUI Partnership Success</h3>
-                <p className="text-gray-600 mb-4">
+                <h3 className="text-xl font-bold mb-2 text-foreground">TUI Partnership Success</h3>
+                <p className="text-muted-foreground mb-4">
                   How we helped TUI reach thousands of new customers through targeted social campaigns and website features.
                 </p>
                 <div className="space-y-2 mb-4">
-                  <div className="text-sm text-gray-600">• 250% increase in bookings</div>
-                  <div className="text-sm text-gray-600">• 50K+ social media impressions</div>
-                  <div className="text-sm text-gray-600">• 15% conversion rate</div>
+                  <div className="text-sm text-muted-foreground">• 250% increase in bookings</div>
+                  <div className="text-sm text-muted-foreground">• 50K+ social media impressions</div>
+                  <div className="text-sm text-muted-foreground">• 15% conversion rate</div>
                 </div>
                 <Button variant="outline" className="w-full">Read Full Case Study</Button>
               </CardContent>
@@ -270,14 +281,14 @@ export default function WorkWithUsPage() {
                 </div>
               </div>
               <CardContent className="p-6">
-                <h3 className="text-xl font-bold mb-2 text-gray-800">Norse Atlantic Airways</h3>
-                <p className="text-gray-600 mb-4">
+                <h3 className="text-xl font-bold mb-2 text-foreground">Norse Atlantic Airways</h3>
+                <p className="text-muted-foreground mb-4">
                   Launching a new airline route with strategic content marketing and audience engagement.
                 </p>
                 <div className="space-y-2 mb-4">
-                  <div className="text-sm text-gray-600">• 500K+ content views</div>
-                  <div className="text-sm text-gray-600">• 30% email open rate</div>
-                  <div className="text-sm text-gray-600">• 200+ flight bookings</div>
+                  <div className="text-sm text-muted-foreground">• 500K+ content views</div>
+                  <div className="text-sm text-muted-foreground">• 30% email open rate</div>
+                  <div className="text-sm text-muted-foreground">• 200+ flight bookings</div>
                 </div>
                 <Button variant="outline" className="w-full">Read Full Case Study</Button>
               </CardContent>
@@ -294,14 +305,14 @@ export default function WorkWithUsPage() {
                 </div>
               </div>
               <CardContent className="p-6">
-                <h3 className="text-xl font-bold mb-2 text-gray-800">loveholidays Campaign</h3>
-                <p className="text-gray-600 mb-4">
+                <h3 className="text-xl font-bold mb-2 text-foreground">loveholidays Campaign</h3>
+                <p className="text-muted-foreground mb-4">
                   Multi-channel approach driving significant ROI through our engaged travel community.
                 </p>
                 <div className="space-y-2 mb-4">
-                  <div className="text-sm text-gray-600">• £100K+ in bookings</div>
-                  <div className="text-sm text-gray-600">• 40% click-through rate</div>
-                  <div className="text-sm text-gray-600">• 1M+ social reach</div>
+                  <div className="text-sm text-muted-foreground">• £100K+ in bookings</div>
+                  <div className="text-sm text-muted-foreground">• 40% click-through rate</div>
+                  <div className="text-sm text-muted-foreground">• 1M+ social reach</div>
                 </div>
                 <Button variant="outline" className="w-full">Read Full Case Study</Button>
               </CardContent>
@@ -341,10 +352,10 @@ export default function WorkWithUsPage() {
                 Join the brands that have already discovered the power of our engaged, travel-loving audience. Let's create something amazing together.
               </p>
               <div className="flex flex-col md:flex-row gap-4 justify-center">
-                <Link href="mailto:Sabrina@EnjoyEscapes.com">                  
-                  <Button size="lg" variant="outline" className="bg-white text-primary font-semibold px-8">                    
-                    Get Started Today                  
-                  </Button>                
+                <Link href="mailto:Sabrina@EnjoyEscapes.com">
+                  <Button size="lg" className="bg-gradient-to-r from-white to-gray-50 text-primary hover:from-gray-50 hover:to-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 font-semibold px-8 border border-white/50">
+                    Get Started Today
+                  </Button>
                 </Link>
               </div>
             </div>

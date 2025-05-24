@@ -37,7 +37,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="relative w-full bg-gradient-to-r from-primary via-secondary to-accent text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/20" />
@@ -77,18 +77,16 @@ export default function AboutPage() {
                 {/* Placeholder for hero visual - can be replaced with your image */}
                 <div className="w-80 h-80 bg-white/20 backdrop-blur rounded-full border border-white/30 flex items-center justify-center">
                   <div className="text-center">
-
                     <Globe className="h-20 w-20 mx-auto mb-4 opacity-60" />
                     <p className="text-sm opacity-60">Amazing Escapes</p>
-
                   </div>
                 </div>
                 
                 {/* Floating elements */}
-                <div className="absolute -top-4 -right-4 bg-accent text-white px-3 py-1 rounded-full text-sm font-semibold animate-bounce">
+                <div className="absolute -top-4 -right-4 bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-semibold animate-bounce">
                   Epic Deals!
                 </div>
-                <div className="absolute -bottom-4 -left-4 bg-secondary text-white px-3 py-1 rounded-full text-sm font-semibold">
+                <div className="absolute -bottom-4 -left-4 bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-sm font-semibold">
                   UK's Favourite
                 </div>
               </div>
@@ -101,16 +99,16 @@ export default function AboutPage() {
         {/* Main Content */}
         <div className="max-w-4xl mx-auto py-16">
           <div className="prose dark:prose-invert max-w-none text-lg">
-            <div className="bg-white/80 backdrop-blur rounded-3xl p-8 shadow-lg border border-white/20 mb-8">
-              <p className="text-xl leading-relaxed pb-2">
+            <div className="bg-card/80 backdrop-blur rounded-3xl p-8 shadow-lg border border-border mb-8">
+              <p className="text-xl leading-relaxed pb-2 text-foreground">
                 At EnjoyEscapes, we believe amazing holidays shouldn't come with a sky-high price tag. That's why we're here to help you discover epic getaways without blowing the budget.
               </p>
               
-              <p className="leading-relaxed pb-2">
+              <p className="leading-relaxed pb-2 text-foreground">
                 Our team of travel-hungry deal hunters is always on the lookout for unforgettable escapes at prices that make you do a double-take. Whether it's dreamy beach breaks, spontaneous city adventures, luxe-for-less stays, or cheeky weekend getaways we've got the goods.
               </p>
               
-              <p className="leading-relaxed">
+              <p className="leading-relaxed text-foreground">
                 We do the digging so you don't have to. Our handpicked deals land where you want them on our website, in your inbox, or scrolling through your socials. With thousands of fellow travel lovers joining the ride every month, EnjoyEscapes is quickly becoming the go-to for travel deals in the UK.
               </p>
             </div>
@@ -126,7 +124,7 @@ export default function AboutPage() {
                   </div>
                   <h3 className="text-2xl font-bold text-primary">Budget-Friendly</h3>
                 </div>
-                <p className="text-gray-700 text-lg">
+                <p className="text-muted-foreground text-lg">
                   We hunt for the best travel deals so you can experience more for less.
                 </p>
               </CardContent>
@@ -140,7 +138,7 @@ export default function AboutPage() {
                   </div>
                   <h3 className="text-2xl font-bold text-secondary">Handpicked Quality</h3>
                 </div>
-                <p className="text-gray-700 text-lg">
+                <p className="text-muted-foreground text-lg">
                   Each escape is carefully selected for its quality, value, and unforgettable experience.
                 </p>
               </CardContent>
@@ -154,7 +152,7 @@ export default function AboutPage() {
                   </div>
                   <h3 className="text-2xl font-bold text-accent">Diverse Destinations</h3>
                 </div>
-                <p className="text-gray-700 text-lg">
+                <p className="text-muted-foreground text-lg">
                   From beach paradises to city explorations, we cover destinations for every travel style.
                 </p>
               </CardContent>
@@ -168,7 +166,7 @@ export default function AboutPage() {
                   </div>
                   <h3 className="text-2xl font-bold text-primary">UK-Focused</h3>
                 </div>
-                <p className="text-gray-700 text-lg">
+                <p className="text-muted-foreground text-lg">
                   Our deals are tailored for UK travelers, with convenient departures and curated experiences.
                 </p>
               </CardContent>
@@ -192,12 +190,12 @@ export default function AboutPage() {
                 </p>
                 <div className="flex justify-center gap-4 flex-wrap">
                   <Link href="/">
-                    <Button size="lg" className="bg-white text-primary hover:bg-gray-100 font-semibold px-8">
+                    <Button size="lg" className="bg-gradient-to-r from-white to-gray-50 text-primary hover:from-gray-50 hover:to-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 font-semibold px-8 border border-white/50">
                       Explore Deals
                     </Button>
                   </Link>
                   <Link href="/search">
-                    <Button size="lg" variant="outline" className="border-white text-black font-semibold px-8">
+                    <Button size="lg" className="bg-white/20 backdrop-blur border border-white/30 text-white hover:bg-white/30 font-semibold px-8">
                       Search Escapes
                     </Button>
                   </Link>
