@@ -69,27 +69,24 @@ export default function AboutPage() {
                   UK-Focused
                 </div>
               </div>
-            </div>
-            
-            {/* Hero Visual Area */}
-            <div className="relative flex justify-center">
-              <div className="relative">
-                {/* Placeholder for hero visual - can be replaced with your image */}
-                <div className="w-80 h-80 bg-white/20 backdrop-blur rounded-full border border-white/30 flex items-center justify-center">
-                  <div className="text-center">
-                    <Globe className="h-20 w-20 mx-auto mb-4 opacity-60" />
-                    <p className="text-sm opacity-60">Amazing Escapes</p>
-                  </div>
+              
+              {/* Subtle floating badges */}
+              <div className="flex gap-4 justify-center lg:justify-start">
+                <div className="bg-accent/20 border border-accent/30 text-accent-foreground px-3 py-1 rounded-full text-sm font-medium animate-pulse">
+                  ✨ Epic Deals
                 </div>
-                
-                {/* Floating elements */}
-                <div className="absolute -top-4 -right-4 bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-semibold animate-bounce">
-                  Epic Deals!
-                </div>
-                <div className="absolute -bottom-4 -left-4 bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-sm font-semibold">
-                  UK's Favourite
+                <div className="bg-secondary/20 border border-secondary/30 text-secondary-foreground px-3 py-1 rounded-full text-sm font-medium">
+                  🇬🇧 UK's Favourite
                 </div>
               </div>
+            </div>
+            
+            {/* Mission Statement */}
+            <div className="bg-white/10 backdrop-blur rounded-3xl p-8 border border-white/30">
+              <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
+              <p className="text-lg opacity-90 leading-relaxed">
+                At EnjoyEscapes, we believe amazing holidays shouldn't come with a sky-high price tag. That's why we're here to help you discover epic getaways without blowing the budget.
+              </p>
             </div>
           </div>
         </div>

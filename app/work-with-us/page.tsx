@@ -51,45 +51,36 @@ export default function WorkWithUsPage() {
         </div>
         
         <div className="container mx-auto px-4 py-20 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                Work with us
-              </h1>
-              <p className="text-xl md:text-2xl mb-8 opacity-90">
-                Connect your travel brand with our engaged audience of adventure seekers
-              </p>
-              
-              {/* Quick Stats */}
-              <div className="grid grid-cols-2 gap-6 mb-8">
-                <div className="text-center bg-white/10 backdrop-blur rounded-xl p-4">
-                  <div className="text-2xl md:text-3xl font-bold">100M+</div>
-                  <div className="text-sm opacity-80">Viewers per year</div>
-                </div>
-                <div className="text-center bg-white/10 backdrop-blur rounded-xl p-4">
-                  <div className="text-2xl md:text-3xl font-bold">300K+</div>
-                  <div className="text-sm opacity-80">Social followers</div>
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              Work with us
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 opacity-90">
+              Connect your travel brand with our engaged audience of adventure seekers
+            </p>
+            
+            {/* All Stats in One Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
+              <div className="text-center bg-white/10 backdrop-blur rounded-xl p-4">
+                <div className="text-2xl md:text-3xl font-bold">100M+</div>
+                <div className="text-sm opacity-80">Viewers per year</div>
+              </div>
+              <div className="text-center bg-white/10 backdrop-blur rounded-xl p-4">
+                <div className="text-2xl md:text-3xl font-bold">300K+</div>
+                <div className="text-sm opacity-80">Social followers</div>
+              </div>
+              <div className="text-center bg-white/10 backdrop-blur rounded-xl p-4 relative">
+                <div className="text-2xl md:text-3xl font-bold">£1M+</div>
+                <div className="text-sm opacity-80">Holidays sold</div>
+                <div className="absolute -top-2 -right-2 bg-accent text-accent-foreground px-2 py-1 rounded-full text-xs font-semibold animate-bounce">
+                  This year!
                 </div>
               </div>
-            </div>
-            
-            {/* Hero Image Area */}
-            <div className="relative flex justify-center">
-              <div className="relative">
-                {/* Placeholder for hero image - replace with your image */}
-                <div className="w-80 h-96 bg-white/20 backdrop-blur rounded-3xl border border-white/30 flex items-center justify-center">
-                  <div className="text-center">
-                    <Plane className="h-16 w-16 mx-auto mb-4 opacity-60" />
-                    <p className="text-sm opacity-60">Insert hero image here</p>
-                  </div>
-                </div>
-                
-                {/* Floating elements */}
-                <div className="absolute -top-4 -right-4 bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-semibold animate-bounce">
-                  £1M+ sold!
-                </div>
-                <div className="absolute -bottom-4 -left-4 bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-sm font-semibold">
-                  95% UK
+              <div className="text-center bg-white/10 backdrop-blur rounded-xl p-4 relative">
+                <div className="text-2xl md:text-3xl font-bold">95%</div>
+                <div className="text-sm opacity-80">UK audience</div>
+                <div className="absolute -bottom-2 -left-2 bg-secondary text-secondary-foreground px-2 py-1 rounded-full text-xs font-semibold animate-pulse">
+                  Quality reach
                 </div>
               </div>
             </div>
