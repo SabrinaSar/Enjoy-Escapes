@@ -220,15 +220,31 @@ export default function WorkWithUsPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center">
             {/* Brand Logo Placeholders */}
             {[
-              "Gov.uk", "TUI", "loveholidays", "onthebeach", "Barbados", "Visit Portugal",
-              "Birmingham Airport", "kayak", "Bandos Maldives", "Trip.com", "Samsung", "Norse"
+              { filename: "gov.uk", displayName: "Gov.uk" },
+              { filename: "tui", displayName: "TUI" },
+              { filename: "loveholidays", displayName: "loveholidays" },
+              { filename: "onthebeach", displayName: "On the Beach" },
+              { filename: "barbados", displayName: "Barbados Tourism" },
+              { filename: "visit-portugal", displayName: "Visit Portugal" },
+              { filename: "birmingham-airport", displayName: "Birmingham Airport" },
+              { filename: "kayak", displayName: "Kayak" },
+              { filename: "bandos-maldives", displayName: "Bandos Maldives" },
+              { filename: "trip.com", displayName: "Trip.com" },
+              { filename: "samsung", displayName: "Samsung" },
+              { filename: "norse", displayName: "Norse Atlantic" }
             ].map((brand, index) => (
               <div key={index} className="bg-card rounded-xl p-6 shadow-sm border border-border hover:shadow-md hover:scale-105 transition-all duration-300">
-                <div className="h-16 flex items-center justify-center">
-                  <div className="text-center">
-                    <Image src={`/images/${brand.toLowerCase().replace(/\s+/g, '-')}.png`} alt={brand} width={100} height={100} className="w-full h-8 bg-muted rounded mb-2 flex items-center justify-center"/>
-                    <div className="text-sm font-medium text-foreground">{brand}</div>
+                <div className="h-20 flex flex-col items-center justify-center">
+                  <div className="mb-3 flex items-center justify-center">
+                    <Image 
+                      src={`/images/${brand.filename}.png`} 
+                      alt={brand.displayName} 
+                      width={80} 
+                      height={80} 
+                      className="object-contain max-w-[80px] max-h-[60px]"
+                    />
                   </div>
+                  <div className="text-xs font-medium text-foreground text-center leading-tight">{brand.displayName}</div>
                 </div>
               </div>
             ))}
