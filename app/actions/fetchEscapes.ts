@@ -12,7 +12,7 @@ export type EscapeData = {
   price: number | null;
   link: string | null;
   image: string | null;
-  type: "hotel" | "flight" | "hotel+flight" | null;
+  type: "hotel" | "flight" | "hotel+flight" | "other" | null;
   nights: number | null;
   board_basis:
     | "room_only"
@@ -38,7 +38,7 @@ export type EscapeData = {
 
 // Define a type for category filters
 export type CategoryFilter = {
-  type?: "hotel" | "flight" | "hotel+flight";
+  type?: "hotel" | "flight" | "hotel+flight" | "other";
   board_basis?: string;
   last_minute?: boolean;
   price_under?: number;

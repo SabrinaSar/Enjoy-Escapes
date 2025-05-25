@@ -18,7 +18,7 @@ type EscapeInsert = Database["public"]["Tables"]["escapes_data"]["Insert"];
 type EscapeUpdate = Database["public"]["Tables"]["escapes_data"]["Update"];
 
 // Define a type validator for the deal type enum
-const dealTypeEnum = z.enum(["hotel", "flight", "hotel+flight"]);
+const dealTypeEnum = z.enum(["hotel", "flight", "hotel+flight", "other"]);
 
 // Define a type validator for the board basis enum
 const boardBasisEnum = z.enum([
@@ -163,6 +163,8 @@ const escapeFormSchema = z
         return (
           data.board_basis !== "flight_only" && data.board_basis !== "room_only"
         );
+      if (data.type === "other")
+        return !data.board_basis; // "other" type should not have board basis
       return true;
     },
     {
@@ -645,6 +647,8 @@ export async function updateEscape(
             data.board_basis !== "flight_only" &&
             data.board_basis !== "room_only"
           );
+        if (data.type === "other")
+          return !data.board_basis; // "other" type should not have board basis
         return true;
       },
       {
@@ -841,7 +845,7 @@ export async function fetchEscapesWithPagination(
     school_holidays?: boolean;
     long_haul?: boolean;
     last_minute?: boolean;
-    type?: "hotel" | "flight" | "hotel+flight";
+    type?: "hotel" | "flight" | "hotel+flight" | "other";
     include_scheduled?: boolean; // New filter to include scheduled escapes
   } = {}
 ): Promise<{

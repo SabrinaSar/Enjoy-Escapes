@@ -29,11 +29,11 @@ export default function HeaderAuthClient() {
             About Us
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        {/* <DropdownMenuItem asChild>
           <Link href="/work-with-us" className="cursor-pointer">
             Work With Us
           </Link>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuItem asChild>
           <Link href="/admin" className="cursor-pointer">
             Admin Dashboard

@@ -195,7 +195,7 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
   const DealTypeBadge = ({
     type,
   }: {
-    type: "hotel" | "flight" | "hotel+flight" | null;
+    type: "hotel" | "flight" | "hotel+flight" | "other" | null;
   }) => {
     if (!type) return null;
 
@@ -215,6 +215,10 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
       icon = <PackageCheck className="h-3 w-3 mr-1" />;
       label = "Package";
       variant = "default";
+    } else if (type === "other") {
+      icon = <Star className="h-3 w-3 mr-1" />;
+      label = "Experience";
+      variant = "secondary";
     }
 
     return (

@@ -91,7 +91,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     deposit_price: initialData?.deposit_price || "",
     deposit_price_unit: initialData?.deposit_price_unit || "pp",
     link: initialData?.link || "",
-    type: (initialData?.type as "hotel" | "flight" | "hotel+flight") || "hotel",
+    type: (initialData?.type as "hotel" | "flight" | "hotel+flight" | "other") || "hotel",
     nights: initialData?.nights || "",
     board_basis: initialData?.board_basis || "",
     star_rating: initialData?.star_rating || "",
@@ -141,6 +141,9 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
         (k) => k !== "flight_only" && k !== "room_only"
       );
     }
+    if (selectedType === "other") {
+      return []; // No board basis options for "other" type
+    }
     return Object.keys(BOARD_BASIS_LABELS);
   };
 
@@ -171,7 +174,9 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
   useEffect(() => {
     setFormData((prev) => ({
       ...prev,
-      type: selectedType as "hotel" | "flight" | "hotel+flight",
+      type: selectedType as "hotel" | "flight" | "hotel+flight" | "other",
+      // Clear board_basis when switching to "other" type
+      board_basis: selectedType === "other" ? "" : prev.board_basis,
     }));
   }, [selectedType]);
 
@@ -314,6 +319,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 <option value="hotel">Hotel</option>
                 <option value="flight">Flight</option>
                 <option value="hotel+flight">Hotel + Flight</option>
+                <option value="other">Other</option>
               </select>
               <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             </div>
@@ -559,33 +565,35 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="board_basis">Board Basis</Label>
-              <select
-                id="board_basis"
-                name="board_basis"
-                value={formData.board_basis}
-                onChange={handleInputChange}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                aria-invalid={!!state.errors?.board_basis}
-                aria-describedby="board-basis-error"
-              >
-                <option value="">Select Board Basis</option>
-                {getFilteredBoardBasisOptions().map((key) => (
-                  <option key={key} value={key}>
-                    {BOARD_BASIS_LABELS[key as keyof typeof BOARD_BASIS_LABELS]}
-                  </option>
-                ))}
-              </select>
-              {state.errors?.board_basis && (
-                <p
-                  id="board-basis-error"
-                  className="text-sm font-medium text-destructive"
+            {selectedType !== "other" && (
+              <div className="space-y-2">
+                <Label htmlFor="board_basis">Board Basis</Label>
+                <select
+                  id="board_basis"
+                  name="board_basis"
+                  value={formData.board_basis}
+                  onChange={handleInputChange}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-invalid={!!state.errors?.board_basis}
+                  aria-describedby="board-basis-error"
                 >
-                  {state.errors.board_basis.join(", ")}
-                </p>
-              )}
-            </div>
+                  <option value="">Select Board Basis</option>
+                  {getFilteredBoardBasisOptions().map((key) => (
+                    <option key={key} value={key}>
+                      {BOARD_BASIS_LABELS[key as keyof typeof BOARD_BASIS_LABELS]}
+                    </option>
+                  ))}
+                </select>
+                {state.errors?.board_basis && (
+                  <p
+                    id="board-basis-error"
+                    className="text-sm font-medium text-destructive"
+                  >
+                    {state.errors.board_basis.join(", ")}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

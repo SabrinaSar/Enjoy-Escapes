@@ -24,7 +24,7 @@ import { fetchEscapesWithPagination } from "./actions";
 
 type EscapeStats = {
   id: number;
-  type: "hotel" | "flight" | "hotel+flight" | null;
+  type: "hotel" | "flight" | "hotel+flight" | "other" | null;
   price: number | null;
   created_at: string;
   featured: boolean | null;
@@ -69,6 +69,7 @@ export default async function EscapesPage({
       | "hotel"
       | "flight"
       | "hotel+flight"
+      | "other"
       | undefined,
     include_scheduled: resolvedSearchParams.scheduled === "true" || undefined,
   };

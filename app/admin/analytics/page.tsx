@@ -250,6 +250,7 @@ function formatEscapeType(type: string | null): string {
     case 'hotel': return 'Hotel';
     case 'flight': return 'Flight';
     case 'hotel+flight': return 'Hotel + Flight';
+    case 'other': return 'Other';
     default: return type;
   }
 }

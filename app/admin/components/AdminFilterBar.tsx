@@ -307,6 +307,7 @@ export function AdminFilterBar() {
                 <SelectItem value="hotel">Hotel Only</SelectItem>
                 <SelectItem value="flight">Flight Only</SelectItem>
                 <SelectItem value="hotel+flight">Hotel + Flight</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
           </div>

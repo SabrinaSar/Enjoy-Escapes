@@ -47,7 +47,9 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
         ? "Flight"
         : escape.type === "hotel+flight"
           ? "Hotel + Flight Package"
-          : "Travel Deal";
+          : escape.type === "other"
+            ? "Experience"
+            : "Travel Deal";
 
   const dealTitle = escape.title || `${dealType}`;
   const fullDescription = `${dealType}${escape.nights ? ` for ${escape.nights} nights` : ""}${escape.board_basis ? `, ${BOARD_BASIS_LABELS[escape.board_basis] || escape.board_basis}` : ""}`;
@@ -121,7 +123,9 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
                           ? "Hotel"
                           : escape.type === "flight"
                             ? "Flight"
-                            : "Hotel + Flight"}
+                            : escape.type === "hotel+flight"
+                              ? "Hotel + Flight"
+                              : "Experience"}
                       </span>
                     </>
                   )}
