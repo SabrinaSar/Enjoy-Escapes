@@ -114,7 +114,7 @@ export default function WorkWithUsPage() {
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Audience</h2>
               <p className="text-xl opacity-90">
-                83% of UK parents say they <span className="italic font-script">regularly</span> use our website for inspiration
+                83% of our audience say they <span className="italic font-script">regularly</span> use our socials and website for inspiration
               </p>
             </div>
             
@@ -195,7 +195,7 @@ export default function WorkWithUsPage() {
                   <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden">
                     {/* Website Feature Image */}
                     <Image 
-                      src="/website-features.png" 
+                      src="/website-feature.png" 
                       alt="Website Features" 
                       width={300} 
                       height={500} 
@@ -233,18 +233,15 @@ export default function WorkWithUsPage() {
               { filename: "samsung", displayName: "Samsung" },
               { filename: "norse", displayName: "Norse Atlantic" }
             ].map((brand, index) => (
-              <div key={index} className="bg-card rounded-xl p-6 shadow-sm border border-border hover:shadow-md hover:scale-105 transition-all duration-300">
-                <div className="h-20 flex flex-col items-center justify-center">
-                  <div className="mb-3 flex items-center justify-center">
-                    <Image 
-                      src={`/images/${brand.filename}.png`} 
-                      alt={brand.displayName} 
-                      width={80} 
-                      height={80} 
-                      className="object-contain max-w-[80px] max-h-[60px]"
-                    />
-                  </div>
-                  <div className="text-xs font-medium text-foreground text-center leading-tight">{brand.displayName}</div>
+              <div key={index} className="bg-card rounded-xl p-4 shadow-sm border border-border hover:shadow-md hover:scale-105 transition-all duration-300">
+                <div className="h-20 flex items-center justify-center">
+                  <Image 
+                    src={`/images/${brand.filename}.png`} 
+                    alt={brand.displayName} 
+                    width={120} 
+                    height={80} 
+                    className="object-contain max-w-full max-h-full"
+                  />
                 </div>
               </div>
             ))}
