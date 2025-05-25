@@ -51,42 +51,22 @@ export default function AboutPage() {
         </div>
         
         <div className="container mx-auto px-4 py-20 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">About Enjoy Escapes</h1>
-              <p className="text-xl md:text-2xl mb-8 opacity-90">
-                We find the deals. You enjoy the journey.
-              </p>
-              
-              {/* Quick highlights */}
-              <div className="flex flex-wrap gap-4 mb-8">
-                <div className="bg-white/10 backdrop-blur rounded-full px-4 py-2 text-sm">
-                  <Plane className="inline h-4 w-4 mr-2" />
-                  Budget-Friendly
-                </div>
-                <div className="bg-white/10 backdrop-blur rounded-full px-4 py-2 text-sm">
-                  <MapPin className="inline h-4 w-4 mr-2" />
-                  UK-Focused
-                </div>
-              </div>
-              
-              {/* Subtle floating badges */}
-              <div className="flex gap-4 justify-center lg:justify-start">
-                <div className="bg-accent/20 border border-accent/30 text-accent-foreground px-3 py-1 rounded-full text-sm font-medium animate-pulse">
-                  ✨ Epic Deals
-                </div>
-                <div className="bg-secondary/20 border border-secondary/30 text-secondary-foreground px-3 py-1 rounded-full text-sm font-medium">
-                  🇬🇧 UK's Favourite
-                </div>
-              </div>
-            </div>
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">About Enjoy Escapes</h1>
+            <p className="text-xl md:text-2xl mb-8 opacity-90">
+              We find the deals. You enjoy the journey.
+            </p>
             
-            {/* Mission Statement */}
-            <div className="bg-white/10 backdrop-blur rounded-3xl p-8 border border-white/30">
-              <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
-              <p className="text-lg opacity-90 leading-relaxed">
-                At EnjoyEscapes, we believe amazing holidays shouldn't come with a sky-high price tag. That's why we're here to help you discover epic getaways without blowing the budget.
-              </p>
+            {/* Quick highlights */}
+            <div className="flex flex-wrap gap-4 mb-8 justify-center">
+              <div className="bg-white/10 backdrop-blur rounded-full px-4 py-2 text-sm">
+                <Plane className="inline h-4 w-4 mr-2" />
+                Budget-Friendly
+              </div>
+              <div className="bg-white/10 backdrop-blur rounded-full px-4 py-2 text-sm">
+                <MapPin className="inline h-4 w-4 mr-2" />
+                UK-Focused
+              </div>
             </div>
           </div>
         </div>
