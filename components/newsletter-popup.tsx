@@ -6,6 +6,7 @@ import { Input } from "./ui/input";
 import { useState, useEffect } from "react";
 import { Mail, X, Gift, PlaneTakeoff } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import Image from "next/image";
 
 export default function NewsletterPopup() {
   const [email, setEmail] = useState("");
@@ -108,21 +109,31 @@ export default function NewsletterPopup() {
 
   return (
     <Dialog open={showPopup} onOpenChange={setShowPopup}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-center justify-center">
-            <Gift className="h-5 w-5 text-primary" />
-            Win £100 Travel Voucher!
-          </DialogTitle>
-        </DialogHeader>
-        
-        <div className="space-y-4">
-          <div className="text-center">
-            <div className="bg-primary/10 rounded-lg p-4 mb-4">
-              <p className="text-sm text-muted-foreground">
-                🎁 <strong>Limited Time Giveaway!</strong> Subscribe to our newsletter and you'll be automatically entered to win a £100 travel voucher. Plus get exclusive deals delivered to your inbox!
-              </p>
+      <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
+        {/* Eye-catching header image */}
+        <div className="relative h-48 w-full">
+          <Image
+            src="/win-bg.png"
+            alt="Win £100 Giveaway"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/60"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center text-white">
+              <Gift className="h-10 w-10 mx-auto mb-3" />
+              <h2 className="text-3xl font-bold mb-2">Win £100!</h2>
+              <p className="text-2xl opacity-90">Limited Time Giveaway</p>
             </div>
+          </div>
+        </div>
+        
+        <div className="p-6 space-y-4">
+          <div className="text-center">
+            <p className="text-muted-foreground mb-4">
+              Subscribe to our newsletter and you'll be automatically entered to win £100. Plus get exclusive travel deals delivered to your inbox!
+            </p>
           </div>
 
           <form onSubmit={handleFormSubmit} className="space-y-4">
