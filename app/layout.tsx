@@ -4,6 +4,7 @@ import Navbar from "@/app/components/navbar";
 import { ThemeProvider } from "next-themes";
 import Script from "next/script";
 import Footer from "@/components/footer";
+import NewsletterPopup from "@/components/newsletter-popup";
 
 const defaultUrl = "https://enjoyescapes.com";
 
@@ -33,6 +34,7 @@ export default function RootLayout({
               <div className="w-full flex-1 flex flex-col">{children}</div>
               <Footer />
             </div>
+            <NewsletterPopup />
           </main>
         </ThemeProvider>
       </body>
