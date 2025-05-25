@@ -175,7 +175,7 @@ export default function WorkWithUsPage() {
                   <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden">
                     {/* Social Media Content Image */}
                     <Image 
-                      src="/Social.jpeg" 
+                      src="/social.jpeg" 
                       alt="Social Media Content" 
                       width={250} 
                       height={500} 
