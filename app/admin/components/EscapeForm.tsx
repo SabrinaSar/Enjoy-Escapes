@@ -197,6 +197,19 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
       return;
     }
 
+    // Check for HEIC files (by file extension and MIME type)
+    const fileName = file.name.toLowerCase();
+    const isHeicByExtension = fileName.endsWith('.heic') || fileName.endsWith('.heif');
+    const isHeicByMimeType = file.type === 'image/heic' || file.type === 'image/heif';
+    
+    if (isHeicByExtension || isHeicByMimeType) {
+      toast.error("HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format.");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      return;
+    }
+
     // Verify it's a valid image file
     if (!file.type.startsWith("image/")) {
       toast.error("File must be a valid image.");
@@ -355,7 +368,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
               id="image_file"
               name="image_file"
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
               onChange={handleFileChange}
               aria-invalid={!!state.errors?.image_file}
               aria-describedby="image-file-error"
@@ -364,7 +377,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
             <p className="text-sm text-muted-foreground">
               {formType === "edit"
                 ? "Upload a new image to replace the current one."
-                : "Upload an image for the escape."}
+                : "Upload an image for the escape."} Supported formats: JPG, PNG, WebP, GIF. HEIC files are not supported.
             </p>
             {state.errors?.image_file && (
               <p

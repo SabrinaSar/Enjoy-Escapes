@@ -56,15 +56,34 @@ export default function BannerForm({ banner, onSuccess }: BannerFormProps) {
   // Handle file selection and preview
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
-    setFile(selectedFile);
     
     if (selectedFile) {
+      // Check for HEIC files (by file extension and MIME type)
+      const fileName = selectedFile.name.toLowerCase();
+      const isHeicByExtension = fileName.endsWith('.heic') || fileName.endsWith('.heif');
+      const isHeicByMimeType = selectedFile.type === 'image/heic' || selectedFile.type === 'image/heif';
+      
+      if (isHeicByExtension || isHeicByMimeType) {
+        toast.error("HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format.");
+        e.target.value = ""; // Clear the input
+        return;
+      }
+
+      // Validate it's an actual image file
+      if (!selectedFile.type.startsWith("image/")) {
+        toast.error("File must be a valid image.");
+        e.target.value = ""; // Clear the input
+        return;
+      }
+
+      setFile(selectedFile);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
       };
       reader.readAsDataURL(selectedFile);
     } else {
+      setFile(null);
       setPreview(banner?.image || null);
     }
   };
@@ -132,7 +151,7 @@ export default function BannerForm({ banner, onSuccess }: BannerFormProps) {
           id="image_file"
           name="image_file"
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
           onChange={handleFileChange}
           required={!banner}
         />

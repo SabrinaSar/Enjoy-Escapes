@@ -103,6 +103,32 @@ export async function createBanner(
     };
   }
 
+  // Check for HEIC files (by file extension and MIME type)
+  const fileName = imageFile.name.toLowerCase();
+  const isHeicByExtension = fileName.endsWith('.heic') || fileName.endsWith('.heif');
+  const isHeicByMimeType = imageFile.type === 'image/heic' || imageFile.type === 'image/heif';
+  
+  if (isHeicByExtension || isHeicByMimeType) {
+    return {
+      success: false,
+      message: "HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format.",
+      errors: {
+        image_file: ["HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format."],
+      },
+    };
+  }
+
+  // Validate it's an actual image file
+  if (!imageFile.type.startsWith("image/")) {
+    return {
+      success: false,
+      message: "Uploaded file must be an image.",
+      errors: {
+        image_file: ["Uploaded file must be an image."],
+      },
+    };
+  }
+
   // Validate form data using Zod
   const validationResult = bannerFormSchema.safeParse(rawFormData);
   if (!validationResult.success) {
@@ -231,14 +257,40 @@ export async function updateBanner(
     const imageFile = formData.get("image_file") as File | null;
 
     if (imageFile && imageFile.size > 0) {
+      // Check for HEIC files (by file extension and MIME type)
+      const fileName = imageFile.name.toLowerCase();
+      const isHeicByExtension = fileName.endsWith('.heic') || fileName.endsWith('.heif');
+      const isHeicByMimeType = imageFile.type === 'image/heic' || imageFile.type === 'image/heif';
+      
+      if (isHeicByExtension || isHeicByMimeType) {
+        return {
+          success: false,
+          message: "HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format.",
+          errors: {
+            image_file: ["HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format."],
+          },
+        };
+      }
+
+      // Validate it's an actual image file
+      if (!imageFile.type.startsWith("image/")) {
+        return {
+          success: false,
+          message: "Uploaded file must be an image.",
+          errors: {
+            image_file: ["Uploaded file must be an image."],
+          },
+        };
+      }
+
       // Get file extension
       const fileExtension = imageFile.name.split(".").pop();
-      const fileName = `banners/${Date.now()}_${imageFile.name.replace(/[^\w\d.-]/g, "_")}`;
+      const safeFileName = `banners/${Date.now()}_${imageFile.name.replace(/[^\w\d.-]/g, "_")}`;
 
       // Upload the image to Supabase Storage using the same bucket as escapes
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from("enjoy-escapes-assets")
-        .upload(fileName, imageFile, {
+        .upload(safeFileName, imageFile, {
           contentType: imageFile.type, // Explicitly set the content type
         });
 
@@ -249,7 +301,7 @@ export async function updateBanner(
       // Get public URL for the uploaded image
       const { data: imageData } = supabase.storage
         .from("enjoy-escapes-assets")
-        .getPublicUrl(fileName);
+        .getPublicUrl(safeFileName);
 
       // Check if publicUrl exists in the returned data
       imageUrl = imageData?.publicUrl ?? null;
@@ -257,7 +309,7 @@ export async function updateBanner(
         // Handle case where public URL couldn't be generated
         console.error("Could not get public URL for uploaded image.");
         // Attempt to clean up the uploaded file
-        await supabase.storage.from("enjoy-escapes-assets").remove([fileName]);
+        await supabase.storage.from("enjoy-escapes-assets").remove([safeFileName]);
         throw new Error("Image uploaded but failed to get public URL.");
       }
     }

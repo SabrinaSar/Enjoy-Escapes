@@ -199,6 +199,21 @@ export async function createEscape(
       };
     }
 
+    // Check for HEIC files (by file extension and MIME type)
+    const fileName = imageFile.name.toLowerCase();
+    const isHeicByExtension = fileName.endsWith('.heic') || fileName.endsWith('.heif');
+    const isHeicByMimeType = imageFile.type === 'image/heic' || imageFile.type === 'image/heif';
+    
+    if (isHeicByExtension || isHeicByMimeType) {
+      return {
+        success: false,
+        message: "HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format.",
+        errors: {
+          image_file: ["HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format."],
+        },
+      };
+    }
+
     // Validate it's an actual image file
     if (!imageFile.type.startsWith("image/")) {
       return {
@@ -423,6 +438,21 @@ export async function updateEscape(
         message: "Image file must have a valid name.",
         errors: {
           image_file: ["Image file must have a valid name."],
+        },
+      };
+    }
+
+    // Check for HEIC files (by file extension and MIME type)
+    const fileName = imageFile.name.toLowerCase();
+    const isHeicByExtension = fileName.endsWith('.heic') || fileName.endsWith('.heif');
+    const isHeicByMimeType = imageFile.type === 'image/heic' || imageFile.type === 'image/heif';
+    
+    if (isHeicByExtension || isHeicByMimeType) {
+      return {
+        success: false,
+        message: "HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format.",
+        errors: {
+          image_file: ["HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format."],
         },
       };
     }
