@@ -195,7 +195,7 @@ export default function WorkWithUsPage() {
                   <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden">
                     {/* Website Feature Image */}
                     <Image 
-                      src="/website-feature.png" 
+                      src="/website-features.png" 
                       alt="Website Features" 
                       width={300} 
                       height={500} 
