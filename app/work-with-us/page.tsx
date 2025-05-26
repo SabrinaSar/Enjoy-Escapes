@@ -161,7 +161,7 @@ export default function WorkWithUsPage() {
         </div>
 
         {/* iPhone Mockups Section */}
-        <div className="py-16 mb-16">
+        <div className="py-8 mb-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Content That Converts</h2>
             <p className="text-xl text-muted-foreground">See how we showcase travel deals across our platform</p>
@@ -211,7 +211,7 @@ export default function WorkWithUsPage() {
         </div>
 
         {/* Brands We Work With */}
-        <div className="py-16 mb-16">
+        <div className="py-8 mb-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Brands We've Worked With</h2>
             <p className="text-xl text-muted-foreground">Trusted by leading travel and lifestyle brands</p>
@@ -234,13 +234,13 @@ export default function WorkWithUsPage() {
               { filename: "norse", displayName: "Norse Atlantic" }
             ].map((brand, index) => (
               <div key={index} className="bg-card rounded-xl p-4 shadow-sm border border-border hover:shadow-md hover:scale-105 transition-all duration-300">
-                <div className="h-20 flex items-center justify-center">
+                <div className="h-32 flex items-center justify-center">
                   <Image 
                     src={`/images/${brand.filename}.png`} 
                     alt={brand.displayName} 
-                    width={120} 
-                    height={80} 
-                    className="object-contain max-w-full max-h-full"
+                    width={180} 
+                    height={120} 
+                    className="object-contain w-full h-full"
                   />
                 </div>
               </div>
@@ -249,7 +249,7 @@ export default function WorkWithUsPage() {
         </div>
 
         {/* Case Studies */}
-        <div className="py-16 mb-16">
+        <div className="py-4 mb-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Case Studies</h2>
             <p className="text-xl text-muted-foreground">Real results from our brand partnerships</p>
