@@ -58,29 +58,40 @@ export default function NewsletterPopup() {
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSuccess(true);
-      // Mark as shown in session storage
-      sessionStorage.setItem('newsletter-popup-shown', 'true');
+      // Mark as shown with current timestamp
+      const now = new Date().getTime();
+      localStorage.setItem('newsletter-popup-shown', now.toString());
     }, 1000);
   };
 
   const closePopup = () => {
     setShowPopup(false);
-    // Mark as shown in session storage so it doesn't show again this session
-    sessionStorage.setItem('newsletter-popup-shown', 'true');
+    // Mark as shown with current timestamp so it doesn't show again for 24 hours
+    const now = new Date().getTime();
+    localStorage.setItem('newsletter-popup-shown', now.toString());
   };
 
   useEffect(() => {
-    // Check if popup has already been shown this session
-    const hasBeenShown = sessionStorage.getItem('newsletter-popup-shown');
+    // Check if popup has been shown in the last 24 hours
+    const lastShown = localStorage.getItem('newsletter-popup-shown');
     
-    if (!hasBeenShown) {
-      // Show popup after 15 seconds
-      const timer = setTimeout(() => {
-        setShowPopup(true);
-      }, 15000);
-
-      return () => clearTimeout(timer);
+    if (lastShown) {
+      const lastShownTime = parseInt(lastShown);
+      const now = new Date().getTime();
+      const twentyFourHours = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      
+      // If less than 24 hours have passed, don't show the popup
+      if (now - lastShownTime < twentyFourHours) {
+        return;
+      }
     }
+    
+    // Show popup after 15 seconds if 24 hours have passed or it's never been shown
+    const timer = setTimeout(() => {
+      setShowPopup(true);
+    }, 15000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   // Success state
