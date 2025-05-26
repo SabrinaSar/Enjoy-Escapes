@@ -73,8 +73,7 @@ const BOARD_BASIS_LABELS: Record<string, string> = {
 
 // Format price with unit
 const formatPrice = (price?: number | null, unit?: string | null) => {
-  if (price === null || price === undefined) return null;
-
+  if (price === null || price === undefined || price === 0) return null;
   const unitDisplay = unit ? ` ${unit}` : "";
   return `£${price}${unitDisplay}`;
 };

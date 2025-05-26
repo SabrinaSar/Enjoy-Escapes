@@ -68,7 +68,7 @@ const StandardCard: React.FC<StandardCardProps> = ({ escape }) => {
       <meta itemProp="name" content={dealTitle} />
       <meta itemProp="description" content={fullDescription} />
       {escape.image && <meta itemProp="image" content={escape.image} />}
-      {escape.price && (
+      {escape.price !== null && escape.price !== undefined && escape.price > 0 && (
         <meta itemProp="price" content={escape.price.toString()} />
       )}
 
@@ -137,7 +137,7 @@ const StandardCard: React.FC<StandardCardProps> = ({ escape }) => {
           </div>
         </CardContent>
         <CardFooter className="p-3 md:p-4 pt-1 md:pt-2 flex flex-col items-end gap-1 bg-white dark:bg-card">
-          {escape.price ? (
+          {escape.price !== null && escape.price !== undefined && escape.price > 0 ? (
             <span className="whitespace-nowrap text-right">
               <span className="text-base text-muted-foreground mr-1">from</span>
               <span className="text-2xl font-bold text-accent align-middle">

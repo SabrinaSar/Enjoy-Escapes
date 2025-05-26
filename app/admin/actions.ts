@@ -42,7 +42,10 @@ const escapeFormSchema = z
     price: z
       .string()
       .min(1, "Price is required.")
-      .transform((val) => parseInt(val.replace(/[^0-9]/g, ""), 10)), // Transform string to number, removing non-digits
+      .transform((val) => {
+        const numericValue = parseInt(val.replace(/[^0-9]/g, ""), 10);
+        return isNaN(numericValue) ? 0 : numericValue;
+      }), // Transform string to number, allowing 0 for "Contact for Price"
     link: z.string().url("Invalid URL format."),
     type: dealTypeEnum, // Add type validation
     // Optional fields
@@ -522,7 +525,10 @@ export async function updateEscape(
       price: z
         .string()
         .min(1, "Price is required.")
-        .transform((val) => parseInt(val.replace(/[^0-9]/g, ""), 10)), // Transform string to number, removing non-digits
+        .transform((val) => {
+          const numericValue = parseInt(val.replace(/[^0-9]/g, ""), 10);
+          return isNaN(numericValue) ? 0 : numericValue;
+        }), // Transform string to number, allowing 0 for "Contact for Price"
       link: z.string().url("Invalid URL format."),
       type: dealTypeEnum, // Add type validation
       nights: z
