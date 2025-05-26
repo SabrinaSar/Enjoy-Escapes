@@ -71,6 +71,14 @@ export default function NewsletterPopup() {
     localStorage.setItem('newsletter-popup-shown', now.toString());
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      closePopup();
+    } else {
+      setShowPopup(open);
+    }
+  };
+
   useEffect(() => {
     // Check if popup has been shown in the last 24 hours
     const lastShown = localStorage.getItem('newsletter-popup-shown');
@@ -97,8 +105,11 @@ export default function NewsletterPopup() {
   // Success state
   if (isSuccess) {
     return (
-      <Dialog open={showPopup} onOpenChange={setShowPopup}>
+      <Dialog open={showPopup} onOpenChange={handleOpenChange}>
         <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="sr-only">Newsletter Subscription Success</DialogTitle>
+          </DialogHeader>
           <div className="text-center p-6">
             <div className="flex justify-center mb-4">
               <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center">
@@ -119,8 +130,11 @@ export default function NewsletterPopup() {
   }
 
   return (
-    <Dialog open={showPopup} onOpenChange={setShowPopup}>
+    <Dialog open={showPopup} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
+        <DialogHeader className="sr-only">
+          <DialogTitle>Newsletter Subscription Giveaway</DialogTitle>
+        </DialogHeader>
         {/* Eye-catching header image */}
         <div className="relative h-48 w-full">
           <Image
