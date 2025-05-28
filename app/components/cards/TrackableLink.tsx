@@ -29,51 +29,45 @@ const TrackableLink: React.FC<TrackableLinkProps> = ({
   microDataItemType,
 }) => {
   const pathname = usePathname();
-  const isNavigatingRef = useRef(false);
+  const isTrackingRef = useRef(false);
 
   const handleClick = useCallback(
-    async (e: React.MouseEvent<HTMLAnchorElement>) => {
-      // Prevent multiple clicks
-      if (isNavigatingRef.current) {
-        e.preventDefault();
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      // Don't prevent default - let the browser handle navigation naturally
+      // This prevents popup blocking issues
+      
+      // Prevent duplicate tracking
+      if (isTrackingRef.current) {
         return;
       }
       
-      e.preventDefault(); // Prevent immediate navigation
-      isNavigatingRef.current = true;
+      isTrackingRef.current = true;
       
-      // Get browser data for better analytics
+      // Get browser data for analytics
       const source = pathname || "";
       const userAgent = navigator.userAgent;
       const referrer = document.referrer;
       
-      try {
-        // Track the click first - but don't wait too long
-        const trackingPromise = trackEscapeClick({
-          escape_id: itemId,
-          source,
-          user_agent: userAgent,
-          referrer,
-        });
-        
-        // Wait max 500ms for tracking, then navigate regardless
-        await Promise.race([
-          trackingPromise,
-          new Promise(resolve => setTimeout(resolve, 500))
-        ]);
-      } catch (error) {
+      // Track the click asynchronously without blocking navigation
+      // Use fire-and-forget approach
+      trackEscapeClick({
+        escape_id: itemId,
+        source,
+        user_agent: userAgent,
+        referrer,
+      }).catch(error => {
         console.error("Error tracking click:", error);
-      }
+      }).finally(() => {
+        // Reset tracking flag after a short delay
+        setTimeout(() => {
+          isTrackingRef.current = false;
+        }, 100);
+      });
       
-      // Navigate to the destination
-      window.open(href, "_blank", "noopener,noreferrer");
-      
-      // Reset the flag after a delay
-      setTimeout(() => {
-        isNavigatingRef.current = false;
-      }, 1000);
+      // Let the browser handle the navigation naturally
+      // No preventDefault, no manual window.open
     },
-    [itemId, href, pathname, itemType]
+    [itemId, pathname, itemType]
   );
 
   return (
@@ -87,9 +81,7 @@ const TrackableLink: React.FC<TrackableLinkProps> = ({
       itemScope={itemScope}
       itemType={microDataItemType}
       style={{ 
-        touchAction: 'manipulation',
-        WebkitUserSelect: 'none',
-        userSelect: 'none'
+        touchAction: 'manipulation'
       }}
     >
       {children}
