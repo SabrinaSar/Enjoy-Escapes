@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import NavbarSearchForm from "@/app/components/NavbarSearchForm";
 import { Suspense } from "react";
+import { staticAssets } from "@/lib/static-assets";
 
 export default function Navbar() {
   // Using cookies.get to retrieve the search query from headers is not reliable
@@ -14,7 +15,7 @@ export default function Navbar() {
         <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
           <Link href={"/"} className="flex items-center gap-2 font-semibold">
             <Image
-              src="/logo.png"
+              src={staticAssets.logo}
               alt="Enjoy Escapes Logo"
               width={40}
               height={40}

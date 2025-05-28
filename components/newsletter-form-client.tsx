@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Instagram, Mail, PlaneTakeoff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { staticAssets } from "@/lib/static-assets";
 
 export default function NewsletterFormClient() {
   const [email, setEmail] = useState("");
@@ -151,7 +152,7 @@ export default function NewsletterFormClient() {
         <div className="md:border-l md:border-border md:pl-8">
           <div className="flex items-center gap-3 mb-4">
             <Image
-              src="/logo.png"
+              src={staticAssets.logo}
               alt="Enjoy Escapes Logo"
               width={40}
               height={40}

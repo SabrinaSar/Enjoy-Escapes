@@ -4,6 +4,7 @@ import Link from "next/link";
 import { TrendingUp, Users, MessageSquareHeart, Mail, BarChart, BookMarked, Smartphone, Heart, Globe, Calendar, Baby, Plane } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { staticAssets } from "@/lib/static-assets";
 
 export const metadata: Metadata = {
   title: "Work With Us | Enjoy Escapes",
@@ -195,7 +196,7 @@ export default function WorkWithUsPage() {
                   <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden">
                     {/* Website Feature Image */}
                     <Image 
-                      src="/website-features.png" 
+                      src={staticAssets.websiteFeatures} 
                       alt="Website Features" 
                       width={300} 
                       height={500} 
@@ -220,23 +221,23 @@ export default function WorkWithUsPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center">
             {/* Brand Logo Placeholders */}
             {[
-              { filename: "gov.uk", displayName: "Gov.uk" },
-              { filename: "tui", displayName: "TUI" },
-              { filename: "loveholidays", displayName: "loveholidays" },
-              { filename: "onthebeach", displayName: "On the Beach" },
-              { filename: "barbados", displayName: "Barbados Tourism" },
-              { filename: "visit-portugal", displayName: "Visit Portugal" },
-              { filename: "birmingham-airport", displayName: "Birmingham Airport" },
-              { filename: "kayak", displayName: "Kayak" },
-              { filename: "bandos-maldives", displayName: "Bandos Maldives" },
-              { filename: "trip.com", displayName: "Trip.com" },
-              { filename: "samsung", displayName: "Samsung" },
-              { filename: "norse", displayName: "Norse Atlantic" }
+              { key: "govuk", displayName: "Gov.uk", asset: staticAssets.brands.govuk },
+              { key: "tui", displayName: "TUI", asset: staticAssets.brands.tui },
+              { key: "loveholidays", displayName: "loveholidays", asset: staticAssets.brands.loveholidays },
+              { key: "onthebeach", displayName: "On the Beach", asset: staticAssets.brands.onthebeach },
+              { key: "barbados", displayName: "Barbados Tourism", asset: staticAssets.brands.barbados },
+              { key: "visitPortugal", displayName: "Visit Portugal", asset: staticAssets.brands.visitPortugal },
+              { key: "birminghamAirport", displayName: "Birmingham Airport", asset: staticAssets.brands.birminghamAirport },
+              { key: "kayak", displayName: "Kayak", asset: staticAssets.brands.kayak },
+              { key: "bandosMaldives", displayName: "Bandos Maldives", asset: staticAssets.brands.bandosMaldives },
+              { key: "tripcom", displayName: "Trip.com", asset: staticAssets.brands.tripcom },
+              { key: "samsung", displayName: "Samsung", asset: staticAssets.brands.samsung },
+              { key: "norse", displayName: "Norse Atlantic", asset: staticAssets.brands.norse }
             ].map((brand, index) => (
-              <div key={index} className="bg-card rounded-xl p-4 shadow-sm border border-border hover:shadow-md hover:scale-105 transition-all duration-300">
+              <div key={brand.key} className="bg-card rounded-xl p-4 shadow-sm border border-border hover:shadow-md hover:scale-105 transition-all duration-300">
                 <div className="h-32 flex items-center justify-center">
                   <Image 
-                    src={`/images/${brand.filename}.png`} 
+                    src={brand.asset} 
                     alt={brand.displayName} 
                     width={180} 
                     height={120} 
