@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import Script from "next/script";
 import Footer from "@/components/footer";
 import NewsletterPopup from "@/components/newsletter-popup";
+import { Analytics } from "@vercel/analytics/next"
 
 const defaultUrl = "https://enjoyescapes.com";
 
@@ -21,6 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <Analytics />
       <body className="bg-background text-foreground">
         <ThemeProvider
           attribute="class"
