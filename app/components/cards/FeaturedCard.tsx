@@ -72,14 +72,14 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ escape }) => {
         <meta itemProp="price" content={escape.price.toString()} />
       )}
 
-      <Card className="overflow-hidden border border-blue-300/50 dark:border-blue-500/40 hover:shadow-md dark:hover:shadow-black/30 transition-all duration-300 p-0 group-hover:shadow-lg dark:group-hover:shadow-black/40 flex flex-col h-full group-hover:translate-y-[-8px] group-hover:scale-[1.02] group-hover:border-blue-400/70 dark:group-hover:border-blue-500/60">
+      <Card className="overflow-hidden border border-blue-300/50 dark:border-blue-500/40 hover:shadow-md dark:hover:shadow-black/30 transition-all duration-300 p-0 group-hover:shadow-lg dark:group-hover:shadow-black/40 flex flex-col h-full group-hover:translate-y-[-8px] group-hover:scale-[1.02] group-hover:border-blue-400/70 dark:group-hover:border-blue-500/60 transform-gpu will-change-transform origin-center backface-hidden">
         {/* Image section */}
         <div className="relative h-40 md:h-48 w-full overflow-hidden">
           <Image
             src={escape.image!}
             alt={dealTitle}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.05] transform-gpu will-change-transform origin-center backface-hidden"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority={false}
           />

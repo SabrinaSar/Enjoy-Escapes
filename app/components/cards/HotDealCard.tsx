@@ -72,14 +72,14 @@ const HotDealCard: React.FC<HotDealCardProps> = ({ escape }) => {
         <meta itemProp="price" content={escape.price.toString()} />
       )}
 
-      <Card className="overflow-hidden border border-accent/40 dark:border-accent/50 shadow-lg shadow-accent/30 dark:shadow-accent/20 hover:shadow-md dark:hover:shadow-black/30 transition-all duration-300 p-0 group-hover:shadow-xl dark:group-hover:shadow-black/40 flex flex-col h-full group-hover:translate-y-[-10px] group-hover:scale-[1.03] group-hover:border-accent/70 dark:group-hover:border-accent/80">
+      <Card className="overflow-hidden border border-accent/40 dark:border-accent/50 shadow-lg shadow-accent/30 dark:shadow-accent/20 hover:shadow-md dark:hover:shadow-black/30 transition-all duration-300 p-0 group-hover:shadow-xl dark:group-hover:shadow-black/40 flex flex-col h-full group-hover:translate-y-[-10px] group-hover:scale-[1.03] group-hover:border-accent/70 dark:group-hover:border-accent/80 transform-gpu will-change-transform origin-center backface-hidden">
         {/* Image section */}
         <div className="relative h-40 md:h-48 w-full overflow-hidden">
           <Image
             src={escape.image!}
             alt={dealTitle}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.07]"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.07] transform-gpu will-change-transform origin-center backface-hidden"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority={false}
           />
@@ -98,7 +98,7 @@ const HotDealCard: React.FC<HotDealCardProps> = ({ escape }) => {
           </div>
 
           {/* Hot deal indicator on the top-right corner */}
-          <div className="absolute top-2 right-2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+          <div className="absolute top-2 right-2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 transform-gpu will-change-transform origin-center backface-hidden">
             <Flame className="h-5 w-5" />
           </div>
         </div>

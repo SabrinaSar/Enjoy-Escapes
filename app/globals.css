@@ -126,6 +126,13 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+    
+    /* High refresh rate animation optimizations */
+    --transition-timing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-timing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-duration-fast: 150ms;
+    --transition-duration-normal: 300ms;
+    --transition-duration-slow: 500ms;
   }
 
   .dark {
@@ -176,5 +183,81 @@
   .no-scrollbar {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
+  }
+
+  /* High refresh rate optimizations */
+  .transform-gpu {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  .will-change-transform {
+    will-change: transform;
+  }
+  
+  .backface-hidden {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  
+  .origin-center {
+    transform-origin: center;
+    -webkit-transform-origin: center;
+  }
+  
+  /* Force GPU compositing for smooth animations at high refresh rates */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    perspective: 1000px;
+    -webkit-perspective: 1000px;
+  }
+  
+  /* Optimize for high refresh rate displays */
+  @media (min-resolution: 120dpi) {
+    .high-refresh-optimized {
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+    }
+  }
+  
+  /* Smooth animation utilities for high refresh rates */
+  .smooth-transform {
+    transition: transform var(--transition-duration-normal) var(--transition-timing-smooth);
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  
+  .smooth-scale {
+    transition: transform var(--transition-duration-slow) var(--transition-timing-smooth);
+    transform-origin: center;
+    -webkit-transform-origin: center;
+  }
+  
+  /* Respect user motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .smooth-transform,
+    .smooth-scale,
+    .gpu-accelerated {
+      transition: none !important;
+      animation: none !important;
+      transform: none !important;
+    }
+  }
+  
+  /* Force hardware acceleration for specific elements */
+  .force-gpu-layer {
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    will-change: transform, opacity;
+    isolation: isolate;
   }
 }
