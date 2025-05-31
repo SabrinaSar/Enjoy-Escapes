@@ -225,21 +225,28 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     }
   };
 
-  // Add this helper function to convert between timezones properly
+  // Fixed function to properly handle local timezone for input display
   const formatDateForInput = (isoString: string | null | undefined) => {
     if (!isoString) return '';
-    // This ensures the date is interpreted in the local timezone
-    const date = new Date(isoString);
+    
+    // Parse the ISO string as UTC
+    const utcDate = new Date(isoString);
+    
+    // Get timezone offset in minutes
+    const timezoneOffset = utcDate.getTimezoneOffset();
+    
+    // Adjust for local timezone
+    const localDate = new Date(utcDate.getTime() - (timezoneOffset * 60000));
+    
     // Format as YYYY-MM-DDThh:mm (required format for datetime-local input)
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}T${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+    return localDate.toISOString().slice(0, 16);
   };
   
-  // Add this function to convert from local time to UTC when saving
+  // Fixed function to properly convert local time to UTC for storage
   const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const localDateTimeValue = e.target.value;
     
     if (!localDateTimeValue) {
-      // If the input is cleared, set scheduled_for to empty string
       setFormData((prev) => ({
         ...prev,
         scheduled_for: "",
@@ -248,13 +255,17 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     }
     
     // Create a date object from the local datetime input
-    // This will be interpreted as local time
-    const localDate = new Date(localDateTimeValue);
+    // This needs to be treated as local time, not UTC
+    const [datePart, timePart] = localDateTimeValue.split('T');
+    const [year, month, day] = datePart.split('-').map(Number);
+    const [hours, minutes] = timePart.split(':').map(Number);
     
-    // Convert to ISO string (which is in UTC)
+    // Create date in local timezone
+    const localDate = new Date(year, month - 1, day, hours, minutes);
+    
+    // Convert to ISO string (UTC) for storage
     const isoString = localDate.toISOString();
     
-    // Update the form data with the ISO string
     setFormData((prev) => ({
       ...prev,
       scheduled_for: isoString,
