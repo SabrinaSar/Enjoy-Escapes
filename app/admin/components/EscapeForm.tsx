@@ -71,6 +71,7 @@ const BOARD_BASIS_LABELS = {
 export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
   const router = useRouter();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const isMountedRef = React.useRef(true);
 
   // Add refs for form fields
   const titleRef = React.useRef<HTMLInputElement>(null);
@@ -83,37 +84,43 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
   const MAX_FILE_SIZE_MB = 4;
   const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-  // Create form state to persist values between renders
+  // Create form state to persist values between renders with safe defaults
   const [formData, setFormData] = React.useState({
-    title: initialData?.title || "",
-    price: initialData?.price || "",
-    price_unit: initialData?.price_unit || "pp",
-    deposit_price: initialData?.deposit_price || "",
-    deposit_price_unit: initialData?.deposit_price_unit || "pp",
-    link: initialData?.link || "",
-    type: (initialData?.type as "hotel" | "flight" | "hotel+flight" | "other") || "hotel",
-    nights: initialData?.nights || "",
-    board_basis: initialData?.board_basis || "",
-    star_rating: initialData?.star_rating || "",
-    school_holidays: initialData?.school_holidays || false,
-    long_haul: initialData?.long_haul || false,
-    featured: initialData?.featured || false,
-    hot_deal: initialData?.hot_deal || false,
-    last_minute: initialData?.last_minute || false,
-    scheduled_for: initialData?.scheduled_for || "",
+    title: initialData?.title ?? "",
+    price: initialData?.price?.toString() ?? "",
+    price_unit: initialData?.price_unit ?? "pp",
+    deposit_price: initialData?.deposit_price?.toString() ?? "",
+    deposit_price_unit: initialData?.deposit_price_unit ?? "pp",
+    link: initialData?.link ?? "",
+    type: (initialData?.type as "hotel" | "flight" | "hotel+flight" | "other") ?? "hotel",
+    nights: initialData?.nights?.toString() ?? "",
+    board_basis: initialData?.board_basis ?? "",
+    star_rating: initialData?.star_rating?.toString() ?? "",
+    school_holidays: initialData?.school_holidays ?? false,
+    long_haul: initialData?.long_haul ?? false,
+    featured: initialData?.featured ?? false,
+    hot_deal: initialData?.hot_deal ?? false,
+    last_minute: initialData?.last_minute ?? false,
+    scheduled_for: initialData?.scheduled_for ?? "",
   });
 
-  // Handle input changes to update state
+  // Handle input changes to update state with error handling
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    try {
+      const { name, value } = e.target;
+      if (!name || !isMountedRef.current) return; // Guard against missing name attribute and unmounted component
+      
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    } catch (error) {
+      console.error("Error handling input change:", error);
+    }
   };
 
   const initialState: FormState = {
@@ -128,148 +135,252 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     initialData?.type ?? "hotel"
   );
 
-  // Filter board_basis options based on selectedType
+  // Filter board_basis options based on selectedType with error handling
   const getFilteredBoardBasisOptions = () => {
-    if (selectedType === "flight") {
-      return ["flight_only"];
+    try {
+      if (selectedType === "flight") {
+        return ["flight_only"];
+      }
+      if (selectedType === "hotel") {
+        return Object.keys(BOARD_BASIS_LABELS).filter((k) => k !== "flight_only");
+      }
+      if (selectedType === "hotel+flight") {
+        return Object.keys(BOARD_BASIS_LABELS).filter(
+          (k) => k !== "flight_only" && k !== "room_only"
+        );
+      }
+      if (selectedType === "other") {
+        return []; // No board basis options for "other" type
+      }
+      return Object.keys(BOARD_BASIS_LABELS);
+    } catch (error) {
+      console.error("Error filtering board basis options:", error);
+      return Object.keys(BOARD_BASIS_LABELS); // Fallback to all options
     }
-    if (selectedType === "hotel") {
-      return Object.keys(BOARD_BASIS_LABELS).filter((k) => k !== "flight_only");
-    }
-    if (selectedType === "hotel+flight") {
-      return Object.keys(BOARD_BASIS_LABELS).filter(
-        (k) => k !== "flight_only" && k !== "room_only"
-      );
-    }
-    if (selectedType === "other") {
-      return []; // No board basis options for "other" type
-    }
-    return Object.keys(BOARD_BASIS_LABELS);
   };
 
   useEffect(() => {
-    if (state.message) {
-      if (state.success) {
-        toast.success(state.message);
-        router.push("/admin");
-        router.refresh();
-      } else {
-        let errorMessage = state.message;
-        if (state.errors && Object.keys(state.errors).length > 0) {
-          errorMessage +=
-            "\n" +
-            Object.entries(state.errors)
-              .map(([field, errors]) => `${field}: ${errors.join(", ")}`)
-              .join("\n");
+    try {
+      if (state?.message && isMountedRef.current) {
+        if (state.success) {
+          toast.success(state.message);
+          router.push("/admin");
+          router.refresh();
+        } else {
+          let errorMessage = state.message;
+          if (state.errors && Object.keys(state.errors).length > 0) {
+            errorMessage +=
+              "\n" +
+              Object.entries(state.errors)
+                .map(([field, errors]) => `${field}: ${Array.isArray(errors) ? errors.join(", ") : errors}`)
+                .join("\n");
+          }
+          toast.error(errorMessage || "An error occurred.");
+          if (state.errors?.image_file && fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
         }
-        toast.error(errorMessage || "An error occurred.");
-        if (state.errors?.image_file && fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
+      }
+    } catch (error) {
+      console.error("Error in useEffect for state handling:", error);
+      if (isMountedRef.current) {
+        toast.error("An unexpected error occurred while processing the form response.");
       }
     }
   }, [state, router]);
 
-  // Synchronize type selection with formData
+  // Cleanup effect to track component unmount
   useEffect(() => {
-    setFormData((prev) => ({
-      ...prev,
-      type: selectedType as "hotel" | "flight" | "hotel+flight" | "other",
-      // Clear board_basis when switching to "other" type
-      board_basis: selectedType === "other" ? "" : prev.board_basis,
-    }));
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  // Synchronize type selection with formData with error handling
+  useEffect(() => {
+    try {
+      if (isMountedRef.current) {
+        setFormData((prev) => ({
+          ...prev,
+          type: selectedType as "hotel" | "flight" | "hotel+flight" | "other",
+          // Clear board_basis when switching to "other" type
+          board_basis: selectedType === "other" ? "" : prev.board_basis,
+        }));
+      }
+    } catch (error) {
+      console.error("Error synchronizing type selection:", error);
+    }
   }, [selectedType]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    try {
+      const file = event.target.files?.[0];
+      if (!file) return;
 
-    // Check file size
-    if (file.size > MAX_FILE_SIZE_BYTES) {
-      toast.error(`File size exceeds the limit of ${MAX_FILE_SIZE_MB} MB.`);
+      // Check file size
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        toast.error(`File size exceeds the limit of ${MAX_FILE_SIZE_MB} MB.`);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
+
+      // Check if file has a valid name
+      if (!file.name || file.name.trim() === "") {
+        toast.error("File must have a valid name.");
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
+
+      // Check for HEIC files (by file extension and MIME type)
+      const fileName = file.name.toLowerCase();
+      const isHeicByExtension = fileName.endsWith('.heic') || fileName.endsWith('.heif');
+      const isHeicByMimeType = file.type === 'image/heic' || file.type === 'image/heif';
+      
+      if (isHeicByExtension || isHeicByMimeType) {
+        toast.error("HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format.");
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
+
+      // Verify it's a valid image file
+      if (!file.type.startsWith("image/")) {
+        toast.error("File must be a valid image.");
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
+    } catch (error) {
+      console.error("Error handling file change:", error);
+      toast.error("An error occurred while processing the file.");
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-      return;
-    }
-
-    // Check if file has a valid name
-    if (!file.name || file.name.trim() === "") {
-      toast.error("File must have a valid name.");
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-      return;
-    }
-
-    // Check for HEIC files (by file extension and MIME type)
-    const fileName = file.name.toLowerCase();
-    const isHeicByExtension = fileName.endsWith('.heic') || fileName.endsWith('.heif');
-    const isHeicByMimeType = file.type === 'image/heic' || file.type === 'image/heif';
-    
-    if (isHeicByExtension || isHeicByMimeType) {
-      toast.error("HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format.");
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-      return;
-    }
-
-    // Verify it's a valid image file
-    if (!file.type.startsWith("image/")) {
-      toast.error("File must be a valid image.");
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-      return;
     }
   };
 
   // Fixed function to properly handle local timezone for input display
   const formatDateForInput = (isoString: string | null | undefined) => {
-    if (!isoString) return '';
-    
-    // Parse the ISO string as UTC
-    const utcDate = new Date(isoString);
-    
-    // Get timezone offset in minutes
-    const timezoneOffset = utcDate.getTimezoneOffset();
-    
-    // Adjust for local timezone
-    const localDate = new Date(utcDate.getTime() - (timezoneOffset * 60000));
-    
-    // Format as YYYY-MM-DDThh:mm (required format for datetime-local input)
-    return localDate.toISOString().slice(0, 16);
+    try {
+      if (!isoString) return '';
+      
+      // Parse the ISO string as UTC
+      const utcDate = new Date(isoString);
+      
+      // Check if date is valid
+      if (isNaN(utcDate.getTime())) {
+        console.warn("Invalid date string provided:", isoString);
+        return '';
+      }
+      
+      // Get timezone offset in minutes
+      const timezoneOffset = utcDate.getTimezoneOffset();
+      
+      // Adjust for local timezone
+      const localDate = new Date(utcDate.getTime() - (timezoneOffset * 60000));
+      
+      // Format as YYYY-MM-DDThh:mm (required format for datetime-local input)
+      return localDate.toISOString().slice(0, 16);
+    } catch (error) {
+      console.error("Error formatting date for input:", error);
+      return '';
+    }
   };
   
   // Fixed function to properly convert local time to UTC for storage
   const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const localDateTimeValue = e.target.value;
-    
-    if (!localDateTimeValue) {
+    try {
+      if (!isMountedRef.current) return;
+      
+      const localDateTimeValue = e.target.value;
+      
+      if (!localDateTimeValue) {
+        setFormData((prev) => ({
+          ...prev,
+          scheduled_for: "",
+        }));
+        return;
+      }
+      
+      // Create a date object from the local datetime input
+      // This needs to be treated as local time, not UTC
+      const [datePart, timePart] = localDateTimeValue.split('T');
+      
+      if (!datePart || !timePart) {
+        console.warn("Invalid datetime format:", localDateTimeValue);
+        return;
+      }
+      
+      const [year, month, day] = datePart.split('-').map(Number);
+      const [hours, minutes] = timePart.split(':').map(Number);
+      
+      // Validate date components
+      if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(hours) || isNaN(minutes)) {
+        console.warn("Invalid date components:", { year, month, day, hours, minutes });
+        return;
+      }
+      
+      // Create date in local timezone
+      const localDate = new Date(year, month - 1, day, hours, minutes);
+      
+      // Check if date is valid
+      if (isNaN(localDate.getTime())) {
+        console.warn("Invalid date created:", localDate);
+        return;
+      }
+      
+      // Convert to ISO string (UTC) for storage
+      const isoString = localDate.toISOString();
+      
       setFormData((prev) => ({
         ...prev,
-        scheduled_for: "",
+        scheduled_for: isoString,
       }));
-      return;
+    } catch (error) {
+      console.error("Error handling datetime change:", error);
+      toast.error("Invalid date/time format.");
     }
-    
-    // Create a date object from the local datetime input
-    // This needs to be treated as local time, not UTC
-    const [datePart, timePart] = localDateTimeValue.split('T');
-    const [year, month, day] = datePart.split('-').map(Number);
-    const [hours, minutes] = timePart.split(':').map(Number);
-    
-    // Create date in local timezone
-    const localDate = new Date(year, month - 1, day, hours, minutes);
-    
-    // Convert to ISO string (UTC) for storage
-    const isoString = localDate.toISOString();
-    
-    setFormData((prev) => ({
-      ...prev,
-      scheduled_for: isoString,
-    }));
+  };
+
+  // Safe checkbox change handler
+  const handleCheckboxChange = (fieldName: string) => {
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
+      try {
+        if (!isMountedRef.current) return;
+        setFormData((prev) => ({
+          ...prev,
+          [fieldName]: e.target.checked,
+        }));
+      } catch (error) {
+        console.error(`Error handling checkbox change for ${fieldName}:`, error);
+      }
+    };
+  };
+
+  // Safe select change handler
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    try {
+      const { name, value } = e.target;
+      if (name === "type") {
+        setSelectedType(value);
+      }
+      handleInputChange(e);
+    } catch (error) {
+      console.error("Error handling select change:", error);
+    }
+  };
+
+  // Helper function to safely display error messages
+  const formatErrorMessage = (errors: string[] | string | undefined) => {
+    if (!errors) return "";
+    if (Array.isArray(errors)) return errors.join(", ");
+    return errors.toString();
   };
 
   return (
@@ -307,7 +418,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 id="title-error"
                 className="text-sm font-medium text-destructive"
               >
-                {state.errors.title.join(", ")}
+                {formatErrorMessage(state.errors.title)}
               </p>
             )}
           </div>
@@ -322,10 +433,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 aria-invalid={!!state.errors?.type}
                 aria-describedby="type-error"
                 className="w-full appearance-none rounded-md border border-input bg-background py-2 pl-3 pr-8 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                onChange={(e) => {
-                  setSelectedType(e.target.value);
-                  handleInputChange(e);
-                }}
+                onChange={handleSelectChange}
               >
                 <option value="hotel">Hotel</option>
                 <option value="flight">Flight</option>
@@ -339,7 +447,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 id="type-error"
                 className="text-sm font-medium text-destructive"
               >
-                {state.errors.type.join(", ")}
+                {formatErrorMessage(state.errors.type)}
               </p>
             )}
           </div>
@@ -362,7 +470,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 id="link-error"
                 className="text-sm font-medium text-destructive"
               >
-                {state.errors.link.join(", ")}
+                {formatErrorMessage(state.errors.link)}
               </p>
             )}
           </div>
@@ -401,7 +509,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 id="image-file-error"
                 className="text-sm font-medium text-destructive"
               >
-                {state.errors.image_file.join(", ")}
+                {formatErrorMessage(state.errors.image_file)}
               </p>
             )}
           </div>
@@ -425,10 +533,15 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                       : formData.price
                   }
                   onChange={(e) => {
-                    setFormData((prev) => ({
-                      ...prev,
-                      price: e.target.value,
-                    }));
+                    try {
+                      if (!isMountedRef.current) return;
+                      setFormData((prev) => ({
+                        ...prev,
+                        price: e.target.value,
+                      }));
+                    } catch (error) {
+                      console.error("Error updating price:", error);
+                    }
                   }}
                   className="pl-7"
                   aria-invalid={!!state.errors?.price}
@@ -440,7 +553,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   id="price-error"
                   className="text-sm font-medium text-destructive"
                 >
-                  {state.errors.price.join(", ")}
+                  {formatErrorMessage(state.errors.price)}
                 </p>
               )}
             </div>
@@ -465,7 +578,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   id="price-unit-error"
                   className="text-sm font-medium text-destructive"
                 >
-                  {state.errors.price_unit.join(", ")}
+                  {formatErrorMessage(state.errors.price_unit)}
                 </p>
               )}
             </div>
@@ -495,7 +608,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   id="deposit-price-error"
                   className="text-sm font-medium text-destructive"
                 >
-                  {state.errors.deposit_price.join(", ")}
+                  {formatErrorMessage(state.errors.deposit_price)}
                 </p>
               )}
             </div>
@@ -520,7 +633,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   id="deposit-price-unit-error"
                   className="text-sm font-medium text-destructive"
                 >
-                  {state.errors.deposit_price_unit.join(", ")}
+                  {formatErrorMessage(state.errors.deposit_price_unit)}
                 </p>
               )}
             </div>
@@ -546,7 +659,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   id="nights-error"
                   className="text-sm font-medium text-destructive"
                 >
-                  {state.errors.nights.join(", ")}
+                  {formatErrorMessage(state.errors.nights)}
                 </p>
               )}
             </div>
@@ -571,7 +684,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   id="star-rating-error"
                   className="text-sm font-medium text-destructive"
                 >
-                  {state.errors.star_rating.join(", ")}
+                  {formatErrorMessage(state.errors.star_rating)}
                 </p>
               )}
             </div>
@@ -591,7 +704,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   <option value="">Select Board Basis</option>
                   {getFilteredBoardBasisOptions().map((key) => (
                     <option key={key} value={key}>
-                      {BOARD_BASIS_LABELS[key as keyof typeof BOARD_BASIS_LABELS]}
+                      {BOARD_BASIS_LABELS[key as keyof typeof BOARD_BASIS_LABELS] || key}
                     </option>
                   ))}
                 </select>
@@ -600,7 +713,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                     id="board-basis-error"
                     className="text-sm font-medium text-destructive"
                   >
-                    {state.errors.board_basis.join(", ")}
+                    {formatErrorMessage(state.errors.board_basis)}
                   </p>
                 )}
               </div>
@@ -616,12 +729,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   name="school_holidays"
                   className="h-4 w-4 rounded border-gray-300"
                   checked={formData.school_holidays}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      school_holidays: e.target.checked,
-                    }))
-                  }
+                  onChange={handleCheckboxChange("school_holidays")}
                   value="true"
                 />
                 <Label htmlFor="school_holidays">School Holidays</Label>
@@ -639,12 +747,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   name="long_haul"
                   className="h-4 w-4 rounded border-gray-300"
                   checked={formData.long_haul}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      long_haul: e.target.checked,
-                    }))
-                  }
+                  onChange={handleCheckboxChange("long_haul")}
                   value="true"
                 />
                 <Label htmlFor="long_haul">Long Haul</Label>
@@ -662,12 +765,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   name="featured"
                   className="h-4 w-4 rounded border-gray-300"
                   checked={formData.featured}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      featured: e.target.checked,
-                    }))
-                  }
+                  onChange={handleCheckboxChange("featured")}
                   value="true"
                 />
                 <Label htmlFor="featured">Featured</Label>
@@ -685,12 +783,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   name="hot_deal"
                   className="h-4 w-4 rounded border-gray-300"
                   checked={formData.hot_deal}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      hot_deal: e.target.checked,
-                    }))
-                  }
+                  onChange={handleCheckboxChange("hot_deal")}
                   value="true"
                 />
                 <Label htmlFor="hot_deal">Hot Deal</Label>
@@ -708,12 +801,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   name="last_minute"
                   className="h-4 w-4 rounded border-gray-300"
                   checked={formData.last_minute}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      last_minute: e.target.checked,
-                    }))
-                  }
+                  onChange={handleCheckboxChange("last_minute")}
                   value="true"
                 />
                 <Label htmlFor="last_minute">Last Minute</Label>
@@ -747,7 +835,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 id="scheduled-for-error"
                 className="text-sm font-medium text-destructive"
               >
-                {state.errors.scheduled_for.join(", ")}
+                {formatErrorMessage(state.errors.scheduled_for)}
               </p>
             )}
           </div>
