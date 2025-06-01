@@ -15,6 +15,13 @@ import { useEffect } from "react";
 import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import { CalendarIcon } from "lucide-react";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+// Configure Day.js plugins
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 type EscapeData = Database["public"]["Tables"]["escapes_data"]["Row"];
 
@@ -283,6 +290,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     { value: "Europe/London", label: "London (GMT/BST)" },
     { value: "Europe/Paris", label: "Paris (CET/CEST)" },
     { value: "Europe/Berlin", label: "Berlin (CET/CEST)" },
+    { value: "Europe/Madrid", label: "Madrid (CET/CEST)" },
     { value: "America/New_York", label: "New York (EST/EDT)" },
     { value: "America/Los_Angeles", label: "Los Angeles (PST/PDT)" },
     { value: "Asia/Tokyo", label: "Tokyo (JST)" },
@@ -290,39 +298,21 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     { value: "UTC", label: "UTC" },
   ];
 
-  // Fixed function to properly handle local timezone for input display
+  // Convert UTC date to selected timezone for display in input
   const formatDateForInput = (isoString: string | null | undefined) => {
     try {
       if (!isoString) return '';
       
-      // Parse the ISO string as UTC
-      const utcDate = new Date(isoString);
+      // Parse UTC date and convert to selected timezone
+      const dateInTimezone = dayjs.utc(isoString).tz(selectedTimezone);
       
-      // Check if date is valid
-      if (isNaN(utcDate.getTime())) {
+      if (!dateInTimezone.isValid()) {
         console.warn("Invalid date string provided:", isoString);
         return '';
       }
       
-      // Convert UTC to the selected timezone for display
-      const formatter = new Intl.DateTimeFormat('en-CA', {
-        timeZone: selectedTimezone,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      });
-      
-      const parts = formatter.formatToParts(utcDate);
-      const year = parts.find(p => p.type === 'year')?.value;
-      const month = parts.find(p => p.type === 'month')?.value;
-      const day = parts.find(p => p.type === 'day')?.value;
-      const hour = parts.find(p => p.type === 'hour')?.value;
-      const minute = parts.find(p => p.type === 'minute')?.value;
-      
-      return `${year}-${month}-${day}T${hour}:${minute}`;
+      // Format for datetime-local input (YYYY-MM-DDTHH:mm)
+      return dateInTimezone.format('YYYY-MM-DDTHH:mm');
     } catch (error) {
       console.error("Error formatting date for input:", error);
       return '';
@@ -334,7 +324,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     try {
       if (!isMountedRef.current) return;
       
-      const localDateTimeValue = e.target.value; // e.g., "2025-06-15T18:25"
+      const localDateTimeValue = e.target.value; // e.g., "2025-06-07T00:42"
       
       if (!localDateTimeValue) {
         setFormData((prev) => ({
@@ -344,30 +334,23 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
         return;
       }
       
-      // Simple approach: treat the input as being in the selected timezone
-      // and convert it to UTC by constructing an ISO string with timezone info
+      console.log('Input datetime:', localDateTimeValue);
+      console.log('Selected timezone:', selectedTimezone);
       
-      // Get the current timezone offset for the selected timezone
-      const tempDate = new Date();
-      const offset = getTimezoneOffset(selectedTimezone, tempDate);
+      // Use Day.js to parse the input as being in the selected timezone
+      // Then convert to UTC
+      const dateInTimezone = dayjs.tz(localDateTimeValue, selectedTimezone);
       
-      // Convert offset to hours and minutes
-      const offsetHours = Math.floor(Math.abs(offset) / 60);
-      const offsetMinutes = Math.abs(offset) % 60;
-      const offsetSign = offset >= 0 ? '+' : '-';
-      const offsetString = `${offsetSign}${String(offsetHours).padStart(2, '0')}:${String(offsetMinutes).padStart(2, '0')}`;
-      
-      // Create ISO string with timezone offset
-      const isoWithTimezone = `${localDateTimeValue}:00${offsetString}`;
-      
-      // Parse this into a Date object (automatically converts to UTC)
-      const utcDate = new Date(isoWithTimezone);
-      
-      if (isNaN(utcDate.getTime())) {
-        throw new Error("Invalid date");
+      if (!dateInTimezone.isValid()) {
+        throw new Error("Invalid date/time");
       }
       
+      // Convert to UTC and get ISO string
+      const utcDate = dateInTimezone.utc();
       const isoString = utcDate.toISOString();
+      
+      console.log('Date in timezone:', dateInTimezone.format());
+      console.log('Final UTC ISO:', isoString);
       
       setFormData((prev) => ({
         ...prev,
@@ -377,13 +360,6 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
       console.error("Error handling datetime change:", error);
       toast.error("Invalid date/time format.");
     }
-  };
-
-  // Simple helper to get timezone offset for a given timezone
-  const getTimezoneOffset = (timeZone: string, date: Date): number => {
-    const utc1 = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
-    const utc2 = new Date(date.toLocaleString('en-US', { timeZone }));
-    return (utc2.getTime() - utc1.getTime()) / (1000 * 60);
   };
 
   // Handle timezone change
