@@ -225,10 +225,17 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
 
   // Effect to update the client-side formatted input value when formData.scheduled_for or timezone changes
   useEffect(() => {
+    console.log('\n⚡ useEffect: Updating input value due to data/timezone change');
+    console.log('  📅 scheduled_for:', formData.scheduled_for);
+    console.log('  🌍 selectedTimezone:', selectedTimezone);
+    
     if (formData.scheduled_for) {
-      setScheduledForInputValue(formatDateForInput(formData.scheduled_for));
+      const inputValue = formatDateForInput(formData.scheduled_for);
+      setScheduledForInputValue(inputValue);
+      console.log('  ✅ Set input value:', inputValue);
     } else {
       setScheduledForInputValue("");
+      console.log('  ✅ Cleared input value');
     }
   }, [formData.scheduled_for, selectedTimezone]);
 
@@ -301,20 +308,32 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
   // Convert UTC date to selected timezone for display in input
   const formatDateForInput = (isoString: string | null | undefined) => {
     try {
-      if (!isoString) return '';
+      if (!isoString) {
+        console.log('📅 formatDateForInput: No date provided');
+        return '';
+      }
+      
+      console.log('📅 formatDateForInput: Converting UTC to display format');
+      console.log('  📍 Input UTC ISO:', isoString);
+      console.log('  🌍 Selected timezone:', selectedTimezone);
       
       // Parse UTC date and convert to selected timezone
       const dateInTimezone = dayjs.utc(isoString).tz(selectedTimezone);
       
       if (!dateInTimezone.isValid()) {
-        console.warn("Invalid date string provided:", isoString);
+        console.warn("❌ formatDateForInput: Invalid date string provided:", isoString);
         return '';
       }
       
       // Format for datetime-local input (YYYY-MM-DDTHH:mm)
-      return dateInTimezone.format('YYYY-MM-DDTHH:mm');
+      const formattedDate = dateInTimezone.format('YYYY-MM-DDTHH:mm');
+      
+      console.log('  ✅ Formatted for input:', formattedDate);
+      console.log('  📊 Timezone offset:', dateInTimezone.format('Z'));
+      
+      return formattedDate;
     } catch (error) {
-      console.error("Error formatting date for input:", error);
+      console.error("❌ formatDateForInput: Error formatting date for input:", error);
       return '';
     }
   };
@@ -327,6 +346,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
       const localDateTimeValue = e.target.value; // e.g., "2025-06-07T00:42"
       
       if (!localDateTimeValue) {
+        console.log('🕒 handleDateTimeChange: Clearing datetime');
         setFormData((prev) => ({
           ...prev,
           scheduled_for: "",
@@ -334,30 +354,40 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
         return;
       }
       
-      console.log('Input datetime:', localDateTimeValue);
-      console.log('Selected timezone:', selectedTimezone);
+      console.log('\n🕒 handleDateTimeChange: Converting input to UTC');
+      console.log('  📝 Input datetime:', localDateTimeValue);
+      console.log('  🌍 Selected timezone:', selectedTimezone);
       
       // Use Day.js to parse the input as being in the selected timezone
       // Then convert to UTC
       const dateInTimezone = dayjs.tz(localDateTimeValue, selectedTimezone);
       
       if (!dateInTimezone.isValid()) {
+        console.error('  ❌ Invalid date/time created');
         throw new Error("Invalid date/time");
       }
+      
+      console.log('  🎯 Parsed in timezone:', dateInTimezone.format('YYYY-MM-DD HH:mm:ss Z'));
+      console.log('  📊 Timezone offset:', dateInTimezone.format('Z'));
+      console.log('  🏷️  Timezone name:', dateInTimezone.format('z'));
       
       // Convert to UTC and get ISO string
       const utcDate = dateInTimezone.utc();
       const isoString = utcDate.toISOString();
       
-      console.log('Date in timezone:', dateInTimezone.format());
-      console.log('Final UTC ISO:', isoString);
+      console.log('  🌐 Converted to UTC:', utcDate.format('YYYY-MM-DD HH:mm:ss [UTC]'));
+      console.log('  ✅ Final UTC ISO:', isoString);
+      
+      // Show the time difference for clarity
+      const hoursDiff = dateInTimezone.utcOffset() / 60;
+      console.log(`  ⏰ Time difference: ${hoursDiff > 0 ? '+' : ''}${hoursDiff} hours from UTC`);
       
       setFormData((prev) => ({
         ...prev,
         scheduled_for: isoString,
       }));
     } catch (error) {
-      console.error("Error handling datetime change:", error);
+      console.error("❌ handleDateTimeChange: Error handling datetime change:", error);
       toast.error("Invalid date/time format.");
     }
   };
@@ -365,13 +395,29 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
   // Handle timezone change
   const handleTimezoneChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     try {
-      setSelectedTimezone(e.target.value);
+      const newTimezone = e.target.value;
+      const oldTimezone = selectedTimezone;
+      
+      console.log('\n🌍 handleTimezoneChange: Timezone changed');
+      console.log('  📍 Old timezone:', oldTimezone);
+      console.log('  📍 New timezone:', newTimezone);
+      
+      setSelectedTimezone(newTimezone);
+      
       // Re-format the input value for the new timezone
       if (formData.scheduled_for) {
-        setScheduledForInputValue(formatDateForInput(formData.scheduled_for));
+        console.log('  🔄 Re-formatting existing date for new timezone');
+        console.log('  📅 Existing UTC date:', formData.scheduled_for);
+        
+        const newInputValue = formatDateForInput(formData.scheduled_for);
+        setScheduledForInputValue(newInputValue);
+        
+        console.log('  ✅ Updated input value:', newInputValue);
+      } else {
+        console.log('  ℹ️  No existing date to re-format');
       }
     } catch (error) {
-      console.error("Error handling timezone change:", error);
+      console.error("❌ handleTimezoneChange: Error handling timezone change:", error);
     }
   };
 
