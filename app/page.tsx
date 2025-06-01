@@ -6,9 +6,8 @@ import {
 import CategoryFilter from "@/app/components/CategoryFilter";
 import EscapeGrid from "@/app/components/EscapeGrid";
 import PopularDestinations from "@/app/components/PopularDestinations";
+import TimestampDisplay from "@/app/components/TimestampDisplay";
 import { Metadata } from "next";
-import { format } from "date-fns"; // Using date-fns for formatting
-import { Clock } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Latest Travel Deals & Escapes | Enjoy Escapes",
@@ -48,10 +47,6 @@ export default async function Home() {
   // Fetch initial data on the server
   const initialData = await fetchEscapes(1); // Fetch first page
   const latestTimestamp = await getLatestEscapeTimestamp();
-
-  const formattedTimestamp = latestTimestamp
-    ? format(new Date(latestTimestamp), "PPPp") // Format: Sep 21, 2023, 4:30 PM
-    : "Not available";
 
   // Generate structured data for search engines
   const escapeListData = {
@@ -143,10 +138,7 @@ export default async function Home() {
 
         {/* Last Updated Info */}
         <div className="mb-2 text-center md:text-right">
-          <div className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-            <Clock className="h-3 w-3 text-secondary" />
-            <span>Last updated: {formattedTimestamp}</span>
-          </div>
+          <TimestampDisplay timestamp={latestTimestamp} />
         </div>
 
         {/* Escape Grid with Popular Destinations inserted after the 20th item (4 rows of 5) */}
