@@ -104,6 +104,9 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     scheduled_for: initialData?.scheduled_for ?? "",
   });
 
+  // State for the client-side formatted value for the datetime-local input
+  const [scheduledForInputValue, setScheduledForInputValue] = React.useState("");
+
   // Handle input changes to update state with error handling
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -212,6 +215,15 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     }
   }, [selectedType]);
 
+  // Effect to update the client-side formatted input value when formData.scheduled_for changes
+  useEffect(() => {
+    if (formData.scheduled_for) {
+      setScheduledForInputValue(formatDateForInput(formData.scheduled_for));
+    } else {
+      setScheduledForInputValue("");
+    }
+  }, [formData.scheduled_for]);
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       const file = event.target.files?.[0];
@@ -293,12 +305,12 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     }
   };
   
-  // Fixed function to properly convert local time to UTC for storage
+  // Simple function to convert local datetime input to UTC for storage
   const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       if (!isMountedRef.current) return;
       
-      const localDateTimeValue = e.target.value;
+      const localDateTimeValue = e.target.value; // e.g., "2025-06-15T18:25"
       
       if (!localDateTimeValue) {
         setFormData((prev) => ({
@@ -308,31 +320,18 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
         return;
       }
       
-      // The datetime-local input gives us a value like "2024-01-15T14:00"
-      // This represents local time, so we need to parse it as local time
-      // and then convert to UTC for storage
-      
-      // Parse the datetime components manually to ensure local time interpretation
+      // Parse the input manually and apply timezone offset
       const [datePart, timePart] = localDateTimeValue.split('T');
-      if (!datePart || !timePart) {
-        console.warn("Invalid datetime format:", localDateTimeValue);
-        return;
-      }
-      
       const [year, month, day] = datePart.split('-').map(Number);
       const [hours, minutes] = timePart.split(':').map(Number);
       
-      // Create date object using local timezone constructor
-      const localDate = new Date(year, month - 1, day, hours, minutes);
+      // Create a date object representing the input time in UTC
+      // Then subtract the timezone offset to get the actual UTC time
+      const utcDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+      const timezoneOffsetMinutes = new Date().getTimezoneOffset();
+      const adjustedUtcDate = new Date(utcDate.getTime() + (timezoneOffsetMinutes * 60000));
       
-      // Check if date is valid
-      if (isNaN(localDate.getTime())) {
-        console.warn("Invalid date created:", localDate);
-        return;
-      }
-      
-      // Convert to ISO string (UTC) for storage
-      const isoString = localDate.toISOString();
+      const isoString = adjustedUtcDate.toISOString();
       
       setFormData((prev) => ({
         ...prev,
@@ -816,9 +815,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 type="datetime-local"
                 id="scheduled_for"
                 name="scheduled_for"
-                value={formData.scheduled_for ? 
-                  formatDateForInput(formData.scheduled_for) : 
-                  ""}
+                value={scheduledForInputValue}
                 onChange={handleDateTimeChange}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               />
