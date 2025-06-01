@@ -106,6 +106,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
 
   // State for the client-side formatted value for the datetime-local input
   const [scheduledForInputValue, setScheduledForInputValue] = React.useState("");
+  const [selectedTimezone, setSelectedTimezone] = React.useState("Europe/London"); // Default timezone
 
   // Handle input changes to update state with error handling
   const handleInputChange = (
@@ -215,14 +216,14 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     }
   }, [selectedType]);
 
-  // Effect to update the client-side formatted input value when formData.scheduled_for changes
+  // Effect to update the client-side formatted input value when formData.scheduled_for or timezone changes
   useEffect(() => {
     if (formData.scheduled_for) {
       setScheduledForInputValue(formatDateForInput(formData.scheduled_for));
     } else {
       setScheduledForInputValue("");
     }
-  }, [formData.scheduled_for]);
+  }, [formData.scheduled_for, selectedTimezone]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -277,6 +278,18 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     }
   };
 
+  // Common timezone options
+  const timezoneOptions = [
+    { value: "Europe/London", label: "London (GMT/BST)" },
+    { value: "Europe/Paris", label: "Paris (CET/CEST)" },
+    { value: "Europe/Berlin", label: "Berlin (CET/CEST)" },
+    { value: "America/New_York", label: "New York (EST/EDT)" },
+    { value: "America/Los_Angeles", label: "Los Angeles (PST/PDT)" },
+    { value: "Asia/Tokyo", label: "Tokyo (JST)" },
+    { value: "Australia/Sydney", label: "Sydney (AEST/AEDT)" },
+    { value: "UTC", label: "UTC" },
+  ];
+
   // Fixed function to properly handle local timezone for input display
   const formatDateForInput = (isoString: string | null | undefined) => {
     try {
@@ -291,21 +304,32 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
         return '';
       }
       
-      // Get timezone offset in minutes
-      const timezoneOffset = utcDate.getTimezoneOffset();
+      // Convert UTC to the selected timezone for display
+      const formatter = new Intl.DateTimeFormat('en-CA', {
+        timeZone: selectedTimezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
       
-      // Adjust for local timezone
-      const localDate = new Date(utcDate.getTime() - (timezoneOffset * 60000));
+      const parts = formatter.formatToParts(utcDate);
+      const year = parts.find(p => p.type === 'year')?.value;
+      const month = parts.find(p => p.type === 'month')?.value;
+      const day = parts.find(p => p.type === 'day')?.value;
+      const hour = parts.find(p => p.type === 'hour')?.value;
+      const minute = parts.find(p => p.type === 'minute')?.value;
       
-      // Format as YYYY-MM-DDThh:mm (required format for datetime-local input)
-      return localDate.toISOString().slice(0, 16);
+      return `${year}-${month}-${day}T${hour}:${minute}`;
     } catch (error) {
       console.error("Error formatting date for input:", error);
       return '';
     }
   };
   
-  // Simple function to convert local datetime input to UTC for storage
+  // Convert datetime input from selected timezone to UTC for storage
   const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       if (!isMountedRef.current) return;
@@ -320,18 +344,30 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
         return;
       }
       
-      // Parse the input manually and apply timezone offset
-      const [datePart, timePart] = localDateTimeValue.split('T');
-      const [year, month, day] = datePart.split('-').map(Number);
-      const [hours, minutes] = timePart.split(':').map(Number);
+      // Simple approach: treat the input as being in the selected timezone
+      // and convert it to UTC by constructing an ISO string with timezone info
       
-      // Create a date object representing the input time in UTC
-      // Then subtract the timezone offset to get the actual UTC time
-      const utcDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
-      const timezoneOffsetMinutes = new Date().getTimezoneOffset();
-      const adjustedUtcDate = new Date(utcDate.getTime() + (timezoneOffsetMinutes * 60000));
+      // Get the current timezone offset for the selected timezone
+      const tempDate = new Date();
+      const offset = getTimezoneOffset(selectedTimezone, tempDate);
       
-      const isoString = adjustedUtcDate.toISOString();
+      // Convert offset to hours and minutes
+      const offsetHours = Math.floor(Math.abs(offset) / 60);
+      const offsetMinutes = Math.abs(offset) % 60;
+      const offsetSign = offset >= 0 ? '+' : '-';
+      const offsetString = `${offsetSign}${String(offsetHours).padStart(2, '0')}:${String(offsetMinutes).padStart(2, '0')}`;
+      
+      // Create ISO string with timezone offset
+      const isoWithTimezone = `${localDateTimeValue}:00${offsetString}`;
+      
+      // Parse this into a Date object (automatically converts to UTC)
+      const utcDate = new Date(isoWithTimezone);
+      
+      if (isNaN(utcDate.getTime())) {
+        throw new Error("Invalid date");
+      }
+      
+      const isoString = utcDate.toISOString();
       
       setFormData((prev) => ({
         ...prev,
@@ -340,6 +376,26 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     } catch (error) {
       console.error("Error handling datetime change:", error);
       toast.error("Invalid date/time format.");
+    }
+  };
+
+  // Simple helper to get timezone offset for a given timezone
+  const getTimezoneOffset = (timeZone: string, date: Date): number => {
+    const utc1 = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
+    const utc2 = new Date(date.toLocaleString('en-US', { timeZone }));
+    return (utc2.getTime() - utc1.getTime()) / (1000 * 60);
+  };
+
+  // Handle timezone change
+  const handleTimezoneChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    try {
+      setSelectedTimezone(e.target.value);
+      // Re-format the input value for the new timezone
+      if (formData.scheduled_for) {
+        setScheduledForInputValue(formatDateForInput(formData.scheduled_for));
+      }
+    } catch (error) {
+      console.error("Error handling timezone change:", error);
     }
   };
 
@@ -807,8 +863,25 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
             </div>
           </div>
 
-          <div className="mt-6 space-y-2">
+          <div className="mt-6 space-y-4">
             <Label htmlFor="scheduled_for">Schedule Publication Date/Time</Label>
+            
+            <div className="space-y-2">
+              <Label htmlFor="timezone" className="text-sm font-medium">Timezone</Label>
+              <select
+                id="timezone"
+                value={selectedTimezone}
+                onChange={handleTimezoneChange}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {timezoneOptions.map((tz) => (
+                  <option key={tz.value} value={tz.value}>
+                    {tz.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
             <div className="flex items-center space-x-2">
               <CalendarIcon className="h-4 w-4 text-muted-foreground" />
               <Input
@@ -821,7 +894,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
               />
             </div>
             <p className="text-xs text-gray-500">
-              Leave empty to publish immediately, or set a future date/time for when this deal should appear on the website.
+              Leave empty to publish immediately, or set a future date/time for when this deal should appear on the website. The time you enter will be converted to UTC for storage.
             </p>
             {state.errors?.scheduled_for && (
               <p
