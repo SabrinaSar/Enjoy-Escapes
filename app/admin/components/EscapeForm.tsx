@@ -308,26 +308,12 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
         return;
       }
       
-      // Create a date object from the local datetime input
-      // This needs to be treated as local time, not UTC
-      const [datePart, timePart] = localDateTimeValue.split('T');
+      // The datetime-local input gives us a value like "2024-01-15T14:00"
+      // This represents local time, so we need to parse it as local time
+      // and then convert to UTC for storage
       
-      if (!datePart || !timePart) {
-        console.warn("Invalid datetime format:", localDateTimeValue);
-        return;
-      }
-      
-      const [year, month, day] = datePart.split('-').map(Number);
-      const [hours, minutes] = timePart.split(':').map(Number);
-      
-      // Validate date components
-      if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(hours) || isNaN(minutes)) {
-        console.warn("Invalid date components:", { year, month, day, hours, minutes });
-        return;
-      }
-      
-      // Create date in local timezone
-      const localDate = new Date(year, month - 1, day, hours, minutes);
+      // Create date object treating the input as local time
+      const localDate = new Date(localDateTimeValue);
       
       // Check if date is valid
       if (isNaN(localDate.getTime())) {
