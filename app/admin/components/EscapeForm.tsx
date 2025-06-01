@@ -381,6 +381,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
       // Show the time difference for clarity
       const hoursDiff = dateInTimezone.utcOffset() / 60;
       console.log(`  ⏰ Time difference: ${hoursDiff > 0 ? '+' : ''}${hoursDiff} hours from UTC`);
+      console.log('  📤 This UTC value will be sent to backend:', isoString);
       
       setFormData((prev) => ({
         ...prev,
@@ -908,11 +909,17 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
               <CalendarIcon className="h-4 w-4 text-muted-foreground" />
               <Input
                 type="datetime-local"
-                id="scheduled_for"
-                name="scheduled_for"
+                id="scheduled_for_display"
                 value={scheduledForInputValue}
                 onChange={handleDateTimeChange}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                placeholder="Select date and time"
+              />
+              {/* Hidden input that actually gets submitted with UTC value */}
+              <input
+                type="hidden"
+                name="scheduled_for"
+                value={formData.scheduled_for || ""}
               />
             </div>
             <p className="text-xs text-gray-500">
