@@ -1,13 +1,28 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
+// Define the type for categories
+interface Category {
+  id: string;
+  name: string;
+  icon: string;
+  filter?: Record<string, any>;
+  isSpecialPage?: boolean;
+}
+
 // Define the categories shown in the image
-const categories = [
+const categories: Category[] = [
+  {
+    id: "latest-all-inclusive",
+    name: "Latest All Inclusive",
+    icon: "/icons/all-inclusive.svg",
+    isSpecialPage: true, // This indicates it goes to a different page
+  },
   {
     id: "all-inclusive",
     name: "All Inclusive",
@@ -43,6 +58,7 @@ const categories = [
 export default function CategoryFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -65,8 +81,17 @@ export default function CategoryFilter() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Get the currently active filter from URL params
-  const activeCategory = searchParams.get("category");
+  // Get the currently active filter from URL params or pathname for special pages
+  const getActiveCategory = () => {
+    // Check if we're on a special page
+    if (pathname === "/latest-all-inclusive") {
+      return "latest-all-inclusive";
+    }
+    // Otherwise, get from search params
+    return searchParams.get("category");
+  };
+  
+  const activeCategory = getActiveCategory();
 
   // Drag handlers for horizontal scrolling
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -109,7 +134,18 @@ export default function CategoryFilter() {
   // Handle category selection
   const handleCategorySelect = useCallback(
     (categoryId: string) => {
-      // Create a new URLSearchParams instance
+      // Find the category to check if it's a special page
+      const category = categories.find(cat => cat.id === categoryId);
+      
+      // Handle special pages that navigate to different routes
+      if (category?.isSpecialPage) {
+        if (categoryId === "latest-all-inclusive") {
+          router.push("/latest-all-inclusive");
+          return;
+        }
+      }
+
+      // Create a new URLSearchParams instance for regular filters
       const params = new URLSearchParams(searchParams.toString());
 
       // If the same category is clicked, remove the filter
