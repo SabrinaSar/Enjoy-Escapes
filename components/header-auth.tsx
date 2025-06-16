@@ -63,6 +63,9 @@ export default async function AuthButton() {
 
         {/* Desktop view - Normal buttons */}
         <form action={signOutAction} className="hidden sm:flex">
+          <Link className="mr-2" href="/blog">
+            <Button variant={"outline"}>Blog</Button>
+          </Link>
           <Link className="mr-2" href="/about">
             <Button variant={"outline"}>About Us</Button>
           </Link>
@@ -86,6 +89,12 @@ export default async function AuthButton() {
   // For non-logged in users, show social media links
   return (
     <div className="flex items-center gap-1">
+      {/* Blog Link */}
+      <Link href="/blog" className="mr-1">
+        <Button variant="outline" size="sm">
+          Blog
+        </Button>
+      </Link>
       {/* About Us Link */}
       <Link href="/about" className="mr-1">
         <Button variant="outline" size="sm">
