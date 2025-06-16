@@ -58,19 +58,45 @@ export function CategoryForm({ category }: CategoryFormProps) {
       .trim();
   };
 
-  // State for dynamic filters
+  // Get placeholder text for filter values
+  const getFilterPlaceholder = (filterType: string) => {
+    switch (filterType) {
+      case "board_basis": return "e.g., all_inclusive, half_board";
+      case "price_under": return "e.g., 300, 500";
+      case "school_holidays":
+      case "last_minute":
+      case "long_haul":
+      case "featured":
+      case "hot_deal": return "true or false";
+      default: return "Enter filter value";
+    }
+  };
+
+  // Get placeholder text for embed parameters
+  const getEmbedPlaceholder = (paramName: string) => {
+    switch (paramName) {
+      case "destination": return "e.g., 39677 (destination code)";
+      case "departureAirport": return "e.g., LGW, MAN, ABZ";
+      case "boardBasis": return "e.g., AI (All Inclusive), HB (Half Board)";
+      case "starRating": return "e.g., 4,5 (4 or 5 star hotels)";
+      case "duration": return "e.g., 7, 14 (nights)";
+      case "adults": return "e.g., 2";
+      case "children": return "e.g., 0, 2";
+      default: return "Enter parameter value";
+    }
+  };
+
+  // State for category type
+  const [isSpecialPage, setIsSpecialPage] = useState(category?.is_special_page ?? false);
+
+  // State for dynamic filters (only for regular categories)
   const [filters, setFilters] = useState(
     category?.category_filters || [{ filter_type: "", filter_value: "" }]
   );
 
-  // State for dynamic embed params
+  // State for dynamic embed params (only for special pages)
   const [embedParams, setEmbedParams] = useState(
-    category?.category_embed_params || [{ 
-      embed_type: "icelolly", 
-      base_url: "https://supersonic-icelolly-website.pages.dev/v2/affiliate-bos", 
-      param_name: "", 
-      param_value: "" 
-    }]
+    category?.category_embed_params || []
   );
 
   // Add new filter
@@ -93,6 +119,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
   // Add new embed param
   const addEmbedParam = () => {
     setEmbedParams([...embedParams, { 
+      id: crypto.randomUUID(),
       embed_type: "icelolly", 
       base_url: "https://supersonic-icelolly-website.pages.dev/v2/affiliate-bos", 
       param_name: "", 
@@ -112,6 +139,32 @@ export function CategoryForm({ category }: CategoryFormProps) {
     setEmbedParams(updatedParams);
   };
 
+  // Handle special page toggle
+  const handleSpecialPageToggle = (checked: boolean) => {
+    setIsSpecialPage(checked);
+    if (checked) {
+      // Clear filters when switching to special page
+      setFilters([]);
+      // Add default embed params if none exist
+      if (embedParams.length === 0) {
+        setEmbedParams([{
+          id: crypto.randomUUID(),
+          embed_type: "icelolly",
+          base_url: "https://supersonic-icelolly-website.pages.dev/v2/affiliate-bos",
+          param_name: "destination",
+          param_value: ""
+        }]);
+      }
+    } else {
+      // Clear embed params when switching to regular category
+      setEmbedParams([]);
+      // Add default filter if none exist
+      if (filters.length === 0) {
+        setFilters([{ filter_type: "", filter_value: "" }]);
+      }
+    }
+  };
+
   // Handle form submission
   const handleSubmit = async (formData: FormData) => {
     // Add filters to form data
@@ -124,9 +177,9 @@ export function CategoryForm({ category }: CategoryFormProps) {
 
     // Add embed params to form data
     embedParams.forEach((param, index) => {
-      if (param.embed_type && param.base_url && param.param_name && param.param_value) {
-        formData.append(`embed_${index}_type`, param.embed_type);
-        formData.append(`embed_${index}_base_url`, param.base_url);
+      if (param.param_name && param.param_value) {
+        formData.append(`embed_${index}_type`, "icelolly");
+        formData.append(`embed_${index}_base_url`, "https://supersonic-icelolly-website.pages.dev/v2/affiliate-bos");
         formData.append(`embed_${index}_param_name`, param.param_name);
         formData.append(`embed_${index}_param_value`, param.param_value);
       }
@@ -219,142 +272,188 @@ export function CategoryForm({ category }: CategoryFormProps) {
         />
       </div>
 
-      {/* Checkboxes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="is_active"
-            name="is_active"
-            defaultChecked={category?.is_active ?? true}
-          />
-          <Label htmlFor="is_active">Active</Label>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="is_special_page"
-            name="is_special_page"
-            defaultChecked={category?.is_special_page ?? false}
-          />
-          <Label htmlFor="is_special_page">Special Page (not a filter)</Label>
-        </div>
-      </div>
-
-      {/* Category Filters */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-lg">Category Filters</CardTitle>
-          <Button type="button" onClick={addFilter} variant="outline" size="sm">
-            <Plus className="w-4 h-4 mr-1" />
-            Add Filter
-          </Button>
+      {/* Category Type Selection */}
+      <Card className="bg-blue-50 dark:bg-blue-950/20">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg">Category Type</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Choose how this category should work
+          </p>
         </CardHeader>
         <CardContent className="space-y-4">
-          {filters.map((filter, index) => (
-            <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg">
-              <div className="space-y-2">
-                <Label>Filter Type</Label>
-                <Select
-                  value={filter.filter_type}
-                  onValueChange={(value) => updateFilter(index, "filter_type", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select filter type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="board_basis">Board Basis</SelectItem>
-                    <SelectItem value="price_under">Price Under</SelectItem>
-                    <SelectItem value="school_holidays">School Holidays</SelectItem>
-                    <SelectItem value="last_minute">Last Minute</SelectItem>
-                    <SelectItem value="long_haul">Long Haul</SelectItem>
-                    <SelectItem value="featured">Featured</SelectItem>
-                    <SelectItem value="hot_deal">Hot Deal</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Filter Value</Label>
-                <div className="flex gap-2">
-                  <Input
-                    value={filter.filter_value}
-                    onChange={(e) => updateFilter(index, "filter_value", e.target.value)}
-                    placeholder="e.g., all_inclusive, 300, true"
-                  />
-                  {filters.length > 1 && (
-                    <Button
-                      type="button"
-                      onClick={() => removeFilter(index)}
-                      variant="outline"
-                      size="sm"
-                      className="text-red-600"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-start space-x-3">
+              <input
+                type="radio"
+                id="filter_category"
+                name="category_type"
+                checked={!isSpecialPage}
+                onChange={() => handleSpecialPageToggle(false)}
+                className="mt-0.5"
+              />
+              <div>
+                <Label htmlFor="filter_category" className="font-medium">Filter Category</Label>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Filters existing holiday deals on the main page
+                </p>
               </div>
             </div>
-          ))}
+
+            <div className="flex items-start space-x-3">
+              <input
+                type="radio"
+                id="special_page"
+                name="category_type"
+                checked={isSpecialPage}
+                onChange={() => handleSpecialPageToggle(true)}
+                className="mt-0.5"
+              />
+              <div>
+                <Label htmlFor="special_page" className="font-medium">Special Page</Label>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Creates a dedicated page with an IceLolly embed widget
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2 mt-4">
+            <Checkbox
+              id="is_active"
+              name="is_active"
+              defaultChecked={category?.is_active ?? true}
+            />
+            <Label htmlFor="is_active">Active (visible to users)</Label>
+          </div>
+
+          {/* Hidden input for form submission */}
+          <input 
+            type="hidden" 
+            name="is_special_page" 
+            value={isSpecialPage ? "on" : ""} 
+          />
         </CardContent>
       </Card>
 
-      {/* Embed Parameters */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-lg">Embed Parameters</CardTitle>
-          <Button type="button" onClick={addEmbedParam} variant="outline" size="sm">
-            <Plus className="w-4 h-4 mr-1" />
-            Add Parameter
-          </Button>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {embedParams.map((param, index) => (
-            <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg">
-              <div className="space-y-2">
-                <Label>Embed Type</Label>
-                <Select
-                  value={param.embed_type}
-                  onValueChange={(value) => updateEmbedParam(index, "embed_type", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select embed type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="icelolly">IceLolly</SelectItem>
-                    <SelectItem value="holidayconnect">Holiday Connect</SelectItem>
-                    <SelectItem value="custom">Custom</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+      {/* Category Filters - Only for regular categories */}
+      {!isSpecialPage && (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-lg">Category Filters</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                Define what criteria to filter holiday deals by
+              </p>
+            </div>
+            <Button type="button" onClick={addFilter} variant="outline" size="sm">
+              <Plus className="w-4 h-4 mr-1" />
+              Add Filter
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {filters.map((filter, index) => (
+              <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg">
+                <div className="space-y-2">
+                  <Label>Filter Type</Label>
+                  <Select
+                    value={filter.filter_type}
+                    onValueChange={(value) => updateFilter(index, "filter_type", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select filter type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="board_basis">Board Basis (e.g., all_inclusive)</SelectItem>
+                      <SelectItem value="price_under">Price Under (e.g., 300)</SelectItem>
+                      <SelectItem value="school_holidays">School Holidays (true/false)</SelectItem>
+                      <SelectItem value="last_minute">Last Minute (true/false)</SelectItem>
+                      <SelectItem value="long_haul">Long Haul (true/false)</SelectItem>
+                      <SelectItem value="featured">Featured (true/false)</SelectItem>
+                      <SelectItem value="hot_deal">Hot Deal (true/false)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <div className="space-y-2">
-                <Label>Base URL</Label>
-                <Input
-                  value={param.base_url}
-                  onChange={(e) => updateEmbedParam(index, "base_url", e.target.value)}
-                  placeholder="https://example.com/embed"
-                />
+                <div className="space-y-2">
+                  <Label>Filter Value</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={filter.filter_value}
+                      onChange={(e) => updateFilter(index, "filter_value", e.target.value)}
+                      placeholder={getFilterPlaceholder(filter.filter_type)}
+                    />
+                    {filters.length > 1 && (
+                      <Button
+                        type="button"
+                        onClick={() => removeFilter(index)}
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </div>
-
-              <div className="space-y-2">
-                <Label>Parameter Name</Label>
-                <Input
-                  value={param.param_name}
-                  onChange={(e) => updateEmbedParam(index, "param_name", e.target.value)}
-                  placeholder="e.g., destination"
-                />
+            ))}
+            
+            {filters.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                <p>No filters configured. Add at least one filter for this category.</p>
               </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
-              <div className="space-y-2">
-                <Label>Parameter Value</Label>
-                <div className="flex gap-2">
-                  <Input
-                    value={param.param_value}
-                    onChange={(e) => updateEmbedParam(index, "param_value", e.target.value)}
-                    placeholder="e.g., 39677"
-                  />
-                  {embedParams.length > 1 && (
+      {/* IceLolly Widget Parameters - Only for special pages */}
+      {isSpecialPage && (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-lg">IceLolly Widget Parameters</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                Configure the parameters for the IceLolly holiday search widget
+              </p>
+            </div>
+            <Button type="button" onClick={addEmbedParam} variant="outline" size="sm">
+              <Plus className="w-4 h-4 mr-1" />
+              Add Parameter
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {embedParams.map((param, index) => (
+              <div key={param.id || index} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg">
+                <div className="space-y-2">
+                  <Label>Parameter Name</Label>
+                  <Select
+                    value={param.param_name}
+                    onValueChange={(value) => updateEmbedParam(index, "param_name", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select parameter" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="destination">Destination</SelectItem>
+                      <SelectItem value="departureAirport">Departure Airport</SelectItem>
+                      <SelectItem value="boardBasis">Board Basis</SelectItem>
+                      <SelectItem value="starRating">Star Rating</SelectItem>
+                      <SelectItem value="duration">Duration (nights)</SelectItem>
+                      <SelectItem value="adults">Number of Adults</SelectItem>
+                      <SelectItem value="children">Number of Children</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Parameter Value</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={param.param_value}
+                      onChange={(e) => updateEmbedParam(index, "param_value", e.target.value)}
+                      placeholder={getEmbedPlaceholder(param.param_name)}
+                    />
                     <Button
                       type="button"
                       onClick={() => removeEmbedParam(index)}
@@ -364,13 +463,20 @@ export function CategoryForm({ category }: CategoryFormProps) {
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
-                  )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+            ))}
+            
+            {embedParams.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                <p>No parameters configured. Add parameters to customize the IceLolly widget.</p>
+                <p className="text-xs mt-1">Common parameters: destination, departureAirport, boardBasis, starRating</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Form Actions */}
       <div className="flex gap-4">
