@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { Toaster } from "@/components/ui/sonner";
 import ImageGalleryAdmin from "./components/ImageGalleryAdmin";
 
 export const metadata = {
@@ -31,6 +32,7 @@ export default async function ImageGalleryPage() {
           <ImageGalleryAdmin initialImages={images || []} />
         </div>
       </div>
+      <Toaster richColors />
     </div>
   );
 } 
