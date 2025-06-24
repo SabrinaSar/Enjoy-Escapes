@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Search, Calendar, Clock, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Calendar, Clock, ArrowRight, ChevronLeft, ChevronRight, Filter, X } from "lucide-react";
 import { BlogPost, BlogCategory, BlogTag, BlogListingProps } from "@/types/blog";
 import { formatDate } from "@/utils/blog";
 
@@ -68,6 +68,11 @@ export default function BlogListing({
     updateUrl({ page: page.toString() });
   };
 
+  const clearAllFilters = () => {
+    setSearchInput("");
+    updateUrl({ search: undefined, category: undefined, tag: undefined });
+  };
+
   const getFeaturedPost = () => {
     return posts.find(post => post.is_featured) || posts[0];
   };
@@ -83,63 +88,145 @@ export default function BlogListing({
 
   const featuredPost = getFeaturedPost();
   const regularPosts = getRegularPosts();
+  const hasActiveFilters = selectedCategory || selectedTag || searchQuery;
 
   return (
     <div className="space-y-8">
-      {/* Search and Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-        <form onSubmit={handleSearch} className="mb-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <Input
-              type="text"
-              placeholder="Search articles..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              className="pl-10 pr-20"
-            />
-            <Button 
-              type="submit" 
-              size="sm" 
-              className="absolute right-2 top-1/2 transform -translate-y-1/2"
-            >
-              Search
-            </Button>
-          </div>
-        </form>
-
-        {/* Categories */}
-        <div className="mb-4">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Categories</h3>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <Button
-                key={category.id}
-                variant={selectedCategory === category.slug ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleCategoryFilter(category.slug)}
-                style={selectedCategory === category.slug ? getBadgeColor(category) : undefined}
-              >
-                {category.name}
-              </Button>
-            ))}
-          </div>
+      {/* Enhanced Search and Filters */}
+      <div className="relative bg-gradient-to-br from-card via-card/50 to-primary/5 backdrop-blur rounded-3xl p-8 shadow-lg border border-border/50 overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-4 right-4 w-20 h-20 bg-primary rounded-full animate-pulse" />
+          <div className="absolute bottom-4 left-4 w-16 h-16 bg-secondary rounded-full animate-pulse delay-1000" />
         </div>
+        
+        <div className="relative z-10">
+          {/* Header and Search Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            {/* Header */}
+            <div className="lg:col-span-1 flex items-center gap-3">
+              <div className="bg-primary/10 p-3 rounded-full">
+                <Search className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-foreground">Find Your Perfect Read</h3>
+                <p className="text-muted-foreground">Search through our travel stories and tips</p>
+              </div>
+            </div>
 
-        {/* Tags */}
-        <div>
-          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Tags</h3>
-          <div className="flex flex-wrap gap-2">
-            {tags.slice(0, 15).map((tag) => (
-              <Badge
-                key={tag.id}
-                variant={selectedTag === tag.slug ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => handleTagFilter(tag.slug)}
-              >
-                {tag.name}
-              </Badge>
-            ))}
+            {/* Search Form */}
+            <div className="lg:col-span-2">
+              <form onSubmit={handleSearch}>
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+                  <Input
+                    type="text"
+                    placeholder="Search for destinations, tips, guides..."
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    className="pl-12 pr-24 h-14 text-lg bg-background/80 backdrop-blur border-2 border-border/50 focus:border-primary/50 rounded-2xl shadow-sm w-full"
+                  />
+                  <Button 
+                    type="submit" 
+                    size="lg"
+                    className="absolute right-2 top-2 bottom-2 px-6 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-md rounded-xl"
+                  >
+                    Search
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          {/* Active Filters Display */}
+          {hasActiveFilters && (
+            <div className="bg-background/60 backdrop-blur rounded-2xl p-4 mb-6 border border-border/30">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium text-foreground">Active Filters</span>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={clearAllFilters}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Clear All
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {searchQuery && (
+                  <Badge className="bg-primary/10 text-primary border-primary/20 px-3 py-1">
+                    Search: "{searchQuery}"
+                  </Badge>
+                )}
+                {selectedCategory && (
+                  <Badge className="bg-secondary/10 text-secondary border-secondary/20 px-3 py-1">
+                    Category: {categories.find(c => c.slug === selectedCategory)?.name}
+                  </Badge>
+                )}
+                {selectedTag && (
+                  <Badge className="bg-accent/10 text-accent border-accent/20 px-3 py-1">
+                    Tag: {tags.find(t => t.slug === selectedTag)?.name}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Categories and Tags Side by Side */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Categories */}
+            <div>
+              <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                <div className="w-2 h-2 bg-primary rounded-full"></div>
+                Browse by Category
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {categories.map((category) => (
+                  <Button
+                    key={category.id}
+                    variant={selectedCategory === category.slug ? "default" : "outline"}
+                    size="lg"
+                    onClick={() => handleCategoryFilter(category.slug)}
+                    className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 w-full justify-start ${
+                      selectedCategory === category.slug 
+                        ? 'shadow-lg scale-105' 
+                        : 'hover:scale-105 hover:shadow-md bg-background/60 backdrop-blur border-border/50'
+                    }`}
+                    style={selectedCategory === category.slug ? getBadgeColor(category) : undefined}
+                  >
+                    {category.name}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Tags */}
+            <div>
+              <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                Popular Tags
+              </h4>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {tags.slice(0, 12).map((tag) => (
+                  <Badge
+                    key={tag.id}
+                    variant={selectedTag === tag.slug ? "default" : "outline"}
+                    className={`cursor-pointer px-4 py-2 text-sm font-medium rounded-xl transition-all duration-300 justify-center ${
+                      selectedTag === tag.slug 
+                        ? 'bg-gradient-to-r from-accent to-accent/80 text-white shadow-lg scale-105' 
+                        : 'hover:scale-105 hover:shadow-sm bg-background/60 backdrop-blur border-border/50 hover:border-accent/30 hover:text-accent'
+                    }`}
+                    onClick={() => handleTagFilter(tag.slug)}
+                  >
+                    {tag.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
