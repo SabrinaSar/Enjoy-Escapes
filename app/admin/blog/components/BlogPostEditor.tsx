@@ -43,8 +43,6 @@ export default function BlogPostEditor({ post, categories, tags, onClose, onSave
     content: "",
     featured_image_url: "",
     featured_image_alt: "",
-    author_name: "",
-    author_email: "",
     status: "draft",
     publish_date: "",
     seo_title: "",
@@ -65,6 +63,9 @@ export default function BlogPostEditor({ post, categories, tags, onClose, onSave
   // Initialize form data when editing
   useEffect(() => {
     if (post) {
+      const categoryIds = post.blog_categories?.map(pc => pc.blog_category_id) || [];
+      const tagIds = post.blog_tags?.map(pt => pt.blog_tag_id) || [];
+      
       setFormData({
         title: post.title,
         slug: post.slug,
@@ -72,8 +73,6 @@ export default function BlogPostEditor({ post, categories, tags, onClose, onSave
         content: post.content,
         featured_image_url: post.featured_image_url || "",
         featured_image_alt: post.featured_image_alt || "",
-        author_name: post.author_name || "",
-        author_email: post.author_email || "",
         status: post.status,
         publish_date: post.publish_date ? post.publish_date.split('T')[0] : "",
         seo_title: post.seo_title || "",
@@ -81,8 +80,8 @@ export default function BlogPostEditor({ post, categories, tags, onClose, onSave
         seo_keywords: post.seo_keywords || [],
         is_featured: post.is_featured,
         sort_order: post.sort_order,
-        category_ids: post.blog_categories?.map(pc => pc.blog_category_id) || [],
-        tag_ids: post.blog_tags?.map(pt => pt.blog_tag_id) || [],
+        category_ids: categoryIds,
+        tag_ids: tagIds,
       });
     }
   }, [post]);
@@ -177,8 +176,6 @@ export default function BlogPostEditor({ post, categories, tags, onClose, onSave
         content: saveData.content,
         featured_image_url: saveData.featured_image_url || null,
         featured_image_alt: saveData.featured_image_alt || null,
-        author_name: saveData.author_name || null,
-        author_email: saveData.author_email || null,
         status: saveData.status,
         publish_date: saveData.status === "published" && saveData.publish_date 
           ? new Date(saveData.publish_date).toISOString()
@@ -260,8 +257,25 @@ export default function BlogPostEditor({ post, categories, tags, onClose, onSave
           .insert(tagData);
       }
 
+      // Fetch the complete post data with relationships for the callback
+      const { data: completePost } = await supabase
+        .from("blog_posts")
+        .select(`
+          *,
+          blog_categories:blog_post_categories(
+            blog_category_id,
+            blog_categories(*)
+          ),
+          blog_tags:blog_post_tags(
+            blog_tag_id,
+            blog_tags(*)
+          )
+        `)
+        .eq("id", savedPost.id)
+        .single();
+
       toast.success(post ? "Post updated successfully" : "Post created successfully");
-      onSave(savedPost);
+      onSave(completePost || savedPost);
     } catch (error) {
       console.error("Error saving post:", error);
       toast.error("Failed to save post");
@@ -598,36 +612,7 @@ export default function BlogPostEditor({ post, categories, tags, onClose, onSave
                 </CardContent>
               </Card>
 
-              {/* Author Info */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Author</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="author_name">Author Name</Label>
-                    <Input
-                      id="author_name"
-                      value={formData.author_name}
-                      onChange={(e) => handleInputChange("author_name", e.target.value)}
-                      placeholder="Author name"
-                      className="mt-1"
-                    />
-                  </div>
 
-                  <div>
-                    <Label htmlFor="author_email">Author Email</Label>
-                    <Input
-                      id="author_email"
-                      type="email"
-                      value={formData.author_email}
-                      onChange={(e) => handleInputChange("author_email", e.target.value)}
-                      placeholder="author@example.com"
-                      className="mt-1"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
             </div>
           </div>
         </div>

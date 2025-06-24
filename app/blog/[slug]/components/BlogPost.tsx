@@ -38,11 +38,11 @@ export default function BlogPost({ post, relatedPosts }: Props) {
   };
 
   const getBadgeColor = (category: any) => {
-    return { backgroundColor: category.color, color: '#fff' };
+    return { backgroundColor: category?.color || '#3B82F6', color: '#fff' };
   };
 
-  const categories = post.blog_categories?.map(pc => pc.blog_categories).filter(Boolean) || [];
-  const tags = post.blog_tags?.map(pt => pt.blog_tags).filter(Boolean) || [];
+  const categories = post.blog_categories?.map(pc => pc.blog_categories).filter((cat): cat is NonNullable<typeof cat> => Boolean(cat)) || [];
+  const tags = post.blog_tags?.map(pt => pt.blog_tags).filter((tag): tag is NonNullable<typeof tag> => Boolean(tag)) || [];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -137,20 +137,7 @@ export default function BlogPost({ post, relatedPosts }: Props) {
                   </div>
                 </div>
 
-                {/* Author */}
-                {post.author_name && (
-                  <div className="flex items-center gap-3 mb-8">
-                    <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-                      {post.author_name.split(" ").map(n => n[0]).join("").toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-gray-100">
-                        {post.author_name}
-                      </p>
-                      <p className="text-sm text-gray-500">Author</p>
-                    </div>
-                  </div>
-                )}
+
 
                 {/* Main Content */}
                 <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-gray-900 dark:prose-strong:text-gray-100">

@@ -81,9 +81,11 @@ export default async function BlogPostPage({ params }: Props) {
     .select(`
       *,
       blog_categories:blog_post_categories(
+        blog_category_id,
         blog_categories(*)
       ),
       blog_tags:blog_post_tags(
+        blog_tag_id,
         blog_tags(*)
       )
     `)
@@ -107,6 +109,7 @@ export default async function BlogPostPage({ params }: Props) {
     .select(`
       *,
       blog_categories:blog_post_categories(
+        blog_category_id,
         blog_categories(*)
       )
     `)
@@ -124,7 +127,7 @@ export default async function BlogPostPage({ params }: Props) {
     image: post.featured_image_url,
     author: {
       "@type": "Person",
-      name: post.author_name || "Enjoy Escapes",
+      name: "Enjoy Escapes",
     },
     publisher: {
       "@type": "Organization",

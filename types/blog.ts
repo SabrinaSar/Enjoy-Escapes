@@ -6,9 +6,6 @@ export interface BlogPost {
   content: string;
   featured_image_url?: string;
   featured_image_alt?: string;
-  author_id?: string;
-  author_name?: string;
-  author_email?: string;
   status: 'draft' | 'published' | 'archived';
   publish_date?: string;
   seo_title?: string;
@@ -104,8 +101,6 @@ export interface BlogPostFormData {
   content: string;
   featured_image_url?: string;
   featured_image_alt?: string;
-  author_name?: string;
-  author_email?: string;
   status: 'draft' | 'published' | 'archived';
   publish_date?: string;
   seo_title?: string;
@@ -150,7 +145,6 @@ export interface BlogSEOData {
   canonical?: string;
   publishedTime?: string;
   modifiedTime?: string;
-  author?: string;
   tags?: string[];
   category?: string;
 }

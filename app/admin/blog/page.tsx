@@ -15,9 +15,11 @@ export default async function BlogAdminPage() {
     .select(`
       *,
       blog_categories:blog_post_categories(
+        blog_category_id,
         blog_categories(*)
       ),
       blog_tags:blog_post_tags(
+        blog_tag_id,
         blog_tags(*)
       )
     `)

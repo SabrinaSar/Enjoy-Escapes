@@ -109,7 +109,6 @@ export default function BlogPostsList({ posts, categories, onEditPost, onDeleteP
               <TableHead>Title</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Categories</TableHead>
-              <TableHead>Author</TableHead>
               <TableHead>Created</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
@@ -117,7 +116,7 @@ export default function BlogPostsList({ posts, categories, onEditPost, onDeleteP
           <TableBody>
             {filteredPosts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={5} className="text-center py-8 text-gray-500">
                   No posts found
                 </TableCell>
               </TableRow>
@@ -143,11 +142,6 @@ export default function BlogPostsList({ posts, categories, onEditPost, onDeleteP
                   <TableCell>
                     <div className="text-sm text-gray-600">
                       {getCategoryNames(post) || "Uncategorized"}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm">
-                      {post.author_name || "Unknown"}
                     </div>
                   </TableCell>
                   <TableCell>
