@@ -24,14 +24,15 @@ interface SearchParams {
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }) {
   const supabase = await createClient();
-  const page = parseInt(searchParams.page || "1", 10);
+  const resolvedSearchParams = await searchParams;
+  const page = parseInt(resolvedSearchParams.page || "1", 10);
   const limit = 12;
   const offset = (page - 1) * limit;
 
-  // Build query
+  // Build base query
   let query = supabase
     .from("blog_posts")
     .select(`
@@ -48,24 +49,87 @@ export default async function BlogPage({
     .eq("status", "published")
     .order("publish_date", { ascending: false });
 
-  // Apply filters
-  if (searchParams.search) {
-    query = query.or(`title.ilike.%${searchParams.search}%,excerpt.ilike.%${searchParams.search}%`);
+  // Build count query with the same filters
+  let countQuery = supabase
+    .from("blog_posts")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "published");
+
+  // Apply search filter
+  if (resolvedSearchParams.search) {
+    const searchTerm = resolvedSearchParams.search;
+    const searchFilter = `title.ilike.%${searchTerm}%,excerpt.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`;
+    query = query.or(searchFilter);
+    countQuery = countQuery.or(searchFilter);
   }
 
-  // Execute query with pagination
-  const { data: posts, error: postsError } = await query
-    .range(offset, offset + limit - 1);
+  // Apply category filter
+  if (resolvedSearchParams.category) {
+    // First get the category ID
+    const { data: category } = await supabase
+      .from("blog_categories")
+      .select("id")
+      .eq("slug", resolvedSearchParams.category)
+      .eq("is_active", true)
+      .single();
+    
+    if (category) {
+      // Get post IDs for this category
+      const { data: categoryPosts } = await supabase
+        .from("blog_post_categories")
+        .select("blog_post_id")
+        .eq("blog_category_id", category.id);
+      
+      if (categoryPosts && categoryPosts.length > 0) {
+        const postIds = categoryPosts.map(p => p.blog_post_id);
+        query = query.in("id", postIds);
+        countQuery = countQuery.in("id", postIds);
+      } else {
+        // No posts found for this category, return empty results
+        query = query.eq("id", "00000000-0000-0000-0000-000000000000"); // Invalid UUID to return no results
+        countQuery = countQuery.eq("id", "00000000-0000-0000-0000-000000000000");
+      }
+    }
+  }
+
+  // Apply tag filter
+  if (resolvedSearchParams.tag) {
+    // First get the tag ID
+    const { data: tag } = await supabase
+      .from("blog_tags")
+      .select("id")
+      .eq("slug", resolvedSearchParams.tag)
+      .eq("is_active", true)
+      .single();
+    
+    if (tag) {
+      // Get post IDs for this tag
+      const { data: tagPosts } = await supabase
+        .from("blog_post_tags")
+        .select("blog_post_id")
+        .eq("blog_tag_id", tag.id);
+      
+      if (tagPosts && tagPosts.length > 0) {
+        const postIds = tagPosts.map(p => p.blog_post_id);
+        query = query.in("id", postIds);
+        countQuery = countQuery.in("id", postIds);
+      } else {
+        // No posts found for this tag, return empty results
+        query = query.eq("id", "00000000-0000-0000-0000-000000000000"); // Invalid UUID to return no results
+        countQuery = countQuery.eq("id", "00000000-0000-0000-0000-000000000000");
+      }
+    }
+  }
+
+  // Execute queries
+  const [{ data: posts, error: postsError }, { count }] = await Promise.all([
+    query.range(offset, offset + limit - 1),
+    countQuery
+  ]);
 
   if (postsError) {
     console.error("Error fetching posts:", postsError);
   }
-
-  // Get total count for pagination
-  const { count } = await supabase
-    .from("blog_posts")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "published");
 
   // Fetch categories and tags
   const { data: categories } = await supabase
@@ -146,9 +210,9 @@ export default async function BlogPage({
             currentPage={page}
             totalPages={totalPages}
             totalPosts={totalPosts}
-            selectedCategory={searchParams.category}
-            selectedTag={searchParams.tag}
-            searchQuery={searchParams.search}
+            selectedCategory={resolvedSearchParams.category}
+            selectedTag={resolvedSearchParams.tag}
+            searchQuery={resolvedSearchParams.search}
           />
         </div>
       </div>

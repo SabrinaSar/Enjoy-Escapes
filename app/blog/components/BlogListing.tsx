@@ -74,12 +74,12 @@ export default function BlogListing({
   };
 
   const getFeaturedPost = () => {
-    return posts.find(post => post.is_featured) || posts[0];
+    return posts.find(post => post.is_featured);
   };
 
   const getRegularPosts = () => {
     const featuredPost = getFeaturedPost();
-    return posts.filter(post => post.id !== featuredPost?.id);
+    return featuredPost ? posts.filter(post => post.id !== featuredPost.id) : posts;
   };
 
   const getBadgeColor = (category: BlogCategory) => {
@@ -237,16 +237,20 @@ export default function BlogListing({
           <div className="md:flex">
             {featuredPost.featured_image_url && (
               <div className="md:w-1/2">
-                <img
-                  src={featuredPost.featured_image_url}
-                  alt={featuredPost.featured_image_alt || featuredPost.title}
-                  className="w-full h-64 md:h-full object-cover"
-                />
+                <Link href={`/blog/${featuredPost.slug}`}>
+                  <img
+                    src={featuredPost.featured_image_url}
+                    alt={featuredPost.featured_image_alt || featuredPost.title}
+                    className="w-full h-64 md:h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                  />
+                </Link>
               </div>
             )}
             <div className={`p-8 ${featuredPost.featured_image_url ? 'md:w-1/2' : 'w-full'}`}>
               <div className="flex items-center gap-2 mb-3">
-                <Badge className="bg-blue-600 text-white">Featured</Badge>
+                {featuredPost.is_featured && (
+                  <Badge className="bg-blue-600 text-white">Featured</Badge>
+                )}
                 {featuredPost.blog_categories?.[0]?.blog_categories && (
                   <Badge 
                     style={getBadgeColor(featuredPost.blog_categories[0].blog_categories)}
@@ -301,60 +305,57 @@ export default function BlogListing({
       {regularPosts.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {regularPosts.map((post) => (
-            <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              {post.featured_image_url && (
-                <div className="aspect-video bg-gray-200">
-                  <img
-                    src={post.featured_image_url}
-                    alt={post.featured_image_alt || post.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-              
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-2 mb-2">
-                  {post.blog_categories?.[0]?.blog_categories && (
-                    <Badge 
-                      style={getBadgeColor(post.blog_categories[0].blog_categories)}
-                      className="text-xs"
-                    >
-                      {post.blog_categories[0].blog_categories.name}
-                    </Badge>
-                  )}
-                </div>
-                
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 line-clamp-2">
-                  <Link 
-                    href={`/blog/${post.slug}`}
-                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                  >
-                    {post.title}
-                  </Link>
-                </h3>
-              </CardHeader>
-              
-              <CardContent className="pt-0">
-                {post.excerpt && (
-                  <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
-                    {post.excerpt}
-                  </p>
+            <Link key={post.id} href={`/blog/${post.slug}`} className="block">
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                {post.featured_image_url && (
+                  <div className="aspect-video bg-gray-200">
+                    <img
+                      src={post.featured_image_url}
+                      alt={post.featured_image_alt || post.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 )}
                 
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    {formatDate(post.publish_date || post.created_at, "short")}
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    {post.blog_categories?.[0]?.blog_categories && (
+                      <Badge 
+                        style={getBadgeColor(post.blog_categories[0].blog_categories)}
+                        className="text-xs"
+                      >
+                        {post.blog_categories[0].blog_categories.name}
+                      </Badge>
+                    )}
                   </div>
-                  {post.reading_time && (
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {post.reading_time}m
-                    </div>
+                  
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    {post.title}
+                  </h3>
+                </CardHeader>
+                
+                <CardContent className="pt-0">
+                  {post.excerpt && (
+                    <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
+                      {post.excerpt}
+                    </p>
                   )}
-                </div>
-              </CardContent>
-            </Card>
+                  
+                  <div className="flex items-center justify-between text-sm text-gray-500">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      {formatDate(post.publish_date || post.created_at, "short")}
+                    </div>
+                    {post.reading_time && (
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {post.reading_time}m
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       )}

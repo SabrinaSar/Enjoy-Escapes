@@ -5,11 +5,12 @@ import BlogPost from "./components/BlogPost";
 import { generateSEOTags } from "@/utils/blog";
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = await createClient();
+  const resolvedParams = await params;
   
   const { data: post } = await supabase
     .from("blog_posts")
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         blog_tags(*)
       )
     `)
-    .eq("slug", params.slug)
+    .eq("slug", resolvedParams.slug)
     .eq("status", "published")
     .single();
 
@@ -75,6 +76,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const supabase = await createClient();
+  const resolvedParams = await params;
 
   const { data: post, error } = await supabase
     .from("blog_posts")
@@ -89,7 +91,7 @@ export default async function BlogPostPage({ params }: Props) {
         blog_tags(*)
       )
     `)
-    .eq("slug", params.slug)
+    .eq("slug", resolvedParams.slug)
     .eq("status", "published")
     .single();
 
