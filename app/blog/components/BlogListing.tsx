@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -237,12 +238,16 @@ export default function BlogListing({
           <div className="md:flex">
             {featuredPost.featured_image_url && (
               <div className="md:w-1/2">
-                <Link href={`/blog/${featuredPost.slug}`}>
-                  <img
-                    src={featuredPost.featured_image_url}
-                    alt={featuredPost.featured_image_alt || featuredPost.title}
-                    className="w-full h-64 md:h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                  />
+                <Link href={`/blog/${featuredPost.slug}`} className="block">
+                  <div className="relative h-64 md:h-full w-full overflow-hidden">
+                    <Image
+                      src={featuredPost.featured_image_url}
+                      alt={featuredPost.featured_image_alt || featuredPost.title}
+                      fill
+                      className="object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                  </div>
                 </Link>
               </div>
             )}
@@ -306,18 +311,20 @@ export default function BlogListing({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {regularPosts.map((post) => (
             <Link key={post.id} href={`/blog/${post.slug}`} className="block">
-              <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer p-0">
                 {post.featured_image_url && (
-                  <div className="aspect-video bg-gray-200">
-                    <img
+                  <div className="relative h-48 w-full overflow-hidden">
+                    <Image
                       src={post.featured_image_url}
                       alt={post.featured_image_alt || post.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover transition-transform duration-300 hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </div>
                 )}
                 
-                <CardHeader className="pb-3">
+                <CardHeader className="p-4 pb-3">
                   <div className="flex items-center gap-2 mb-2">
                     {post.blog_categories?.[0]?.blog_categories && (
                       <Badge 
@@ -334,7 +341,7 @@ export default function BlogListing({
                   </h3>
                 </CardHeader>
                 
-                <CardContent className="pt-0">
+                <CardContent className="px-4 pt-0 pb-4">
                   {post.excerpt && (
                     <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
                       {post.excerpt}

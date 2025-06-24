@@ -126,7 +126,7 @@ export default function BlogPost({ post, relatedPosts }: Props) {
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
               {/* Featured Image */}
               {post.featured_image_url && (
-                <div className="aspect-video bg-gray-200">
+                <div className="aspect-video bg-gray-200 overflow-hidden">
                   <img
                     src={post.featured_image_url}
                     alt={post.featured_image_alt || post.title}
@@ -367,11 +367,11 @@ export default function BlogPost({ post, relatedPosts }: Props) {
                           className="block group"
                         >
                           {relatedPost.featured_image_url && (
-                            <div className="aspect-video bg-gray-200 rounded mb-2">
+                            <div className="aspect-[4/3] bg-gray-200 rounded mb-2 overflow-hidden">
                               <img
                                 src={relatedPost.featured_image_url}
                                 alt={relatedPost.title}
-                                className="w-full h-full object-cover rounded"
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                               />
                             </div>
                           )}
