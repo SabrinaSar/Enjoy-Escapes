@@ -77,21 +77,7 @@ export interface ImageGallery {
   updated_at: string;
 }
 
-export interface BlogComment {
-  id: string;
-  blog_post_id: string;
-  parent_comment_id?: string;
-  author_name: string;
-  author_email: string;
-  author_website?: string;
-  content: string;
-  status: 'pending' | 'approved' | 'spam' | 'rejected';
-  ip_address?: string;
-  user_agent?: string;
-  created_at: string;
-  updated_at: string;
-  replies?: BlogComment[];
-}
+
 
 // Form interfaces for admin
 export interface BlogPostFormData {

@@ -1,23 +1,75 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Calendar, Clock, Eye, Share2, ArrowLeft, Heart, MessageCircle } from "lucide-react";
+import { Calendar, Clock, Eye, Share2, ArrowLeft, Heart } from "lucide-react";
 import { BlogPost as BlogPostType } from "@/types/blog";
 import { formatDate } from "@/utils/blog";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import NewsletterFormClient from "@/components/newsletter-form-client";
 
 interface Props {
   post: BlogPostType;
   relatedPosts: BlogPostType[];
 }
 
+interface TableOfContentsItem {
+  id: string;
+  text: string;
+  level: number;
+}
+
 export default function BlogPost({ post, relatedPosts }: Props) {
   const [isLiked, setIsLiked] = useState(false);
+  const [activeHeading, setActiveHeading] = useState<string>("");
+
+  // Extract table of contents from markdown content
+  const tableOfContents = useMemo(() => {
+    const headingRegex = /^(#{1,6})\s+(.+)$/gm;
+    const headings: TableOfContentsItem[] = [];
+    let match;
+
+    while ((match = headingRegex.exec(post.content)) !== null) {
+      const level = match[1].length;
+      const text = match[2];
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      
+      headings.push({
+        id,
+        text,
+        level
+      });
+    }
+
+    return headings;
+  }, [post.content]);
+
+  // Set up intersection observer for active heading tracking
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveHeading(entry.target.id);
+          }
+        });
+      },
+      {
+        rootMargin: "-20% 0% -35% 0%",
+        threshold: 0
+      }
+    );
+
+    // Observe all headings
+    const headingElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    headingElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -39,6 +91,16 @@ export default function BlogPost({ post, relatedPosts }: Props) {
 
   const getBadgeColor = (category: any) => {
     return { backgroundColor: category?.color || '#3B82F6', color: '#fff' };
+  };
+
+  const scrollToHeading = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
   };
 
   const categories = post.blog_categories?.map(pc => pc.blog_categories).filter((cat): cat is NonNullable<typeof cat> => Boolean(cat)) || [];
@@ -137,17 +199,72 @@ export default function BlogPost({ post, relatedPosts }: Props) {
                   </div>
                 </div>
 
-
-
                 {/* Main Content */}
-                <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-gray-900 dark:prose-strong:text-gray-100">
+                <div className="prose prose-lg max-w-none dark:prose-invert">
                   <ReactMarkdown 
                     remarkPlugins={[remarkGfm]}
                     components={{
+                      h1: ({ node, children, ...props }) => (
+                        <h1 
+                          id={children?.toString().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}
+                          className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-8 mb-4 scroll-mt-24"
+                          {...props}
+                        >
+                          {children}
+                        </h1>
+                      ),
+                      h2: ({ node, children, ...props }) => (
+                        <h2 
+                          id={children?.toString().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}
+                          className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mt-8 mb-4 scroll-mt-24"
+                          {...props}
+                        >
+                          {children}
+                        </h2>
+                      ),
+                      h3: ({ node, children, ...props }) => (
+                        <h3 
+                          id={children?.toString().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}
+                          className="text-xl font-semibold text-gray-900 dark:text-gray-100 mt-6 mb-3 scroll-mt-24"
+                          {...props}
+                        >
+                          {children}
+                        </h3>
+                      ),
+                      h4: ({ node, children, ...props }) => (
+                        <h4 
+                          id={children?.toString().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}
+                          className="text-lg font-semibold text-gray-900 dark:text-gray-100 mt-6 mb-3 scroll-mt-24"
+                          {...props}
+                        >
+                          {children}
+                        </h4>
+                      ),
+                      h5: ({ node, children, ...props }) => (
+                        <h5 
+                          id={children?.toString().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}
+                          className="text-base font-semibold text-gray-900 dark:text-gray-100 mt-4 mb-2 scroll-mt-24"
+                          {...props}
+                        >
+                          {children}
+                        </h5>
+                      ),
+                      h6: ({ node, children, ...props }) => (
+                        <h6 
+                          id={children?.toString().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}
+                          className="text-sm font-semibold text-gray-900 dark:text-gray-100 mt-4 mb-2 scroll-mt-24"
+                          {...props}
+                        >
+                          {children}
+                        </h6>
+                      ),
+                      p: ({ node, ...props }) => (
+                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4" {...props} />
+                      ),
                       img: ({ node, ...props }) => (
                         <img 
                           {...props} 
-                          className="rounded-lg shadow-md w-full h-auto"
+                          className="rounded-lg shadow-md w-full h-auto my-6"
                           loading="lazy"
                         />
                       ),
@@ -156,8 +273,32 @@ export default function BlogPost({ post, relatedPosts }: Props) {
                           {...props} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="text-blue-600 dark:text-blue-400 hover:underline"
+                          className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
                         />
+                      ),
+                      blockquote: ({ node, ...props }) => (
+                        <blockquote 
+                          className="border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-900/20 p-4 my-6 italic text-gray-700 dark:text-gray-300"
+                          {...props}
+                        />
+                      ),
+                      code: ({ node, className, children, ...props }) => {
+                        const isInline = !className?.includes('language-');
+                        return isInline ? (
+                          <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono" {...props}>
+                            {children}
+                          </code>
+                        ) : (
+                          <code className="block bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-sm font-mono overflow-x-auto" {...props}>
+                            {children}
+                          </code>
+                        );
+                      },
+                      ul: ({ node, ...props }) => (
+                        <ul className="list-disc list-inside mb-4 space-y-2 text-gray-700 dark:text-gray-300" {...props} />
+                      ),
+                      ol: ({ node, ...props }) => (
+                        <ol className="list-decimal list-inside mb-4 space-y-2 text-gray-700 dark:text-gray-300" {...props} />
                       ),
                     }}
                   >
@@ -188,16 +329,29 @@ export default function BlogPost({ post, relatedPosts }: Props) {
           <aside className="lg:col-span-1">
             <div className="sticky top-8 space-y-6">
               {/* Table of Contents */}
-              <Card>
-                <CardHeader>
-                  <h3 className="font-semibold">Table of Contents</h3>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    <p>Scroll to navigate through the article sections</p>
-                  </div>
-                </CardContent>
-              </Card>
+              {tableOfContents.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <h3 className="font-semibold">Table of Contents</h3>
+                  </CardHeader>
+                  <CardContent>
+                    <nav className="space-y-2">
+                      {tableOfContents.map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => scrollToHeading(item.id)}
+                          className={`block w-full text-left text-sm hover:text-primary transition-colors ${
+                            activeHeading === item.id ? 'text-primary font-medium' : 'text-gray-600 dark:text-gray-400'
+                          }`}
+                          style={{ paddingLeft: `${(item.level - 1) * 12}px` }}
+                        >
+                          {item.text}
+                        </button>
+                      ))}
+                    </nav>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Related Posts */}
               {relatedPosts.length > 0 && (
@@ -243,41 +397,10 @@ export default function BlogPost({ post, relatedPosts }: Props) {
                   </CardContent>
                 </Card>
               )}
-
-              {/* Newsletter Signup */}
-              <Card>
-                <CardHeader>
-                  <h3 className="font-semibold">Stay Updated</h3>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    Get the latest travel tips and destination guides delivered to your inbox.
-                  </p>
-                  <Button className="w-full">
-                    Subscribe to Newsletter
-                  </Button>
-                </CardContent>
-              </Card>
             </div>
           </aside>
         </div>
 
-        {/* Comments Section Placeholder */}
-        <div className="mt-12">
-          <Card>
-            <CardHeader>
-              <h3 className="text-xl font-semibold flex items-center gap-2">
-                <MessageCircle className="h-5 w-5" />
-                Comments
-              </h3>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 dark:text-gray-400">
-                Comments feature coming soon. Share your thoughts about this article!
-              </p>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
   );
