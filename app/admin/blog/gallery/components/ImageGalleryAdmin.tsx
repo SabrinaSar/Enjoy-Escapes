@@ -303,11 +303,19 @@ export default function ImageGalleryAdmin({ initialImages }: Props) {
                   src={image.public_url}
                   alt={image.alt_text || image.filename}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    console.error('Image failed to load:', image.public_url);
+                    console.error('Image data:', image);
+                  }}
+                  onLoad={() => {
+                    console.log('Image loaded successfully:', image.public_url);
+                  }}
                 />
               </div>
               
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center">
-                <div className="opacity-0 group-hover:opacity-100 flex gap-2">
+              {/* Hover overlay - only visible on hover */}
+              <div className="absolute inset-0 bg-transparent hover:bg-black/50 transition-all duration-200 flex items-center justify-center pointer-events-none group-hover:pointer-events-auto">
+                <div className="opacity-0 group-hover:opacity-100 flex gap-2 pointer-events-auto">
                   <Button
                     size="sm"
                     variant="secondary"
@@ -374,6 +382,13 @@ export default function ImageGalleryAdmin({ initialImages }: Props) {
                 src={image.public_url}
                 alt={image.alt_text || image.filename}
                 className="w-16 h-16 object-cover rounded"
+                onError={(e) => {
+                  console.error('List view image failed to load:', image.public_url);
+                  console.error('Image data:', image);
+                }}
+                onLoad={() => {
+                  console.log('List view image loaded successfully:', image.public_url);
+                }}
               />
               
               <div className="flex-1 min-w-0">
