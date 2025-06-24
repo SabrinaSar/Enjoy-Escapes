@@ -11,11 +11,12 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { X, Save, Eye, Image as ImageIcon } from "lucide-react";
-import { BlogPost, BlogCategory, BlogTag, BlogPostFormData } from "@/types/blog";
+import { X, Save, Eye, Image as ImageIcon, Plus } from "lucide-react";
+import { BlogPost, BlogCategory, BlogTag, BlogPostFormData, ImageGallery } from "@/types/blog";
 import { generateSlug, estimateReadingTime, generateExcerpt, validateBlogPost } from "@/utils/blog";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
+import ImageGalleryModal from "./ImageGalleryModal";
 
 // Dynamically import the markdown editor to avoid SSR issues
 const MDEditor = dynamic(
@@ -57,6 +58,7 @@ export default function BlogPostEditor({ post, categories, tags, onClose, onSave
 
   const [isSaving, setIsSaving] = useState(false);
   const [showImageGallery, setShowImageGallery] = useState(false);
+  const [showContentImageGallery, setShowContentImageGallery] = useState(false);
   const [keywordInput, setKeywordInput] = useState("");
   const supabase = createClient();
 
@@ -136,6 +138,21 @@ export default function BlogPostEditor({ post, categories, tags, onClose, onSave
         ? prev.tag_ids.filter(id => id !== tagId)
         : [...prev.tag_ids, tagId]
     }));
+  };
+
+  const handleFeaturedImageSelect = (image: ImageGallery) => {
+    setFormData(prev => ({
+      ...prev,
+      featured_image_url: image.public_url,
+      featured_image_alt: image.alt_text || "",
+    }));
+  };
+
+  const handleContentImageInsert = (image: ImageGallery) => {
+    const imageMarkdown = `![${image.alt_text || image.filename}](${image.public_url})`;
+    const currentContent = formData.content;
+    const newContent = currentContent ? `${currentContent}\n\n${imageMarkdown}` : imageMarkdown;
+    setFormData(prev => ({ ...prev, content: newContent }));
   };
 
   const handleSave = async (status?: "draft" | "published") => {
@@ -334,7 +351,18 @@ export default function BlogPostEditor({ post, categories, tags, onClose, onSave
               {/* Content Editor */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Content</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Content</CardTitle>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowContentImageGallery(true)}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Insert Image
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div data-color-mode="light">
@@ -368,7 +396,7 @@ export default function BlogPostEditor({ post, categories, tags, onClose, onSave
                       maxLength={60}
                     />
                     <div className="text-xs text-gray-500 mt-1">
-                      {formData.seo_title.length}/60 characters
+                      {(formData.seo_title || "").length}/60 characters
                     </div>
                   </div>
 
@@ -384,7 +412,7 @@ export default function BlogPostEditor({ post, categories, tags, onClose, onSave
                       maxLength={160}
                     />
                     <div className="text-xs text-gray-500 mt-1">
-                      {formData.seo_description.length}/160 characters
+                      {(formData.seo_description || "").length}/160 characters
                     </div>
                   </div>
 
@@ -604,6 +632,22 @@ export default function BlogPostEditor({ post, categories, tags, onClose, onSave
           </div>
         </div>
       </div>
+
+      {/* Image Gallery Modals */}
+      <ImageGalleryModal
+        isOpen={showImageGallery}
+        onClose={() => setShowImageGallery(false)}
+        onSelectImage={handleFeaturedImageSelect}
+        mode="single"
+        selectedImageId={formData.featured_image_url ? undefined : undefined}
+      />
+
+      <ImageGalleryModal
+        isOpen={showContentImageGallery}
+        onClose={() => setShowContentImageGallery(false)}
+        onSelectImage={handleContentImageInsert}
+        mode="content"
+      />
     </div>
   );
 } 
