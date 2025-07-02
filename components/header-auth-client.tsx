@@ -25,6 +25,11 @@ export default function HeaderAuthClient() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
         <DropdownMenuItem asChild>
+          <Link href="/blog" className="cursor-pointer">
+            Blog
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href="/about" className="cursor-pointer">
             About Us
           </Link>

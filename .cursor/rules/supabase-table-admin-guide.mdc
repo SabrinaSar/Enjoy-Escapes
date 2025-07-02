@@ -1,0 +1,369 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Supabase Table and Admin Panel Management Guide
+
+## Adding New Tables to Supabase
+
+### 1. Database Schema Creation
+When adding new tables to Supabase:
+
+```sql
+-- Example table structure following the established pattern
+CREATE TABLE new_table_name (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  description TEXT,
+  is_active BOOLEAN DEFAULT true,
+  sort_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Add RLS (Row Level Security) policies
+ALTER TABLE new_table_name ENABLE ROW LEVEL SECURITY;
+
+-- Create policies for different access levels
+CREATE POLICY "Allow public read access" ON new_table_name
+  FOR SELECT USING (is_active = true);
+
+CREATE POLICY "Allow admin full access" ON new_table_name
+  FOR ALL USING (auth.jwt() ->> 'role' = 'admin');
+```
+
+### 2. Related Tables Pattern
+For tables with relationships (like category_filters, category_embed_params):
+
+```sql
+-- Related table following the established pattern
+CREATE TABLE new_table_related (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  new_table_id UUID REFERENCES new_table_name(id) ON DELETE CASCADE,
+  key TEXT NOT NULL,
+  value TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+```
+
+## Server Component Pattern
+
+### 3. Create Server Component
+Following the pattern in [CategoryFilter.tsx](mdc:app/components/CategoryFilter.tsx):
+
+```typescript
+// app/components/NewTableFilter.tsx
+import { createClient } from "@/utils/supabase/server";
+import NewTableFilterClient from "./NewTableFilterClient";
+
+export default async function NewTableFilter() {
+  const supabase = await createClient();
+  const { data: items } = await supabase
+    .from("new_table_name")
+    .select(`
+      *,
+      new_table_related (*)
+    `)
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+
+  return <NewTableFilterClient initialItems={items || []} />;
+}
+```
+
+### 4. Create Client Component
+```typescript
+// app/components/NewTableFilterClient.tsx
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+interface NewTableItem {
+  id: string;
+  name: string;
+  description?: string;
+  is_active: boolean;
+  sort_order: number;
+  new_table_related?: Array<{
+    key: string;
+    value: string;
+  }>;
+}
+
+interface Props {
+  initialItems: NewTableItem[];
+}
+
+export default function NewTableFilterClient({ initialItems }: Props) {
+  const [items] = useState(initialItems);
+  const router = useRouter();
+
+  // Implementation here
+  return (
+    <div>
+      {/* Component JSX */}
+    </div>
+  );
+}
+```
+
+## Admin Panel Management
+
+### 5. Admin Page Structure
+Create admin pages following the established pattern:
+
+```typescript
+// app/admin/new-table/page.tsx
+import { createClient } from "@/utils/supabase/server";
+import NewTableAdmin from "./components/NewTableAdmin";
+
+export default async function NewTableAdminPage() {
+  const supabase = await createClient();
+  
+  const { data: items } = await supabase
+    .from("new_table_name")
+    .select(`
+      *,
+      new_table_related (*)
+    `)
+    .order("created_at", { ascending: false });
+
+  return <NewTableAdmin initialItems={items || []} />;
+}
+```
+
+### 6. Admin Component with CRUD Operations
+```typescript
+// app/admin/new-table/components/NewTableAdmin.tsx
+"use client";
+
+import { useState } from "react";
+import { createClient } from "@/utils/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+
+export default function NewTableAdmin({ initialItems }) {
+  const [items, setItems] = useState(initialItems);
+  const [isLoading, setIsLoading] = useState(false);
+  const supabase = createClient();
+
+  const handleCreate = async (newItem) => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("new_table_name")
+        .insert([newItem])
+        .select()
+        .single();
+
+      if (error) throw error;
+      setItems([data, ...items]);
+    } catch (error) {
+      console.error("Error creating item:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdate = async (id, updates) => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("new_table_name")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      setItems(items.map(item => item.id === id ? data : item));
+    } catch (error) {
+      console.error("Error updating item:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from("new_table_name")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+      setItems(items.filter(item => item.id !== id));
+    } catch (error) {
+      console.error("Error deleting item:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Admin interface JSX */}
+    </div>
+  );
+}
+```
+
+### 7. Form Components
+Create reusable form components for consistent admin interfaces:
+
+```typescript
+// app/admin/components/NewTableForm.tsx
+"use client";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+
+interface Props {
+  item?: any;
+  onSubmit: (data: any) => void;
+  isLoading?: boolean;
+}
+
+export default function NewTableForm({ item, onSubmit, isLoading }: Props) {
+  const [formData, setFormData] = useState({
+    name: item?.name || "",
+    description: item?.description || "",
+    is_active: item?.is_active ?? true,
+    sort_order: item?.sort_order || 0,
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium mb-1">Name</label>
+        <Input
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          required
+        />
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium mb-1">Description</label>
+        <Textarea
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+        />
+      </div>
+      
+      <div className="flex items-center space-x-2">
+        <Switch
+          checked={formData.is_active}
+          onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+        />
+        <label className="text-sm font-medium">Active</label>
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium mb-1">Sort Order</label>
+        <Input
+          type="number"
+          value={formData.sort_order}
+          onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) })}
+        />
+      </div>
+      
+      <Button type="submit" disabled={isLoading}>
+        {isLoading ? "Saving..." : item ? "Update" : "Create"}
+      </Button>
+    </form>
+  );
+}
+```
+
+## Best Practices
+
+### 8. TypeScript Types
+Always create proper TypeScript interfaces:
+
+```typescript
+// types/database.ts
+export interface NewTableItem {
+  id: string;
+  name: string;
+  description?: string;
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+  new_table_related?: NewTableRelated[];
+}
+
+export interface NewTableRelated {
+  id: string;
+  new_table_id: string;
+  key: string;
+  value: string;
+  created_at: string;
+}
+```
+
+### 9. Error Handling
+Always implement proper error handling:
+
+```typescript
+const handleOperation = async () => {
+  try {
+    setIsLoading(true);
+    const { data, error } = await supabase.from("table").select();
+    
+    if (error) {
+      console.error("Database error:", error);
+      // Show user-friendly error message
+      return;
+    }
+    
+    // Handle success
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    // Show generic error message
+  } finally {
+    setIsLoading(false);
+  }
+};
+```
+
+### 10. Navigation and Routing
+For admin navigation, add to the admin navigation component:
+
+```typescript
+// Add to admin navigation
+const adminNavItems = [
+  { href: "/admin/new-table", label: "New Table Management" },
+  // ... other nav items
+];
+```
+
+## Security Considerations
+
+### 11. RLS Policies
+Always implement Row Level Security:
+- Public read access for active items only
+- Admin full access for management
+- Proper authentication checks
+
+### 12. Input Validation
+Validate all inputs both client-side and server-side:
+- Required fields
+- Data types
+- Length limits
+- Sanitization
+
+This pattern ensures consistency across your application and provides a solid foundation for managing any new tables you add to your Supabase database.

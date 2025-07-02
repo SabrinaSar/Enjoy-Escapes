@@ -97,7 +97,30 @@ export default function AdminLayout({
             <Image className="h-4 w-4" />
             Banner Management
           </Link>
-          {/* Add other admin links here */}
+          <Link
+            href="/admin/categories"
+            className="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <PackagePlus className="h-4 w-4" />
+            Category Management
+          </Link>
+          <Link
+            href="/admin/blog"
+            className="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <PackagePlus className="h-4 w-4" />
+            Blog Management
+          </Link>
+          <Link
+            href="/admin/blog/gallery"
+            className="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <Image className="h-4 w-4" />
+            Image Gallery
+          </Link>
         </nav>
       </div>
 
