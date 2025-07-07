@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Calendar, Clock, Eye, Share2, ArrowLeft, Heart } from "lucide-react";
+import { Calendar, Clock, Share2, ArrowLeft, Heart } from "lucide-react";
 import { BlogPost as BlogPostType } from "@/types/blog";
 import { formatDate } from "@/utils/blog";
 import ReactMarkdown from "react-markdown";
@@ -176,10 +176,6 @@ export default function BlogPost({ post, relatedPosts }: Props) {
                         {post.reading_time} min read
                       </div>
                     )}
-                    <div className="flex items-center gap-1">
-                      <Eye className="h-4 w-4" />
-                      {post.view_count || 0} views
-                    </div>
                   </div>
 
                   <div className="flex items-center gap-2 ml-auto">
