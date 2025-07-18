@@ -6,6 +6,14 @@ import { DynamicIframe } from "./components/DynamicIframe";
 const buildWidgetUrl = async () => {
   const supabase = await createClient();
   
+  // Default parameters that are always included
+  const defaultParams = new URLSearchParams({
+    utm_source: "hc-d73673bf-1025-4875-9fb9-dc86749318cc",
+    utm_medium: "holconn",
+    orgId: "d73673bf-1025-4875-9fb9-dc86749318cc",
+    poweredBy: "icelolly"
+  });
+  
   // Get the category and its embed parameters
   const { data: category } = await supabase
     .from("categories")
@@ -17,27 +25,21 @@ const buildWidgetUrl = async () => {
     .eq("is_active", true)
     .single();
 
-  if (!category || !category.category_embed_params.length) {
-    // Fallback to default configuration
-    const defaultParams = new URLSearchParams({
-      destination: "39677",
-      departureAirport: "ABZ",
-      boardBasis: "AI",
-      starRating: "4,5"
+  // Start with default base URL
+  let baseUrl = "https://holidayconnect-app.icetravelgroup.com/holiday-deals";
+  
+  // If category exists, use its base URL and merge parameters
+  if (category && category.category_embed_params.length) {
+    // Use the base_url from the first embed param if available
+    baseUrl = category.category_embed_params[0]?.base_url || baseUrl;
+    
+    // Add/override default params with database params
+    category.category_embed_params.forEach((param: any) => {
+      defaultParams.set(param.param_name, param.param_value);
     });
-    return `https://supersonic-icelolly-website.pages.dev/v2/affiliate-bos?${defaultParams.toString()}`;
   }
 
-  // Use the base_url from the first embed param (they should all have the same base_url)
-  const baseUrl = category.category_embed_params[0]?.base_url || "https://supersonic-icelolly-website.pages.dev/v2/affiliate-bos";
-
-  // Build params from database
-  const params = new URLSearchParams();
-  category.category_embed_params.forEach((param: any) => {
-    params.append(param.param_name, param.param_value);
-  });
-
-  return `${baseUrl}?${params.toString()}`;
+  return `${baseUrl}?${defaultParams.toString()}`;
 };
 
 export const metadata: Metadata = {
