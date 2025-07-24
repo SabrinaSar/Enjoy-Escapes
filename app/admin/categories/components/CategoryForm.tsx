@@ -120,8 +120,8 @@ export function CategoryForm({ category }: CategoryFormProps) {
   const addEmbedParam = () => {
     setEmbedParams([...embedParams, { 
       id: crypto.randomUUID(),
-      embed_type: "icelolly", 
-      base_url: "https://supersonic-icelolly-website.pages.dev/v2/affiliate-bos", 
+      embed_type: "holiday-finder", 
+      base_url: "https://holidayconnect-app.icetravelgroup.com/holiday-deals", 
       param_name: "", 
       param_value: "" 
     }]);
@@ -149,8 +149,8 @@ export function CategoryForm({ category }: CategoryFormProps) {
       if (embedParams.length === 0) {
         setEmbedParams([{
           id: crypto.randomUUID(),
-          embed_type: "icelolly",
-          base_url: "https://supersonic-icelolly-website.pages.dev/v2/affiliate-bos",
+          embed_type: "holiday-finder",
+          base_url: "https://holidayconnect-app.icetravelgroup.com/holiday-deals",
           param_name: "destination",
           param_value: ""
         }]);
@@ -178,8 +178,8 @@ export function CategoryForm({ category }: CategoryFormProps) {
     // Add embed params to form data
     embedParams.forEach((param, index) => {
       if (param.param_name && param.param_value) {
-        formData.append(`embed_${index}_type`, "icelolly");
-        formData.append(`embed_${index}_base_url`, "https://supersonic-icelolly-website.pages.dev/v2/affiliate-bos");
+        formData.append(`embed_${index}_type`, "holiday-finder");
+        formData.append(`embed_${index}_base_url`, "https://holidayconnect-app.icetravelgroup.com/holiday-deals");
         formData.append(`embed_${index}_param_name`, param.param_name);
         formData.append(`embed_${index}_param_value`, param.param_value);
       }
@@ -311,7 +311,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
               <div>
                 <Label htmlFor="special_page" className="font-medium">Special Page</Label>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Creates a dedicated page with an IceLolly embed widget
+                  Creates a dedicated page with an Holiday Finder widget
                 </p>
               </div>
             </div>
@@ -407,14 +407,14 @@ export function CategoryForm({ category }: CategoryFormProps) {
         </Card>
       )}
 
-      {/* IceLolly Widget Parameters - Only for special pages */}
+      {/* Holiday Finder Widget Parameters - Only for special pages */}
       {isSpecialPage && (
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-lg">IceLolly Widget Parameters</CardTitle>
+              <CardTitle className="text-lg">Holiday Finder Widget Parameters</CardTitle>
               <p className="text-sm text-muted-foreground mt-1">
-                Configure the parameters for the IceLolly holiday search widget
+                Configure the parameters for the Holiday Finder holiday search widget
               </p>
             </div>
             <Button type="button" onClick={addEmbedParam} variant="outline" size="sm">
@@ -470,7 +470,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
             
             {embedParams.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
-                <p>No parameters configured. Add parameters to customize the IceLolly widget.</p>
+                <p>No parameters configured. Add parameters to customize the Holiday Finder widget.</p>
                 <p className="text-xs mt-1">Common parameters: destination, departureAirport, boardBasis, starRating</p>
               </div>
             )}
