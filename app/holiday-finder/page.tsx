@@ -21,7 +21,7 @@ const buildWidgetUrl = async () => {
       *,
       category_embed_params (*)
     `)
-    .eq("slug", "icelolly")
+    .eq("slug", "holiday-finder")
     .eq("is_active", true)
     .single();
 
@@ -43,13 +43,13 @@ const buildWidgetUrl = async () => {
 };
 
 export const metadata: Metadata = {
-  title: "Icelolly | Enjoy Escapes",
+  title: "Holiday Finder | Enjoy Escapes",
   description:
     "Discover the latest all inclusive holiday deals and packages. Find your perfect getaway with everything included.",
   keywords:
     "all inclusive holidays, latest deals, all inclusive packages, holiday deals, vacation packages",
   alternates: {
-    canonical: "https://enjoyescapes.com/icelolly",
+    canonical: "https://enjoyescapes.com/holiday-finder",
   },
   icons: {
     icon: [
@@ -60,11 +60,11 @@ export const metadata: Metadata = {
     apple: '/logo.png',
   },
   openGraph: {
-    title: "Icelolly | Enjoy Escapes",
+    title: "Holiday Finder | Enjoy Escapes",
     description:
       "Discover the latest all inclusive holiday deals and packages. Find your perfect getaway with everything included.",
     type: "website",
-    url: "https://enjoyescapes.com/icelolly",
+    url: "https://enjoyescapes.com/holiday-finder",
     siteName: "Enjoy Escapes",
     images: [
       {
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Icelolly | Enjoy Escapes",
+    title: "Holiday Finder | Enjoy Escapes",
     description:
       "Discover the latest all inclusive holiday deals and packages. Find your perfect getaway with everything included.",
     images: ["https://enjoyescapes.com/logo.png"],
