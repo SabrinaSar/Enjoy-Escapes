@@ -13,6 +13,14 @@ export const metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Enjoy Escapes - Curated Travel Experiences",
   description: "Discover unique travel escapes curated by Enjoy Escapes.",
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/logo.png', type: 'image/png' }
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/logo.png',
+  },
 };
 
 export default function RootLayout({

@@ -51,6 +51,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://enjoyescapes.com/icelolly",
   },
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/logo.png', type: 'image/png' }
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/logo.png',
+  },
   openGraph: {
     title: "Icelolly | Enjoy Escapes",
     description:
