@@ -22,13 +22,7 @@ interface Category {
     filter_type: string;
     filter_value: string;
   }>;
-  category_embed_params: Array<{
-    id: string;
-    embed_type: string;
-    base_url: string;
-    param_name: string;
-    param_value: string;
-  }>;
+  iframe_embed_code: string | null;
 }
 
 export default async function CategoriesPage() {
@@ -50,7 +44,7 @@ export default async function CategoriesPage() {
             Category Management
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manage category filters and embed configurations
+            Manage category filters and iframe embed codes
           </p>
         </div>
         <Button asChild className="w-full sm:w-auto">
@@ -113,7 +107,7 @@ export default async function CategoriesPage() {
                   <th className="text-left p-2">Type</th>
                   <th className="text-left p-2">Status</th>
                   <th className="text-left p-2">Filters</th>
-                  <th className="text-left p-2">Embed Params</th>
+                  <th className="text-left p-2">Iframe Code</th>
                   <th className="text-left p-2">Actions</th>
                 </tr>
               </thead>
@@ -173,7 +167,7 @@ export default async function CategoriesPage() {
                     </td>
                     <td className="p-2">
                       <span className="text-xs text-muted-foreground">
-                        {category.category_embed_params?.length || 0} params
+                        {category.iframe_embed_code ? 'Configured' : 'Not set'}
                       </span>
                     </td>
                     <td className="p-2">

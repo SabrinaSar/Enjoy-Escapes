@@ -9,8 +9,7 @@ export default async function CategoryFilter() {
     .from("categories")
     .select(`
       *,
-      category_filters (*),
-      category_embed_params (*)
+      category_filters (*)
     `)
     .eq("is_active", true)
     .order("sort_order", { ascending: true });

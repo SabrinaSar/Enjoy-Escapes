@@ -13,13 +13,12 @@ export default async function EditCategoryPage({ params }: PageProps) {
   const { id } = await params;
   const supabase = await createClient();
 
-  // Fetch category with its filters and embed params
+  // Fetch category with its filters
   const { data: category, error } = await supabase
     .from("categories")
     .select(`
       *,
-      category_filters (*),
-      category_embed_params (*)
+      category_filters (*)
     `)
     .eq("id", id)
     .single();
@@ -35,7 +34,7 @@ export default async function EditCategoryPage({ params }: PageProps) {
           Edit Category: {category.name}
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Update category details, filters, and embed configurations
+          Update category details, filters, and iframe embed code
         </p>
       </div>
 

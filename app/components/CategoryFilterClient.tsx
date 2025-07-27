@@ -22,13 +22,7 @@ interface Category {
     filter_type: string;
     filter_value: string;
   }>;
-  category_embed_params: Array<{
-    id: string;
-    embed_type: string;
-    base_url: string;
-    param_name: string;
-    param_value: string;
-  }>;
+  iframe_embed_code: string | null;
 }
 
 interface CategoryFilterClientProps {
