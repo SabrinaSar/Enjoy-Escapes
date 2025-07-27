@@ -28,13 +28,7 @@ interface CategoryFormProps {
       filter_type: string;
       filter_value: string;
     }>;
-    category_embed_params: Array<{
-      id: string;
-      embed_type: string;
-      base_url: string;
-      param_name: string;
-      param_value: string;
-    }>;
+    iframe_embed_code: string | null;
   };
 }
 
@@ -72,19 +66,6 @@ export function CategoryForm({ category }: CategoryFormProps) {
     }
   };
 
-  // Get placeholder text for embed parameters
-  const getEmbedPlaceholder = (paramName: string) => {
-    switch (paramName) {
-      case "destination": return "e.g., 39677 (destination code)";
-      case "departureAirport": return "e.g., LGW, MAN, ABZ";
-      case "boardBasis": return "e.g., AI (All Inclusive), HB (Half Board)";
-      case "starRating": return "e.g., 4,5 (4 or 5 star hotels)";
-      case "duration": return "e.g., 7, 14 (nights)";
-      case "adults": return "e.g., 2";
-      case "children": return "e.g., 0, 2";
-      default: return "Enter parameter value";
-    }
-  };
 
   // State for category type
   const [isSpecialPage, setIsSpecialPage] = useState(category?.is_special_page ?? false);
@@ -94,9 +75,9 @@ export function CategoryForm({ category }: CategoryFormProps) {
     category?.category_filters || [{ filter_type: "", filter_value: "" }]
   );
 
-  // State for dynamic embed params (only for special pages)
-  const [embedParams, setEmbedParams] = useState(
-    category?.category_embed_params || []
+  // State for iframe embed code (only for special pages)
+  const [iframeEmbedCode, setIframeEmbedCode] = useState(
+    category?.iframe_embed_code || ""
   );
 
   // Add new filter
@@ -116,28 +97,6 @@ export function CategoryForm({ category }: CategoryFormProps) {
     setFilters(updatedFilters);
   };
 
-  // Add new embed param
-  const addEmbedParam = () => {
-    setEmbedParams([...embedParams, { 
-      id: crypto.randomUUID(),
-      embed_type: "holiday-finder", 
-      base_url: "https://holidayconnect-app.icetravelgroup.com/holiday-deals", 
-      param_name: "", 
-      param_value: "" 
-    }]);
-  };
-
-  // Remove embed param
-  const removeEmbedParam = (index: number) => {
-    setEmbedParams(embedParams.filter((_, i) => i !== index));
-  };
-
-  // Update embed param
-  const updateEmbedParam = (index: number, field: string, value: string) => {
-    const updatedParams = [...embedParams];
-    updatedParams[index] = { ...updatedParams[index], [field]: value };
-    setEmbedParams(updatedParams);
-  };
 
   // Handle special page toggle
   const handleSpecialPageToggle = (checked: boolean) => {
@@ -145,19 +104,9 @@ export function CategoryForm({ category }: CategoryFormProps) {
     if (checked) {
       // Clear filters when switching to special page
       setFilters([]);
-      // Add default embed params if none exist
-      if (embedParams.length === 0) {
-        setEmbedParams([{
-          id: crypto.randomUUID(),
-          embed_type: "holiday-finder",
-          base_url: "https://holidayconnect-app.icetravelgroup.com/holiday-deals",
-          param_name: "destination",
-          param_value: ""
-        }]);
-      }
     } else {
-      // Clear embed params when switching to regular category
-      setEmbedParams([]);
+      // Clear iframe embed code when switching to regular category
+      setIframeEmbedCode("");
       // Add default filter if none exist
       if (filters.length === 0) {
         setFilters([{ filter_type: "", filter_value: "" }]);
@@ -175,15 +124,10 @@ export function CategoryForm({ category }: CategoryFormProps) {
       }
     });
 
-    // Add embed params to form data
-    embedParams.forEach((param, index) => {
-      if (param.param_name && param.param_value) {
-        formData.append(`embed_${index}_type`, "holiday-finder");
-        formData.append(`embed_${index}_base_url`, "https://holidayconnect-app.icetravelgroup.com/holiday-deals");
-        formData.append(`embed_${index}_param_name`, param.param_name);
-        formData.append(`embed_${index}_param_value`, param.param_value);
-      }
-    });
+    // Add iframe embed code to form data
+    if (iframeEmbedCode.trim()) {
+      formData.append("iframe_embed_code", iframeEmbedCode);
+    }
 
     formAction(formData);
   };
@@ -407,73 +351,38 @@ export function CategoryForm({ category }: CategoryFormProps) {
         </Card>
       )}
 
-      {/* Holiday Finder Widget Parameters - Only for special pages */}
+      {/* Iframe Embed Code - Only for special pages */}
       {isSpecialPage && (
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle className="text-lg">Holiday Finder Widget Parameters</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                Configure the parameters for the Holiday Finder holiday search widget
-              </p>
-            </div>
-            <Button type="button" onClick={addEmbedParam} variant="outline" size="sm">
-              <Plus className="w-4 h-4 mr-1" />
-              Add Parameter
-            </Button>
+          <CardHeader>
+            <CardTitle className="text-lg">Iframe Embed Code</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
+              Paste the complete iframe HTML code including any scripts provided by the client
+            </p>
           </CardHeader>
           <CardContent className="space-y-4">
-            {embedParams.map((param, index) => (
-              <div key={param.id || index} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg">
-                <div className="space-y-2">
-                  <Label>Parameter Name</Label>
-                  <Select
-                    value={param.param_name}
-                    onValueChange={(value) => updateEmbedParam(index, "param_name", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select parameter" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="destination">Destination</SelectItem>
-                      <SelectItem value="departureAirport">Departure Airport</SelectItem>
-                      <SelectItem value="boardBasis">Board Basis</SelectItem>
-                      <SelectItem value="starRating">Star Rating</SelectItem>
-                      <SelectItem value="duration">Duration (nights)</SelectItem>
-                      <SelectItem value="adults">Number of Adults</SelectItem>
-                      <SelectItem value="children">Number of Children</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Parameter Value</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      value={param.param_value}
-                      onChange={(e) => updateEmbedParam(index, "param_value", e.target.value)}
-                      placeholder={getEmbedPlaceholder(param.param_name)}
-                    />
-                    <Button
-                      type="button"
-                      onClick={() => removeEmbedParam(index)}
-                      variant="outline"
-                      size="sm"
-                      className="text-red-600"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-            
-            {embedParams.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground">
-                <p>No parameters configured. Add parameters to customize the Holiday Finder widget.</p>
-                <p className="text-xs mt-1">Common parameters: destination, departureAirport, boardBasis, starRating</p>
-              </div>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="iframe_embed_code">Complete Iframe HTML Code</Label>
+              <Textarea
+                id="iframe_embed_code"
+                value={iframeEmbedCode}
+                onChange={(e) => setIframeEmbedCode(e.target.value)}
+                placeholder={`<iframe style="border:0;width:100%;" title="Holiday deals" id="holiday-deals-6d341d52" src="https://holidayconnect-app.icetravelgroup.com/holiday-deals?utm_source=hc-d73673bf-1025-4875-9fb9-dc86749318cc&utm_medium=holconn&utm_content=hol-bos-dl&orgId=d73673bf-1025-4875-9fb9-dc86749318cc&poweredBy=icelolly&title=Sabrina's all inclusive deals"></iframe>
+<script src="https://cdn.jsdelivr.net/npm/@iframe-resizer/parent@5.3.2"></script>
+<script>
+  iframeResize({
+    license: 'GPLv3',
+    waitForLoad: false,
+    checkOrigin: false
+  }, '#holiday-deals-6d341d52');
+</script>`}
+                rows={8}
+                className="font-mono text-sm"
+              />
+              <p className="text-xs text-muted-foreground">
+                Include the complete iframe tag and any associated scripts exactly as provided by the client
+              </p>
+            </div>
           </CardContent>
         </Card>
       )}

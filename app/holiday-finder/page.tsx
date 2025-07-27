@@ -1,45 +1,19 @@
 import { Metadata } from "next";
 import { createClient } from "@/utils/supabase/server";
-import { DynamicIframe } from "./components/DynamicIframe";
 
-// Build the complete URL from database params
-const buildWidgetUrl = async () => {
+// Get the iframe embed code from the database
+const getIframeEmbedCode = async () => {
   const supabase = await createClient();
   
-  // Default parameters that are always included
-  const defaultParams = new URLSearchParams({
-    utm_source: "hc-d73673bf-1025-4875-9fb9-dc86749318cc",
-    utm_medium: "holconn",
-    orgId: "d73673bf-1025-4875-9fb9-dc86749318cc",
-    poweredBy: "icelolly"
-  });
-  
-  // Get the category and its embed parameters
+  // Get the category and its iframe embed code
   const { data: category } = await supabase
     .from("categories")
-    .select(`
-      *,
-      category_embed_params (*)
-    `)
+    .select("iframe_embed_code")
     .eq("slug", "holiday-finder")
     .eq("is_active", true)
     .single();
 
-  // Start with default base URL
-  let baseUrl = "https://holidayconnect-app.icetravelgroup.com/holiday-deals";
-  
-  // If category exists, use its base URL and merge parameters
-  if (category && category.category_embed_params.length) {
-    // Use the base_url from the first embed param if available
-    baseUrl = category.category_embed_params[0]?.base_url || baseUrl;
-    
-    // Add/override default params with database params
-    category.category_embed_params.forEach((param: any) => {
-      defaultParams.set(param.param_name, param.param_value);
-    });
-  }
-
-  return `${baseUrl}?${defaultParams.toString()}`;
+  return category?.iframe_embed_code || null;
 };
 
 export const metadata: Metadata = {
@@ -85,13 +59,23 @@ export const metadata: Metadata = {
 };
 
 export default async function LatestAllInclusivePage() {
-  const widgetUrl = await buildWidgetUrl();
+  const iframeEmbedCode = await getIframeEmbedCode();
+
+  if (!iframeEmbedCode) {
+    return (
+      <div className="w-full min-h-screen flex flex-col items-center justify-center">
+        <p className="text-center text-muted-foreground">
+          No holiday finder widget configured. Please contact the administrator.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen flex flex-col">
-      <DynamicIframe 
-        src={widgetUrl} 
-        title="Latest All Inclusive Holiday Deals" 
+      <div 
+        className="flex-1 w-full mx-4 mb-4"
+        dangerouslySetInnerHTML={{ __html: iframeEmbedCode }}
       />
     </div>
   );
