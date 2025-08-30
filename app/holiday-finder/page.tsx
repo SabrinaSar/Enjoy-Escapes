@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { createClient } from "@/utils/supabase/server";
+import IframeRenderer from "@/app/holiday-finder/components/IframeRenderer";
 
 // Get the iframe embed code from the database
 const getIframeEmbedCode = async () => {
@@ -73,11 +74,7 @@ export default async function LatestAllInclusivePage() {
 
   return (
     <div className="w-full min-h-screen flex flex-col">
-      <div 
-        key="holiday-finder-iframe"
-        className="flex-1 w-full mx-4 mb-4"
-        dangerouslySetInnerHTML={{ __html: iframeEmbedCode }}
-      />
+      <IframeRenderer embedCode={iframeEmbedCode} />
     </div>
   );
 } 
