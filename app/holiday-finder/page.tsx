@@ -74,6 +74,7 @@ export default async function LatestAllInclusivePage() {
   return (
     <div className="w-full min-h-screen flex flex-col">
       <div 
+        key="holiday-finder-iframe"
         className="flex-1 w-full mx-4 mb-4"
         dangerouslySetInnerHTML={{ __html: iframeEmbedCode }}
       />
