@@ -2,7 +2,6 @@
 
 import React, { useCallback, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { trackEscapeClick } from "@/app/actions/trackClick";
 
 interface TrackableLinkProps {
   href: string;
@@ -16,7 +15,9 @@ interface TrackableLinkProps {
 }
 
 /**
- * A link component that tracks clicks before redirecting
+ * A link component that tracks clicks before redirecting.
+ * Uses navigator.sendBeacon for reliable, non-blocking tracking.
+ * Always allows navigation even if tracking fails.
  */
 const TrackableLink: React.FC<TrackableLinkProps> = ({
   href,
@@ -29,51 +30,84 @@ const TrackableLink: React.FC<TrackableLinkProps> = ({
   microDataItemType,
 }) => {
   const pathname = usePathname();
-  const isTrackingRef = useRef(false);
+  const lastTrackTimeRef = useRef<number>(0);
+
+  const trackClick = useCallback(() => {
+    // Simple time-based deduplication (prevent double-clicks within 300ms)
+    const now = Date.now();
+    if (now - lastTrackTimeRef.current < 300) {
+      return;
+    }
+    lastTrackTimeRef.current = now;
+
+    try {
+      // Prepare tracking data
+      const trackingData = {
+        escape_id: itemId,
+        item_type: itemType,
+        source: pathname || "",
+        user_agent: navigator.userAgent,
+        referrer: document.referrer,
+        timestamp: new Date().toISOString(),
+      };
+
+      // Use sendBeacon for reliable tracking that doesn't block navigation
+      // This is specifically designed for analytics and works even when the page unloads
+      if (navigator.sendBeacon) {
+        const success = navigator.sendBeacon(
+          "/api/track-click",
+          JSON.stringify(trackingData)
+        );
+        
+        if (!success) {
+          // Fallback to fetch if sendBeacon fails (rare)
+          fetch("/api/track-click", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(trackingData),
+            keepalive: true, // Keep request alive even if page navigates away
+          }).catch(() => {
+            // Silent fail - don't let tracking errors affect user experience
+          });
+        }
+      } else {
+        // Fallback for browsers without sendBeacon support
+        fetch("/api/track-click", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(trackingData),
+          keepalive: true,
+        }).catch(() => {
+          // Silent fail
+        });
+      }
+    } catch (error) {
+      // Silently fail - never let tracking break the link
+      console.debug("Tracking failed:", error);
+    }
+  }, [itemId, itemType, pathname]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>) => {
-      // Don't prevent default - let the browser handle navigation naturally
-      // This prevents popup blocking issues
+      // Track the click - this never prevents navigation
+      trackClick();
       
-      // Prevent duplicate tracking
-      if (isTrackingRef.current) {
-        return;
-      }
-      
-      isTrackingRef.current = true;
-      
-      // Get browser data for analytics
-      const source = pathname || "";
-      const userAgent = navigator.userAgent;
-      const referrer = document.referrer;
-      
-      // Track the click asynchronously without blocking navigation
-      // Use fire-and-forget approach
-      trackEscapeClick({
-        escape_id: itemId,
-        source,
-        user_agent: userAgent,
-        referrer,
-      }).catch(error => {
-        console.error("Error tracking click:", error);
-      }).finally(() => {
-        // Reset tracking flag after a short delay
-        setTimeout(() => {
-          isTrackingRef.current = false;
-        }, 100);
-      });
-      
-      // Let the browser handle the navigation naturally
-      // No preventDefault, no manual window.open
+      // Let the browser handle navigation naturally
+      // No preventDefault(), no blocking - affiliate link always works
     },
-    [itemId, pathname, itemType]
+    [trackClick]
   );
+
+  // Also track on touch for better iOS support
+  const handleTouchStart = useCallback(() => {
+    trackClick();
+  }, [trackClick]);
 
   return (
     <a
       href={href}
       onClick={handleClick}
+      onTouchStart={handleTouchStart}
       className={className}
       aria-label={ariaLabel}
       target="_blank"
@@ -81,7 +115,10 @@ const TrackableLink: React.FC<TrackableLinkProps> = ({
       itemScope={itemScope}
       itemType={microDataItemType}
       style={{ 
-        touchAction: 'manipulation'
+        touchAction: 'manipulation',
+        // Ensure the link is always tappable on iOS
+        WebkitTapHighlightColor: 'transparent',
+        cursor: 'pointer'
       }}
     >
       {children}
