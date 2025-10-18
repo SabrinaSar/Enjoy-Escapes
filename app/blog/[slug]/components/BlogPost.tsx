@@ -126,7 +126,7 @@ export default function BlogPost({ post, relatedPosts }: Props) {
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
               {/* Featured Image */}
               {post.featured_image_url && (
-                <div className="aspect-video bg-gray-200 overflow-hidden">
+                <div className="aspect-video bg-gray-200 overflow-hidden max-w-4xl mx-auto">
                   <img
                     src={post.featured_image_url}
                     alt={post.featured_image_alt || post.title}
@@ -260,7 +260,7 @@ export default function BlogPost({ post, relatedPosts }: Props) {
                       img: ({ node, ...props }) => (
                         <img 
                           {...props} 
-                          className="rounded-lg shadow-md w-full h-auto my-6"
+                          className="rounded-lg shadow-md max-w-full h-auto my-6 mx-auto"
                           loading="lazy"
                         />
                       ),
