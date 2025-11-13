@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar, Clock, Share2, ArrowLeft, Heart } from "lucide-react";
 import { BlogPost as BlogPostType } from "@/types/blog";
 import { formatDate } from "@/utils/blog";
@@ -278,23 +279,130 @@ export default function BlogPost({ post, relatedPosts }: Props) {
                           {...props}
                         />
                       ),
-                      code: ({ node, className, children, ...props }) => {
+                      code: ({ node, className, children, ...props }: any) => {
                         const isInline = !className?.includes('language-');
-                        return isInline ? (
-                          <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono" {...props}>
-                            {children}
-                          </code>
-                        ) : (
-                          <code className="block bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-sm font-mono overflow-x-auto" {...props}>
+                        // Check if code is inside a pre tag (block code)
+                        const isBlockCode = className?.includes('language-');
+                        
+                        if (isInline) {
+                          return (
+                            <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono" {...props}>
+                              {children}
+                            </code>
+                          );
+                        }
+                        
+                        // Block code - pre wrapper handles the container styling
+                        return (
+                          <code className="text-sm font-mono text-gray-900 dark:text-gray-100" {...props}>
                             {children}
                           </code>
                         );
                       },
-                      ul: ({ node, ...props }) => (
-                        <ul className="list-disc list-inside mb-4 space-y-2 text-gray-700 dark:text-gray-300" {...props} />
-                      ),
+                      ul: ({ node, className, ...props }) => {
+                        // Check if this is a task list by checking the className or node structure
+                        const isTaskList = className?.includes('contains-task-list') || 
+                                         (node?.children?.some(
+                                           (child: any) => child.children?.some(
+                                             (grandchild: any) => grandchild.type === 'element' && grandchild.tagName === 'input'
+                                           )
+                                         ) ?? false);
+                        
+                        return (
+                          <ul 
+                            className={`mb-4 space-y-2 text-gray-700 dark:text-gray-300 ${
+                              isTaskList ? 'list-none pl-0' : 'list-disc list-inside'
+                            }`} 
+                            {...props} 
+                          />
+                        );
+                      },
+                      li: ({ node, children, className, ...props }) => {
+                        // Check if this is a task list item by checking if first child is an input checkbox
+                        const isTaskListItem = node?.children?.some(
+                          (child: any) => child.type === 'element' && child.tagName === 'input' && child.properties?.type === 'checkbox'
+                        ) ?? false;
+                        
+                        if (isTaskListItem) {
+                          return (
+                            <li className="flex items-start gap-2 mb-2 list-none" {...props}>
+                              {children}
+                            </li>
+                          );
+                        }
+                        
+                        return (
+                          <li className="mb-1" {...props}>
+                            {children}
+                          </li>
+                        );
+                      },
+                      input: ({ node, ...props }: any) => {
+                        // Handle task list checkboxes
+                        if (props.type === 'checkbox') {
+                          return (
+                            <Checkbox 
+                              checked={props.checked || false} 
+                              disabled
+                              className="mt-1 mr-2"
+                            />
+                          );
+                        }
+                        // For other input types, render as normal
+                        return <input {...props} />;
+                      },
                       ol: ({ node, ...props }) => (
                         <ol className="list-decimal list-inside mb-4 space-y-2 text-gray-700 dark:text-gray-300" {...props} />
+                      ),
+                      // Tables (GitHub Flavored Markdown)
+                      table: ({ node, ...props }) => (
+                        <div className="overflow-x-auto my-6">
+                          <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-700 rounded-lg" {...props} />
+                        </div>
+                      ),
+                      thead: ({ node, ...props }) => (
+                        <thead className="bg-gray-100 dark:bg-gray-800" {...props} />
+                      ),
+                      tbody: ({ node, ...props }) => (
+                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700" {...props} />
+                      ),
+                      tr: ({ node, ...props }) => (
+                        <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors" {...props} />
+                      ),
+                      th: ({ node, ...props }) => (
+                        <th 
+                          className="border border-gray-300 dark:border-gray-700 px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-800" 
+                          {...props} 
+                        />
+                      ),
+                      td: ({ node, ...props }) => (
+                        <td 
+                          className="border border-gray-300 dark:border-gray-700 px-4 py-3 text-sm text-gray-700 dark:text-gray-300" 
+                          {...props} 
+                        />
+                      ),
+                      // Strikethrough
+                      del: ({ node, ...props }) => (
+                        <del className="line-through text-gray-500 dark:text-gray-400" {...props} />
+                      ),
+                      s: ({ node, ...props }) => (
+                        <s className="line-through text-gray-500 dark:text-gray-400" {...props} />
+                      ),
+                      // Horizontal rule
+                      hr: ({ node, ...props }) => (
+                        <hr className="my-8 border-t border-gray-300 dark:border-gray-700" {...props} />
+                      ),
+                      // Strong/Bold
+                      strong: ({ node, ...props }) => (
+                        <strong className="font-bold text-gray-900 dark:text-gray-100" {...props} />
+                      ),
+                      // Emphasis/Italic
+                      em: ({ node, ...props }) => (
+                        <em className="italic text-gray-800 dark:text-gray-200" {...props} />
+                      ),
+                      // Pre (code block wrapper)
+                      pre: ({ node, ...props }) => (
+                        <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto my-6" {...props} />
                       ),
                     }}
                   >
