@@ -28,14 +28,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate item_type
+    if (!["escape", "banner"].includes(item_type)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid item_type. Must be 'escape' or 'banner'" },
+        { status: 400 }
+      );
+    }
+
     // Create Supabase client
     const supabase = await createClient();
 
     // Insert click data into the clicks_data table
+    // Note: escape_id field is used for both escape IDs and banner IDs
+    // The item_type field distinguishes between them
     const { error } = await supabase
       .from("clicks_data")
       .insert({
         escape_id: escape_id,
+        item_type: item_type,
         source: source || null,
         user_agent: user_agent || null,
         referrer: referrer || null,
