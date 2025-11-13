@@ -238,8 +238,8 @@ export default function BlogListing({
           <div className="md:flex">
             {featuredPost.featured_image_url && (
               <div className="md:w-1/2">
-                <Link href={`/blog/${featuredPost.slug}`} className="block">
-                  <div className="relative h-64 md:h-full w-full overflow-hidden">
+                <Link href={`/blog/${featuredPost.slug}`} className="block h-full">
+                  <div className="relative h-64 md:h-[400px] w-full overflow-hidden">
                     <Image
                       src={featuredPost.featured_image_url}
                       alt={featuredPost.featured_image_alt || featuredPost.title}
