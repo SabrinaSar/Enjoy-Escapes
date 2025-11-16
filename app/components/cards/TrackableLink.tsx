@@ -51,6 +51,15 @@ const TrackableLink: React.FC<TrackableLinkProps> = ({
         timestamp: new Date().toISOString(),
       };
 
+      // Debug logging for banner clicks
+      if (itemType === "banner") {
+        console.log("🎯 Banner click tracking:", {
+          itemId,
+          itemType,
+          trackingData,
+        });
+      }
+
       // Use sendBeacon for reliable tracking that doesn't block navigation
       // This is specifically designed for analytics and works even when the page unloads
       if (navigator.sendBeacon) {
@@ -63,15 +72,25 @@ const TrackableLink: React.FC<TrackableLinkProps> = ({
         const success = navigator.sendBeacon("/api/track-click", blob);
         
         if (!success) {
+          console.warn("⚠️ sendBeacon failed, using fetch fallback");
           // Fallback to fetch if sendBeacon fails (rare)
           fetch("/api/track-click", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(trackingData),
             keepalive: true, // Keep request alive even if page navigates away
-          }).catch(() => {
-            // Silent fail - don't let tracking errors affect user experience
-          });
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (itemType === "banner") {
+                console.log("📡 Fetch response for banner:", data);
+              }
+            })
+            .catch((error) => {
+              console.error("❌ Fetch tracking error:", error);
+            });
+        } else if (itemType === "banner") {
+          console.log("✅ sendBeacon sent successfully for banner");
         }
       } else {
         // Fallback for browsers without sendBeacon support
@@ -92,13 +111,23 @@ const TrackableLink: React.FC<TrackableLinkProps> = ({
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>) => {
+      // Debug logging for banner clicks
+      if (itemType === "banner") {
+        console.log("🖱️ Banner button clicked! Event:", {
+          itemId,
+          itemType,
+          href,
+          target: e.currentTarget,
+        });
+      }
+      
       // Track the click - this never prevents navigation
       trackClick();
       
       // Let the browser handle navigation naturally
       // No preventDefault(), no blocking - affiliate link always works
     },
-    [trackClick]
+    [trackClick, itemType, itemId, href]
   );
 
   // Also track on touch for better iOS support

@@ -20,8 +20,19 @@ export async function POST(request: NextRequest) {
       referrer,
     } = data;
 
+    // Debug logging for banner clicks
+    if (item_type === "banner") {
+      console.log("🎯 API received banner click:", {
+        escape_id,
+        item_type,
+        escape_id_type: typeof escape_id,
+        full_data: data,
+      });
+    }
+
     // Validate required fields
     if (!escape_id || typeof escape_id !== "number") {
+      console.error("❌ Validation failed:", { escape_id, type: typeof escape_id, item_type });
       return NextResponse.json(
         { success: false, error: "Invalid escape_id" },
         { status: 400 }
@@ -53,13 +64,18 @@ export async function POST(request: NextRequest) {
       });
 
     if (error) {
-      console.error("Error tracking click:", error);
+      console.error("❌ Error tracking click:", error);
       // Return 200 even on error to not affect user experience
       // But log it for debugging
       return NextResponse.json(
         { success: false, error: error.message },
         { status: 200 } // Return 200 to prevent retry storms
       );
+    }
+
+    // Success logging for banner clicks
+    if (item_type === "banner") {
+      console.log("✅ Banner click tracked successfully:", { escape_id, item_type });
     }
 
     return NextResponse.json({ success: true }, { status: 200 });

@@ -9,6 +9,14 @@ interface BannerProps {
 }
 
 const Banner = ({ banner, className }: BannerProps) => {
+  // Debug logging
+  console.log("🎨 Banner component render:", {
+    id: banner.id,
+    id_type: typeof banner.id,
+    title: banner.title,
+    link: banner.link,
+  });
+
   // Check if link exists and format it
   const hasLink = banner.link && banner.link.trim() !== "";
 
@@ -19,10 +27,10 @@ const Banner = ({ banner, className }: BannerProps) => {
   };
 
   return (
-    <div 
+    <div
       className={cn(
         "relative overflow-hidden rounded-lg shadow-md w-full",
-        className
+        className,
       )}
       style={bannerStyles}
     >
@@ -30,26 +38,35 @@ const Banner = ({ banner, className }: BannerProps) => {
       <div className="flex flex-row h-full w-full">
         {/* Text content - adjusts width responsively */}
         <div className="p-4 sm:p-6 md:p-8 flex flex-col justify-center w-3/4 sm:w-1/2 xl:w-1/4 space-y-2 sm:space-y-3 md:space-y-4">
-          <h3 className="text-lg sm:text-xl md:text-2xl font-bold">{banner.title}</h3>
-          
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold">
+            {banner.title}
+          </h3>
+
           {banner.description && (
-            <p className="text-xs sm:text-sm md:text-base opacity-90">{banner.description}</p>
+            <p className="text-xs sm:text-sm md:text-base opacity-90">
+              {banner.description}
+            </p>
           )}
-          
+
           {hasLink && (
             <div className="mt-2 sm:mt-3 md:mt-4">
-              <TrackableLink 
-                href={banner.link!} 
-                itemId={banner.id} 
+              <TrackableLink
+                href={banner.link!}
+                itemId={banner.id}
                 itemType="banner"
-                className="inline-flex px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 md:py-2.5 rounded-lg font-medium text-xs sm:text-sm md:text-base bg-accent hover:bg-accent/90 text-accent-foreground"
+                className="inline-flex px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 md:py-2.5 rounded-lg font-medium text-xs sm:text-sm md:text-base bg-accent hover:bg-accent/90 text-accent-foreground pointer-events-auto cursor-pointer"
               >
                 Book now
               </TrackableLink>
             </div>
           )}
+          {!hasLink && (
+            <div className="mt-2 text-xs text-muted-foreground">
+              ⚠️ No link configured
+            </div>
+          )}
         </div>
-        
+
         {/* Image - adjusts width responsively */}
         <div className="w-1/4 sm:w-1/2 xl:w-3/4 relative flex-1 min-h-[150px]">
           <Image
@@ -66,4 +83,4 @@ const Banner = ({ banner, className }: BannerProps) => {
   );
 };
 
-export default Banner; 
+export default Banner;
