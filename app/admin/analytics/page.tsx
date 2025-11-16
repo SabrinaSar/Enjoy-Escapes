@@ -131,7 +131,10 @@ export default async function ClickAnalytics({
   const clicksByEscape: Record<string, number> = {};
   if (clickCounts) {
     clickCounts.forEach((item: ClickCountData) => {
-      clicksByEscape[item.escape_id.toString()] = item.click_count;
+      // Skip items with invalid escape_id
+      if (item.escape_id != null) {
+        clicksByEscape[item.escape_id.toString()] = item.click_count;
+      }
     });
   }
   
@@ -164,7 +167,10 @@ export default async function ClickAnalytics({
   const clicksByBanner: Record<string, number> = {};
   if (bannerClickCounts) {
     bannerClickCounts.forEach((item: ClickCountData) => {
-      clicksByBanner[item.escape_id.toString()] = item.click_count;
+      // Skip items with invalid escape_id (used for banner_id in this context)
+      if (item.escape_id != null) {
+        clicksByBanner[item.escape_id.toString()] = item.click_count;
+      }
     });
   }
 

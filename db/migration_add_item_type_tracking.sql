@@ -37,7 +37,7 @@ AS $$
     COUNT(*) as click_count,
     item_type
   FROM public.clicks_data 
-  WHERE item_type = 'escape'
+  WHERE item_type = 'escape' AND escape_id IS NOT NULL
   GROUP BY escape_id, item_type
   ORDER BY click_count DESC;
 $$;
@@ -57,7 +57,7 @@ AS $$
     COUNT(*) as click_count,
     item_type
   FROM public.clicks_data 
-  WHERE item_type = 'banner'
+  WHERE item_type = 'banner' AND escape_id IS NOT NULL
   GROUP BY escape_id, item_type
   ORDER BY click_count DESC;
 $$;
