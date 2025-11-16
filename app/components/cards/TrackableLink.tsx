@@ -54,10 +54,13 @@ const TrackableLink: React.FC<TrackableLinkProps> = ({
       // Use sendBeacon for reliable tracking that doesn't block navigation
       // This is specifically designed for analytics and works even when the page unloads
       if (navigator.sendBeacon) {
-        const success = navigator.sendBeacon(
-          "/api/track-click",
-          JSON.stringify(trackingData)
-        );
+        // Create a Blob with the correct content type for sendBeacon
+        // sendBeacon with a string doesn't set Content-Type to application/json
+        const blob = new Blob([JSON.stringify(trackingData)], {
+          type: "application/json",
+        });
+        
+        const success = navigator.sendBeacon("/api/track-click", blob);
         
         if (!success) {
           // Fallback to fetch if sendBeacon fails (rare)
