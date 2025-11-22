@@ -33,7 +33,8 @@ interface AllClicksData {
 }
 
 interface ClickCountData {
-  escape_id: number;
+  escape_id?: number;
+  banner_id?: number;
   click_count: number;
   item_type?: string;
 }
@@ -90,7 +91,7 @@ export default async function ClickAnalytics({
   // Fetch escape details for all escapes that have clicks
   const escapeDetails: Record<number, EscapeDetails> = {};
   const allEscapeIds = Array.from(new Set([
-    ...(clickCounts?.map((item: ClickCountData) => item.escape_id) || []),
+    ...(clickCounts?.map((item: ClickCountData) => item.escape_id).filter((id): id is number => id != null) || []),
     ...(recentClicks?.filter(click => !('item_type' in click) || (click as any).item_type === 'escape').map(click => click.escape_id) || [])
   ]));
 
@@ -110,7 +111,7 @@ export default async function ClickAnalytics({
   // Fetch banner details for all banners that have clicks
   const bannerDetails: Record<number, BannerDetails> = {};
   const allBannerIds = Array.from(new Set([
-    ...(bannerClickCounts?.map((item: ClickCountData) => item.escape_id) || []),
+    ...(bannerClickCounts?.map((item: ClickCountData) => item.banner_id ?? item.escape_id).filter((id): id is number => id != null) || []),
     ...(recentClicks?.filter(click => (click as any).item_type === 'banner').map(click => click.escape_id) || [])
   ]));
 
@@ -168,8 +169,10 @@ export default async function ClickAnalytics({
   if (bannerClickCounts) {
     bannerClickCounts.forEach((item: ClickCountData) => {
       // Skip items with invalid escape_id (used for banner_id in this context)
-      if (item.escape_id != null) {
-        clicksByBanner[item.escape_id.toString()] = item.click_count;
+      // The RPC function returns 'banner_id' but we fallback to 'escape_id' if needed
+      const id = item.banner_id ?? item.escape_id;
+      if (id != null) {
+        clicksByBanner[id.toString()] = item.click_count;
       }
     });
   }
