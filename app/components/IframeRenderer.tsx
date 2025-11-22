@@ -51,4 +51,5 @@ export default function IframeRenderer({ embedCode }: IframeRendererProps) {
       className="flex-1 w-full mx-4 mb-4"
     />
   );
-} 
+}
+

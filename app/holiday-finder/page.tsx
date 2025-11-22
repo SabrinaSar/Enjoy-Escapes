@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { createClient } from "@/utils/supabase/server";
-import IframeRenderer from "@/app/holiday-finder/components/IframeRenderer";
+import IframeRenderer from "@/app/components/IframeRenderer";
 
 // Get the iframe embed code from the database
 const getIframeEmbedCode = async () => {

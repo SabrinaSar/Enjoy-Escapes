@@ -9,9 +9,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, Plus } from "lucide-react";
+import { Trash2, Plus, Upload, Loader2 } from "lucide-react";
 import { createCategory, updateCategory } from "../actions";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
 
 interface CategoryFormProps {
   category?: {
@@ -36,6 +38,8 @@ const initialState = { success: false, message: "", errors: {} };
 
 export function CategoryForm({ category }: CategoryFormProps) {
   const router = useRouter();
+  const supabase = createClient();
+  const [isUploading, setIsUploading] = useState(false);
   const [state, formAction] = useFormState(
     category 
       ? updateCategory.bind(null, category.id)
@@ -114,6 +118,42 @@ export function CategoryForm({ category }: CategoryFormProps) {
     }
   };
 
+  // Handle icon upload
+  const handleIconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `categories/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('enjoy-escapes-assets')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('enjoy-escapes-assets')
+        .getPublicUrl(filePath);
+
+      // Update the input value
+      const iconInput = document.getElementById("icon") as HTMLInputElement;
+      if (iconInput) {
+        iconInput.value = publicUrl;
+      }
+      
+      toast.success("Icon uploaded successfully");
+    } catch (error) {
+      console.error("Error uploading icon:", error);
+      toast.error("Failed to upload icon");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   // Handle form submission
   const handleSubmit = async (formData: FormData) => {
     // Add filters to form data
@@ -180,13 +220,41 @@ export function CategoryForm({ category }: CategoryFormProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="icon">Icon Path *</Label>
-          <Input
-            id="icon"
-            name="icon"
-            defaultValue={category?.icon || ""}
-            placeholder="/icons/example.svg"
-            required
-          />
+          <div className="flex gap-2">
+            <Input
+              id="icon"
+              name="icon"
+              defaultValue={category?.icon || ""}
+              placeholder="/icons/example.svg or https://..."
+              required
+              className="flex-1"
+            />
+            <div className="relative">
+              <input
+                type="file"
+                id="icon_upload"
+                className="hidden"
+                accept="image/*"
+                onChange={handleIconUpload}
+                disabled={isUploading}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                disabled={isUploading}
+                onClick={() => document.getElementById("icon_upload")?.click()}
+              >
+                {isUploading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Upload className="w-4 h-4" />
+                )}
+              </Button>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Enter a local path (e.g., /icons/summer.svg) or upload a new icon
+          </p>
           {state.errors?.icon && (
             <p className="text-sm text-red-500">{state.errors.icon[0]}</p>
           )}
