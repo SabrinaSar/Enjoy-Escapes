@@ -820,6 +820,20 @@ export async function deleteEscape(id: number) {
     };
   }
 
+  // Clean up associated clicks first
+  // We target item_type='escape' (or null for backward compatibility) 
+  // to avoid deleting banner clicks if IDs happen to match
+  const { error: cleanupError } = await supabase
+    .from("clicks_data")
+    .delete()
+    .eq("escape_id", id)
+    .or("item_type.eq.escape,item_type.is.null");
+
+  if (cleanupError) {
+    console.error("Warning: Failed to clean up associated clicks:", cleanupError);
+    // Continue with escape deletion anyway
+  }
+
   const { error } = await supabase.from("escapes_data").delete().eq("id", id);
 
   if (error) {
