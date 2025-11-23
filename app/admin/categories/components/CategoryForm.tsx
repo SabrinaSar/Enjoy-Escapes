@@ -14,6 +14,7 @@ import { createCategory, updateCategory } from "../actions";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
+import { validateImageUpload } from "@/utils/blog";
 
 interface CategoryFormProps {
   category?: {
@@ -40,6 +41,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
   const router = useRouter();
   const supabase = createClient();
   const [isUploading, setIsUploading] = useState(false);
+  const [iconPath, setIconPath] = useState(category?.icon || "");
   const [state, formAction] = useFormState(
     category 
       ? updateCategory.bind(null, category.id)
@@ -123,6 +125,13 @@ export function CategoryForm({ category }: CategoryFormProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Validate file
+    const validation = validateImageUpload(file);
+    if (!validation.isValid) {
+      toast.error(validation.error || "Invalid file");
+      return;
+    }
+
     setIsUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
@@ -133,24 +142,26 @@ export function CategoryForm({ category }: CategoryFormProps) {
         .from('enjoy-escapes-assets')
         .upload(filePath, file);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error("Supabase storage error:", uploadError);
+        throw new Error(uploadError.message);
+      }
 
       const { data: { publicUrl } } = supabase.storage
         .from('enjoy-escapes-assets')
         .getPublicUrl(filePath);
 
-      // Update the input value
-      const iconInput = document.getElementById("icon") as HTMLInputElement;
-      if (iconInput) {
-        iconInput.value = publicUrl;
-      }
+      // Update the state
+      setIconPath(publicUrl);
       
       toast.success("Icon uploaded successfully");
     } catch (error) {
       console.error("Error uploading icon:", error);
-      toast.error("Failed to upload icon");
+      toast.error(error instanceof Error ? error.message : "Failed to upload icon");
     } finally {
       setIsUploading(false);
+      // Reset file input
+      e.target.value = "";
     }
   };
 
@@ -224,7 +235,8 @@ export function CategoryForm({ category }: CategoryFormProps) {
             <Input
               id="icon"
               name="icon"
-              defaultValue={category?.icon || ""}
+              value={iconPath}
+              onChange={(e) => setIconPath(e.target.value)}
               placeholder="/icons/example.svg or https://..."
               required
               className="flex-1"
