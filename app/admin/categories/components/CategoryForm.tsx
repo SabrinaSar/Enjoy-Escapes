@@ -485,7 +485,16 @@ export function CategoryForm({ category }: CategoryFormProps) {
       {/* Display success/error messages */}
       {state.message && (
         <div className={`p-4 rounded-lg ${state.success ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}`}>
-          {state.message}
+          <p className="font-medium">{state.message}</p>
+          {state.errors && Object.keys(state.errors).length > 0 && (
+            <ul className="mt-2 list-disc list-inside text-sm">
+              {Object.entries(state.errors).map(([field, errors]) => (
+                <li key={field}>
+                  <span className="font-medium capitalize">{field.replace(/_/g, ' ')}</span>: {(errors as string[])[0]}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
     </form>
