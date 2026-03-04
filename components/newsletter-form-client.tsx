@@ -20,11 +20,11 @@ export default function NewsletterFormClient() {
   };
 
   const handleFormSubmit = () => {
-    if (!email || !email.includes('@')) {
+    if (!email || !email.includes("@")) {
       setErrorMessage("Please enter a valid email address");
       return false;
     }
-    
+
     setIsSubmitting(true);
     setErrorMessage("");
     return true;
@@ -32,7 +32,7 @@ export default function NewsletterFormClient() {
 
   React.useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('success') === 'true') {
+    if (urlParams.get("success") === "true") {
       setIsSuccess(true);
     }
   }, []);
@@ -64,7 +64,9 @@ export default function NewsletterFormClient() {
               <Mail className="h-5 w-5 text-primary" />
               <div className="h-px w-12 bg-primary/30"></div>
             </div>
-            <h3 className="text-lg sm:text-xl font-semibold mb-2">Get exclusive travel deals</h3>
+            <h3 className="text-lg sm:text-xl font-semibold mb-2">
+              Get exclusive travel deals
+            </h3>
             <p className="text-muted-foreground text-sm">
               Join our newsletter for the best escapes, direct to your inbox.
             </p>
@@ -91,8 +93,8 @@ export default function NewsletterFormClient() {
                 autoCapitalize="off"
                 autoCorrect="off"
               />
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="bg-primary hover:bg-primary/90"
                 disabled={isSubmitting}
               >
@@ -110,11 +112,23 @@ export default function NewsletterFormClient() {
         <div className="md:px-4">
           <h3 className="text-xl font-semibold mb-4">Links</h3>
           <nav className="flex flex-col space-y-3">
-            <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">
+            <Link
+              href="/about"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
               About Us
             </Link>
-            <Link href="/work-with-us" className="text-muted-foreground hover:text-primary transition-colors">
+            <Link
+              href="/work-with-us"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
               Work with Us
+            </Link>
+            <Link
+              href="/terms-and-conditions"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              Terms &amp; Conditions
             </Link>
           </nav>
           <div className="flex gap-4 mt-8">
@@ -161,8 +175,9 @@ export default function NewsletterFormClient() {
             <span className="text-xl font-semibold">Enjoy Escapes</span>
           </div>
           <p className="text-muted-foreground">
-            At EnjoyEscapes, we believe amazing holidays shouldn't come with a sky-high price tag. 
-            That's why we're here to help you discover epic getaways without blowing the budget.
+            At EnjoyEscapes, we believe amazing holidays shouldn't come with a
+            sky-high price tag. That's why we're here to help you discover epic
+            getaways without blowing the budget.
           </p>
         </div>
       </div>
@@ -171,4 +186,4 @@ export default function NewsletterFormClient() {
       </div>
     </footer>
   );
-} 
+}

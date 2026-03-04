@@ -5,7 +5,7 @@ import { ThemeProvider } from "next-themes";
 import Script from "next/script";
 import Footer from "@/components/footer";
 import NewsletterPopup from "@/components/newsletter-popup";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next";
 
 const defaultUrl = "https://enjoyescapes.com";
 
@@ -14,14 +14,13 @@ export const metadata = {
   title: "Enjoy Escapes - Curated Travel Experiences",
   description: "Discover unique travel escapes curated by Enjoy Escapes.",
   icons: {
-    icon: [
-      { url: '/favicon.ico' },
-      { url: '/logo.png', type: 'image/png' }
-    ],
-    shortcut: '/favicon.ico',
-    apple: '/logo.png',
+    icon: [{ url: "/favicon.ico" }, { url: "/logo.png", type: "image/png" }],
+    shortcut: "/favicon.ico",
+    apple: "/logo.png",
   },
 };
+
+import { ToastProvider } from "@/db/providers/toast-provider";
 
 export default function RootLayout({
   children,
@@ -32,6 +31,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <Analytics />
       <body className="bg-background text-foreground">
+        <ToastProvider />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

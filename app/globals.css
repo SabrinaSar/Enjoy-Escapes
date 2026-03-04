@@ -261,3 +261,6 @@
     isolation: isolate;
   }
 }
+button{
+  cursor: pointer;
+}
