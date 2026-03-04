@@ -8,8 +8,6 @@ import EscapeGrid from "@/app/components/EscapeGrid";
 import PopularDestinations from "@/app/components/PopularDestinations";
 import TimestampDisplay from "@/app/components/TimestampDisplay";
 import { Metadata } from "next";
-import SearchFilterByCategory from "./components/SearchFilterByCategory";
-import SearchFilterBanner from "./components/SearchFilterBanner";
 
 export const metadata: Metadata = {
   title: "Latest Travel Deals & Escapes | Enjoy Escapes",
