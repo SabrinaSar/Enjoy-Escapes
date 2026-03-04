@@ -205,7 +205,7 @@ export default function CategoryFilterClient({ initialCategories = [] }: Categor
           <Button
             key={category.id}
             variant="ghost"
-            className={`flex flex-col items-center p-2 h-auto w-auto rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 ${
+            className={`flex flex-col items-center group p-2 h-auto w-auto rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 ${
               activeCategory === category.slug
                 ? "bg-gray-100 dark:bg-gray-800"
                 : ""
@@ -221,7 +221,7 @@ export default function CategoryFilterClient({ initialCategories = [] }: Categor
                 className="dark:invert dark:brightness-200 dark:hue-rotate-180"
               />
             </div>
-            <span className="text-xs font-medium">{category.name}</span>
+            <span className="text-xs font-medium dark:group-hover:text-white">{category.name}</span>
           </Button>
         ))}
       </div>

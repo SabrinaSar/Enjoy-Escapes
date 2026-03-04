@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart, Home, PackagePlus, Menu, X, Image } from "lucide-react";
+import { BarChart, Home, PackagePlus, Menu, X, Image, Mail } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { ToastProvider } from "@/db/providers/toast-provider";
 
 export default function AdminLayout({
   children,
@@ -121,11 +122,20 @@ export default function AdminLayout({
             <Image className="h-4 w-4" />
             Image Gallery
           </Link>
+          <Link
+            href="/admin/newsletter"
+            className="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <Mail className="h-4 w-4" />
+            Newsletter Subscribers
+          </Link>
         </nav>
       </div>
 
       {/* Main Content */}
       <div className="w-full pl-0 pt-0">
+        <ToastProvider />
         <main className="bg-gray-100 dark:bg-gray-900 p-4">{children}</main>
       </div>
     </div>

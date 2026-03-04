@@ -50,9 +50,9 @@ export default function AboutPage() {
           <div className="absolute bottom-40 right-1/3 w-24 h-24 bg-white rounded-full animate-pulse delay-700" />
         </div>
         
-        <div className="container mx-auto px-4 py-20 relative z-10">
+        <div className=" mx-auto px-4 py-20 relative z-10">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">About Our Enjoy Escapes</h1>
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">About Enjoy Escapes</h1>
             <p className="text-xl md:text-2xl mb-8 opacity-90">
               We find the deals. You enjoy the journey.
             </p>
@@ -72,9 +72,9 @@ export default function AboutPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4">
         {/* Main Content */}
-        <div className="max-w-4xl mx-auto py-16">
+        <div className=" mx-auto py-16">
           <div className="prose dark:prose-invert max-w-none text-lg">
             <div className="bg-card/80 backdrop-blur rounded-3xl p-8 shadow-lg border border-border mb-8">
               <p className="text-xl leading-relaxed pb-2 text-foreground">
