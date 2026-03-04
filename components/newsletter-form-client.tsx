@@ -124,12 +124,12 @@ export default function NewsletterFormClient() {
             >
               Work with Us
             </Link>
-            <Link
+            {/* <Link
               href="/terms-and-conditions"
               className="text-muted-foreground hover:text-primary transition-colors"
             >
               Terms &amp; Conditions
-            </Link>
+            </Link> */}
           </nav>
           <div className="flex gap-4 mt-8">
             <a

@@ -4,7 +4,7 @@ import Link from "next/link";
 import NavbarSearchForm from "@/app/components/NavbarSearchForm";
 import { Suspense } from "react";
 import { staticAssets } from "@/lib/static-assets";
-import { MailPopup } from "@/components/mail-popup";
+// import { MailPopup } from "@/components/mail-popup";
 
 export default function Navbar() {
   // Using cookies.get to retrieve the search query from headers is not reliable
@@ -59,7 +59,7 @@ export default function Navbar() {
 
           {/* Auth button (dropdown menu on mobile, normal buttons on desktop) */}
           <div className="ml-1 sm:ml-0 flex items-center gap-2">
-            <MailPopup />
+            {/* <MailPopup /> */}
             <AuthButton />
           </div>
         </div>
