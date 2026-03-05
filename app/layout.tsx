@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <Analytics />
-      <body className="bg-background text-foreground">
+      <body className="bg-background text-foreground" suppressHydrationWarning>
         <ToastProvider />
         <ThemeProvider
           attribute="class"
@@ -44,7 +44,7 @@ export default function RootLayout({
               <div className="w-full flex-1 flex flex-col">{children}</div>
               <Footer />
             </div>
-            <NewsletterPopup />
+            <NewsletterPopup showTrigger={false} />
           </main>
         </ThemeProvider>
       </body>

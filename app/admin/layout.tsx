@@ -128,7 +128,7 @@ export default function AdminLayout({
             onClick={() => setSidebarOpen(false)}
           >
             <Mail className="h-4 w-4" />
-            Newsletter Subscribers
+           Edit Newsletter
           </Link>
         </nav>
       </div>

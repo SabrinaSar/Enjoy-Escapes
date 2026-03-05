@@ -12,7 +12,8 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "vieoujqdwuxpaalkvomx.supabase.co",
         port: "",
-        pathname: "/storage/v1/object/public/enjoy-escapes-assets/**", // Allow all images in this bucket
+        pathname:
+          "/storage/v1/object/public/{enjoy-escapes-assets,popup-images}/**", // Allow assets and popup images
       },
     ],
     // Set minimum cache TTL to 31 days (2678400 seconds) to reduce image optimization costs
@@ -42,7 +43,8 @@ const nextConfig: NextConfig = {
       },
       {
         // Cache specific static assets in public for 31 days
-        source: "/:path(logo|hero|social|website-features|win-bg)\\.(png|jpg|jpeg|gif|webp)",
+        source:
+          "/:path(logo|hero|social|website-features|win-bg)\\.(png|jpg|jpeg|gif|webp)",
         headers: [
           {
             key: "Cache-Control",

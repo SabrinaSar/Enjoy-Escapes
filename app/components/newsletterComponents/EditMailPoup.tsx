@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 type PopupData = {
   id: number;
   title: string;
+  subtitle?: string;
   description: string;
   image_url: string | null;
 };
@@ -68,6 +69,11 @@ export default function EditMailPoup({
 
       <form action={handleSubmit} className="space-y-8">
         <input type="hidden" name="id" value={initialData?.id} />
+        <input
+          type="hidden"
+          name="existing_image"
+          value={initialData?.image_url || ""}
+        />
 
         <div className="space-y-6">
           {/* Title Input */}
@@ -82,6 +88,20 @@ export default function EditMailPoup({
               placeholder="e.g. Subscribe to our newsletter!"
               className="h-12 bg-background border-border shadow-sm focus-visible:ring-primary"
               required
+            />
+          </div>
+
+          {/* Subtitle Input */}
+          <div className="grid gap-3">
+            <Label htmlFor="subtitle" className="text-base font-semibold">
+              Popup Subtitle
+            </Label>
+            <Input
+              id="subtitle"
+              name="subtitle"
+              defaultValue={initialData?.subtitle}
+              placeholder="e.g. Limited Time Giveaway"
+              className="h-12 bg-background border-border shadow-sm focus-visible:ring-primary"
             />
           </div>
 
