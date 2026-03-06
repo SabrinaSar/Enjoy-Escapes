@@ -29,7 +29,8 @@ const defaultPopup: PopupData = {
   image_url: null,
 };
 
-const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+const THIRTY_DAYS_MS = 1 * 24 * 60 * 60 * 1000;
+// const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 const SCROLL_TIME_THRESHOLD_MS = 10000; // 10 seconds of scrolling
 
 export default function NewsletterPopup({
