@@ -203,7 +203,7 @@ export default async function BlogPage({
 
         {/* Blog Content */}
         <div className="pb-16">
-          <BlogListing
+          {/* <BlogListing
             posts={posts || []}
             categories={categories || []}
             tags={tags || []}
@@ -213,7 +213,7 @@ export default async function BlogPage({
             selectedCategory={resolvedSearchParams.category}
             selectedTag={resolvedSearchParams.tag}
             searchQuery={resolvedSearchParams.search}
-          />
+          /> */}
         </div>
       </div>
     </div>
