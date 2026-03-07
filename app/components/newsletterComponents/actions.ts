@@ -7,6 +7,7 @@ export async function updatePopup(formData: FormData) {
   const title = formData.get("title") as string;
   const subtitle = formData.get("subtitle") as string;
   const description = formData.get("description") as string;
+  const buttonText = formData.get("button_text") as string;
   const file = formData.get("image") as File;
 
   let image_url: string | null =
@@ -40,6 +41,7 @@ export async function updatePopup(formData: FormData) {
     p_subtitle: subtitle,
     p_description: description,
     p_image_url: image_url,
+    p_button_text: buttonText,
   });
 
   if (error) {
@@ -58,6 +60,7 @@ export async function updatePopup(formData: FormData) {
         title,
         subtitle,
         description,
+        button_text: buttonText,
         image_url,
         is_active: true,
       });

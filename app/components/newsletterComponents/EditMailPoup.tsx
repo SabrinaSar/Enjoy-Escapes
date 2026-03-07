@@ -15,6 +15,7 @@ type PopupData = {
   subtitle?: string;
   description: string;
   image_url: string | null;
+  button_text: string;
 };
 
 export default function EditMailPoup({
@@ -117,6 +118,20 @@ export default function EditMailPoup({
               placeholder="Enter your discount offer or newsletter message..."
               rows={4}
               className="bg-background border-border shadow-sm focus-visible:ring-primary resize-none leading-relaxed"
+              required
+            />
+          </div>
+          {/* button text */}
+          <div className="grid gap-3">
+            <Label htmlFor="button_text" className="text-base font-semibold">
+              Button Text
+            </Label>
+            <Input
+              id="button_text"
+              name="button_text"
+              defaultValue={initialData?.button_text}
+              placeholder="e.g. Subscribe"
+              className="h-12 bg-background border-border shadow-sm focus-visible:ring-primary"
               required
             />
           </div>

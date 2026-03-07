@@ -19,6 +19,7 @@ type PopupData = {
   title: string;
   subtitle: string;
   description: string;
+  button_text: string;
   image_url: string | null;
 };
 
@@ -26,6 +27,7 @@ const defaultPopup: PopupData = {
   title: "",
   subtitle: "",
   description: "",
+  button_text: "",
   image_url: null,
 };
 
@@ -60,6 +62,7 @@ export default function NewsletterPopup({
             title: remote.title ?? "",
             subtitle: remote.subtitle ?? "",
             description: remote.description ?? "",
+            button_text: remote.button_text ?? "",
             image_url: remote.image_url ?? null,
           });
         }
@@ -72,7 +75,7 @@ export default function NewsletterPopup({
 
     fetchPopupData();
   }, []);
-
+  console.log(popupContent);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
@@ -320,7 +323,7 @@ export default function NewsletterPopup({
                   className="w-full bg-primary hover:bg-primary/90"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Entering..." : "Enter Giveaway"}
+                  {isSubmitting ? `${popupContent.button_text}...` : popupContent.button_text}
                 </Button>
               </form>
 
