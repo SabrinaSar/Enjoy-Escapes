@@ -10,6 +10,7 @@ import {
   Info,
 } from "lucide-react";
 import { AdminPagination } from "../components/AdminPagination";
+import { AnalyticsSearch } from "./AnalyticsSearch";
 
 export const metadata: Metadata = {
   title: "Escape Analytics | Admin Panel",
@@ -69,9 +70,16 @@ export default async function ClickAnalytics({
   const startIndex = (currentPage - 1) * pageSize;
 
   // Fetch critical counts and data in parallel
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
   const [
     { data: analyticsSummary, error: analyticsError },
     { data: recentClicks, error: recentClicksError },
+    { count: clicks7Days },
+    { count: clicks30Days },
   ] = await Promise.all([
     // Core analytics summary (Mega Optimized - Reads from Summary Table)
     supabase.rpc("get_admin_analytics_v3", {
@@ -87,7 +95,22 @@ export default async function ClickAnalytics({
       )
       .order("created_at", { ascending: false })
       .limit(10),
+
+    // Total clicks for last 7 days (including banners)
+    supabase
+      .from("clicks_data")
+      .select("*", { count: "exact", head: true })
+      .gte("created_at", sevenDaysAgo.toISOString()),
+
+    // Total clicks for last 30 days (including banners)
+    supabase
+      .from("clicks_data")
+      .select("*", { count: "exact", head: true })
+      .gte("created_at", thirtyDaysAgo.toISOString()),
   ]);
+
+  const totalClicks7d = clicks7Days || 0;
+  const totalClicks30d = clicks30Days || 0;
 
   // Extract data from the summary
   const summary = (analyticsSummary as any) || {};
@@ -280,7 +303,7 @@ export default async function ClickAnalytics({
       </div>
 
       {/* Overview Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         <div className="bg-card rounded-lg p-3 sm:p-4 shadow-sm border">
           <div className="flex items-center justify-between">
             <h3 className="text-sm sm:text-base font-medium text-muted-foreground">
@@ -292,6 +315,36 @@ export default async function ClickAnalytics({
             {totalClicks || 0}
           </p>
           <p className="text-xs text-muted-foreground mt-1">Lifetime total</p>
+        </div>
+
+        <div className="bg-card rounded-lg p-3 sm:p-4 shadow-sm border">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm sm:text-base font-medium text-muted-foreground">
+              Last 7 Days
+            </h3>
+            <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+          </div>
+          <p className="text-xl sm:text-3xl font-bold mt-1 sm:mt-2">
+            {totalClicks7d}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Clicks since {format(sevenDaysAgo, "MMM d")}
+          </p>
+        </div>
+
+        <div className="bg-card rounded-lg p-3 sm:p-4 shadow-sm border">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm sm:text-base font-medium text-muted-foreground">
+              Last 30 Days
+            </h3>
+            <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+          </div>
+          <p className="text-xl sm:text-3xl font-bold mt-1 sm:mt-2">
+            {totalClicks30d}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Clicks since {format(thirtyDaysAgo, "MMM d")}
+          </p>
         </div>
 
         <div className="bg-card rounded-lg p-3 sm:p-4 shadow-sm border">
@@ -431,18 +484,18 @@ export default async function ClickAnalytics({
 
       {/* Escape Analytics Section */}
       <div>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 sm:mb-4">
-          <h2 className="text-xl sm:text-2xl font-bold">
-            Escape Deal Performance
-          </h2>
-          {/* <div>
-            <input type="text" placeholder="Search" />
-          </div> */}
-          <div className="text-sm text-muted-foreground">
-            Showing {startIndex + 1}-
-            {Math.min(startIndex + sortedEscapes.length, activeEscapesCount)} of{" "}
-            {activeEscapesCount} deals • {totalEscapeClicks} total clicks
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-3 sm:mb-6">
+          <div className="space-y-1">
+            <h2 className="text-xl sm:text-2xl font-bold">
+              Escape Deal Performance
+            </h2>
+            <div className="text-sm text-muted-foreground">
+              Showing {startIndex + 1}-
+              {Math.min(startIndex + sortedEscapes.length, activeEscapesCount)}{" "}
+              of {activeEscapesCount} deals • {totalEscapeClicks} total clicks
+            </div>
           </div>
+          <AnalyticsSearch />
         </div>
         {sortedEscapes.length > 0 ? (
           <div className="overflow-x-auto -mx-2 sm:mx-0">
@@ -512,7 +565,6 @@ export default async function ClickAnalytics({
             </p>
           </div>
         )}
-
         {/* Pagination for Escape Deals */}
         {totalEscapePages > 1 && (
           <div className="mt-6">
