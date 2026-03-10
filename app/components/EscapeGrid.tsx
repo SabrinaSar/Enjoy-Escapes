@@ -122,11 +122,11 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
   return (
     <div>
       {escapes.length === 0 && !loading && !error && (
-        <div className="flex flex-col items-center justify-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+        <div className="flex flex-col items-center justify-center py-20 bg-gray-50 dark:bg-gray-800 rounded-3xl border-2 border-dashed border-gray-200">
+          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
             <Search className="text-gray-400" size={32} />
           </div>
-          <h3 className="text-xl font-bold text-gray-800 mb-2">
+          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
             No results found
           </h3>
           <p className="text-center text-muted-foreground max-w-sm px-4">

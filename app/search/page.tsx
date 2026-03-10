@@ -64,7 +64,7 @@ export default async function SearchPage({
 
       {hasSearchParams ? (
         <>
-          <h1 className="text-xl font-bold mb-6 text-gray-800">
+          <h1 className="text-xl font-bold mb-6 text-gray-800 dark:text-white" >
             Search results {query ? `for "${query}"` : ""}{" "}
             {origin ? `from "${origin}"` : ""} {date ? `on ${date}` : ""}
           </h1>

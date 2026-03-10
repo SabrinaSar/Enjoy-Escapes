@@ -267,7 +267,7 @@ export default function EscapesTable({ escapes }: EscapesTableProps) {
       onOpenChange={(open) => !open && setDeleteTargetId(null)}
     >
       <Table>
-        <TableCaption>
+        <TableCaption >
           {searchQuery
             ? `Search results for "${searchQuery}"`
             : "A list of your recent escapes."}
