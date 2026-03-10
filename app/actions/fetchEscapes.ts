@@ -76,13 +76,13 @@ export async function fetchEscapes(
     query = query.or(`title.ilike.%${searchTerm}%,where_to.ilike.%${searchTerm}%`);
   }
 
-  // Apply origin filter if provided
-  if (origin && origin.trim() !== "") {
+  // Apply origin filter if provided (ignore "Any" options)
+  if (origin && origin.trim() !== "" && !origin.toLowerCase().includes("any airport")) {
     query = query.ilike("origin", `%${origin.trim()}%`);
   }
 
-  // Apply date filter if provided
-  if (date && date.trim() !== "") {
+  // Apply date filter if provided (ignore "Any")
+  if (date && date.trim() !== "" && date.toLowerCase() !== "any") {
     query = query.eq("travel_date", date);
   }
 
