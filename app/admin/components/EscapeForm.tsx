@@ -18,6 +18,13 @@ import { CalendarIcon } from "lucide-react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import {
+  POPULAR_DESTINATIONS,
+  ALL_DESTINATIONS,
+  AIRPORTS,
+  MONTHS,
+  DESTINATION_FLAGS,
+} from "@/app/constants/searchOptions";
 
 // Configure Day.js plugins
 dayjs.extend(utc);
@@ -34,7 +41,7 @@ interface FormState {
 
 type ServerAction = (
   prevState: FormState,
-  formData: FormData
+  formData: FormData,
 ) => Promise<FormState>;
 
 interface EscapeFormProps {
@@ -99,7 +106,9 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     deposit_price: initialData?.deposit_price?.toString() ?? "",
     deposit_price_unit: initialData?.deposit_price_unit ?? "pp",
     link: initialData?.link ?? "",
-    type: (initialData?.type as "hotel" | "flight" | "hotel+flight" | "other") ?? "hotel",
+    type:
+      (initialData?.type as "hotel" | "flight" | "hotel+flight" | "other") ??
+      "hotel",
     nights: initialData?.nights?.toString() ?? "",
     board_basis: initialData?.board_basis ?? "",
     star_rating: initialData?.star_rating?.toString() ?? "",
@@ -109,22 +118,27 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     hot_deal: initialData?.hot_deal ?? false,
     last_minute: initialData?.last_minute ?? false,
     scheduled_for: initialData?.scheduled_for ?? "",
+    origin: initialData?.origin ?? "",
+    travel_date: initialData?.travel_date ?? "",
+    where_to: initialData?.where_to ?? "",
   });
 
   // State for the client-side formatted value for the datetime-local input
-  const [scheduledForInputValue, setScheduledForInputValue] = React.useState("");
-  const [selectedTimezone, setSelectedTimezone] = React.useState("Europe/London"); // Default timezone
+  const [scheduledForInputValue, setScheduledForInputValue] =
+    React.useState("");
+  const [selectedTimezone, setSelectedTimezone] =
+    React.useState("Europe/London"); // Default timezone
 
   // Handle input changes to update state with error handling
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     try {
       const { name, value } = e.target;
       if (!name || !isMountedRef.current) return; // Guard against missing name attribute and unmounted component
-      
+
       setFormData((prev) => ({
         ...prev,
         [name]: value,
@@ -143,7 +157,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
   const [state, formAction] = useActionState(action, initialState);
 
   const [selectedType, setSelectedType] = React.useState<string>(
-    initialData?.type ?? "hotel"
+    initialData?.type ?? "hotel",
   );
 
   // Filter board_basis options based on selectedType with error handling
@@ -153,11 +167,13 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
         return ["flight_only"];
       }
       if (selectedType === "hotel") {
-        return Object.keys(BOARD_BASIS_LABELS).filter((k) => k !== "flight_only");
+        return Object.keys(BOARD_BASIS_LABELS).filter(
+          (k) => k !== "flight_only",
+        );
       }
       if (selectedType === "hotel+flight") {
         return Object.keys(BOARD_BASIS_LABELS).filter(
-          (k) => k !== "flight_only" && k !== "room_only"
+          (k) => k !== "flight_only" && k !== "room_only",
         );
       }
       if (selectedType === "other") {
@@ -183,7 +199,10 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
             errorMessage +=
               "\n" +
               Object.entries(state.errors)
-                .map(([field, errors]) => `${field}: ${Array.isArray(errors) ? errors.join(", ") : errors}`)
+                .map(
+                  ([field, errors]) =>
+                    `${field}: ${Array.isArray(errors) ? errors.join(", ") : errors}`,
+                )
                 .join("\n");
           }
           toast.error(errorMessage || "An error occurred.");
@@ -195,7 +214,9 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     } catch (error) {
       console.error("Error in useEffect for state handling:", error);
       if (isMountedRef.current) {
-        toast.error("An unexpected error occurred while processing the form response.");
+        toast.error(
+          "An unexpected error occurred while processing the form response.",
+        );
       }
     }
   }, [state, router]);
@@ -225,17 +246,19 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
 
   // Effect to update the client-side formatted input value when formData.scheduled_for or timezone changes
   useEffect(() => {
-    console.log('\n⚡ useEffect: Updating input value due to data/timezone change');
-    console.log('  📅 scheduled_for:', formData.scheduled_for);
-    console.log('  🌍 selectedTimezone:', selectedTimezone);
-    
+    console.log(
+      "\n⚡ useEffect: Updating input value due to data/timezone change",
+    );
+    console.log("  📅 scheduled_for:", formData.scheduled_for);
+    console.log("  🌍 selectedTimezone:", selectedTimezone);
+
     if (formData.scheduled_for) {
       const inputValue = formatDateForInput(formData.scheduled_for);
       setScheduledForInputValue(inputValue);
-      console.log('  ✅ Set input value:', inputValue);
+      console.log("  ✅ Set input value:", inputValue);
     } else {
       setScheduledForInputValue("");
-      console.log('  ✅ Cleared input value');
+      console.log("  ✅ Cleared input value");
     }
   }, [formData.scheduled_for, selectedTimezone]);
 
@@ -264,11 +287,15 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
 
       // Check for HEIC files (by file extension and MIME type)
       const fileName = file.name.toLowerCase();
-      const isHeicByExtension = fileName.endsWith('.heic') || fileName.endsWith('.heif');
-      const isHeicByMimeType = file.type === 'image/heic' || file.type === 'image/heif';
-      
+      const isHeicByExtension =
+        fileName.endsWith(".heic") || fileName.endsWith(".heif");
+      const isHeicByMimeType =
+        file.type === "image/heic" || file.type === "image/heif";
+
       if (isHeicByExtension || isHeicByMimeType) {
-        toast.error("HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format.");
+        toast.error(
+          "HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format.",
+        );
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
@@ -309,86 +336,103 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
   const formatDateForInput = (isoString: string | null | undefined) => {
     try {
       if (!isoString) {
-        console.log('📅 formatDateForInput: No date provided');
-        return '';
+        console.log("📅 formatDateForInput: No date provided");
+        return "";
       }
-      
-      console.log('📅 formatDateForInput: Converting UTC to display format');
-      console.log('  📍 Input UTC ISO:', isoString);
-      console.log('  🌍 Selected timezone:', selectedTimezone);
-      
+
+      console.log("📅 formatDateForInput: Converting UTC to display format");
+      console.log("  📍 Input UTC ISO:", isoString);
+      console.log("  🌍 Selected timezone:", selectedTimezone);
+
       // Parse UTC date and convert to selected timezone
       const dateInTimezone = dayjs.utc(isoString).tz(selectedTimezone);
-      
+
       if (!dateInTimezone.isValid()) {
-        console.warn("❌ formatDateForInput: Invalid date string provided:", isoString);
-        return '';
+        console.warn(
+          "❌ formatDateForInput: Invalid date string provided:",
+          isoString,
+        );
+        return "";
       }
-      
+
       // Format for datetime-local input (YYYY-MM-DDTHH:mm)
-      const formattedDate = dateInTimezone.format('YYYY-MM-DDTHH:mm');
-      
-      console.log('  ✅ Formatted for input:', formattedDate);
-      console.log('  📊 Timezone offset:', dateInTimezone.format('Z'));
-      
+      const formattedDate = dateInTimezone.format("YYYY-MM-DDTHH:mm");
+
+      console.log("  ✅ Formatted for input:", formattedDate);
+      console.log("  📊 Timezone offset:", dateInTimezone.format("Z"));
+
       return formattedDate;
     } catch (error) {
-      console.error("❌ formatDateForInput: Error formatting date for input:", error);
-      return '';
+      console.error(
+        "❌ formatDateForInput: Error formatting date for input:",
+        error,
+      );
+      return "";
     }
   };
-  
+
   // Convert datetime input from selected timezone to UTC for storage
   const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       if (!isMountedRef.current) return;
-      
+
       const localDateTimeValue = e.target.value; // e.g., "2025-06-07T00:42"
-      
+
       if (!localDateTimeValue) {
-        console.log('🕒 handleDateTimeChange: Clearing datetime');
+        console.log("🕒 handleDateTimeChange: Clearing datetime");
         setFormData((prev) => ({
           ...prev,
           scheduled_for: "",
         }));
         return;
       }
-      
-      console.log('\n🕒 handleDateTimeChange: Converting input to UTC');
-      console.log('  📝 Input datetime:', localDateTimeValue);
-      console.log('  🌍 Selected timezone:', selectedTimezone);
-      
+
+      console.log("\n🕒 handleDateTimeChange: Converting input to UTC");
+      console.log("  📝 Input datetime:", localDateTimeValue);
+      console.log("  🌍 Selected timezone:", selectedTimezone);
+
       // Use Day.js to parse the input as being in the selected timezone
       // Then convert to UTC
       const dateInTimezone = dayjs.tz(localDateTimeValue, selectedTimezone);
-      
+
       if (!dateInTimezone.isValid()) {
-        console.error('  ❌ Invalid date/time created');
+        console.error("  ❌ Invalid date/time created");
         throw new Error("Invalid date/time");
       }
-      
-      console.log('  🎯 Parsed in timezone:', dateInTimezone.format('YYYY-MM-DD HH:mm:ss Z'));
-      console.log('  📊 Timezone offset:', dateInTimezone.format('Z'));
-      console.log('  🏷️  Timezone name:', dateInTimezone.format('z'));
-      
+
+      console.log(
+        "  🎯 Parsed in timezone:",
+        dateInTimezone.format("YYYY-MM-DD HH:mm:ss Z"),
+      );
+      console.log("  📊 Timezone offset:", dateInTimezone.format("Z"));
+      console.log("  🏷️  Timezone name:", dateInTimezone.format("z"));
+
       // Convert to UTC and get ISO string
       const utcDate = dateInTimezone.utc();
       const isoString = utcDate.toISOString();
-      
-      console.log('  🌐 Converted to UTC:', utcDate.format('YYYY-MM-DD HH:mm:ss [UTC]'));
-      console.log('  ✅ Final UTC ISO:', isoString);
-      
+
+      console.log(
+        "  🌐 Converted to UTC:",
+        utcDate.format("YYYY-MM-DD HH:mm:ss [UTC]"),
+      );
+      console.log("  ✅ Final UTC ISO:", isoString);
+
       // Show the time difference for clarity
       const hoursDiff = dateInTimezone.utcOffset() / 60;
-      console.log(`  ⏰ Time difference: ${hoursDiff > 0 ? '+' : ''}${hoursDiff} hours from UTC`);
-      console.log('  📤 This UTC value will be sent to backend:', isoString);
-      
+      console.log(
+        `  ⏰ Time difference: ${hoursDiff > 0 ? "+" : ""}${hoursDiff} hours from UTC`,
+      );
+      console.log("  📤 This UTC value will be sent to backend:", isoString);
+
       setFormData((prev) => ({
         ...prev,
         scheduled_for: isoString,
       }));
     } catch (error) {
-      console.error("❌ handleDateTimeChange: Error handling datetime change:", error);
+      console.error(
+        "❌ handleDateTimeChange: Error handling datetime change:",
+        error,
+      );
       toast.error("Invalid date/time format.");
     }
   };
@@ -398,27 +442,30 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
     try {
       const newTimezone = e.target.value;
       const oldTimezone = selectedTimezone;
-      
-      console.log('\n🌍 handleTimezoneChange: Timezone changed');
-      console.log('  📍 Old timezone:', oldTimezone);
-      console.log('  📍 New timezone:', newTimezone);
-      
+
+      console.log("\n🌍 handleTimezoneChange: Timezone changed");
+      console.log("  📍 Old timezone:", oldTimezone);
+      console.log("  📍 New timezone:", newTimezone);
+
       setSelectedTimezone(newTimezone);
-      
+
       // Re-format the input value for the new timezone
       if (formData.scheduled_for) {
-        console.log('  🔄 Re-formatting existing date for new timezone');
-        console.log('  📅 Existing UTC date:', formData.scheduled_for);
-        
+        console.log("  🔄 Re-formatting existing date for new timezone");
+        console.log("  📅 Existing UTC date:", formData.scheduled_for);
+
         const newInputValue = formatDateForInput(formData.scheduled_for);
         setScheduledForInputValue(newInputValue);
-        
-        console.log('  ✅ Updated input value:', newInputValue);
+
+        console.log("  ✅ Updated input value:", newInputValue);
       } else {
-        console.log('  ℹ️  No existing date to re-format');
+        console.log("  ℹ️  No existing date to re-format");
       }
     } catch (error) {
-      console.error("❌ handleTimezoneChange: Error handling timezone change:", error);
+      console.error(
+        "❌ handleTimezoneChange: Error handling timezone change:",
+        error,
+      );
     }
   };
 
@@ -432,7 +479,10 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
           [fieldName]: e.target.checked,
         }));
       } catch (error) {
-        console.error(`Error handling checkbox change for ${fieldName}:`, error);
+        console.error(
+          `Error handling checkbox change for ${fieldName}:`,
+          error,
+        );
       }
     };
   };
@@ -495,6 +545,116 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 {formatErrorMessage(state.errors.title)}
               </p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="where_to">
+              Destination Search Target (Where to?)
+            </Label>
+            <div className="relative">
+              <select
+                id="where_to"
+                name="where_to"
+                value={formData.where_to}
+                onChange={handleInputChange}
+                aria-invalid={!!state.errors?.where_to}
+                aria-describedby="where-to-error"
+                className="w-full appearance-none rounded-md border border-input bg-background py-2 pl-3 pr-8 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="">Select Destination</option>
+                <optgroup label="Most popular">
+                  {POPULAR_DESTINATIONS.map((dest) => (
+                    <option key={`form-pop-${dest}`} value={dest}>
+                      {dest} {DESTINATION_FLAGS[dest]}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="All">
+                  {ALL_DESTINATIONS.map((dest) => (
+                    <option key={`form-all-${dest}`} value={dest}>
+                      {dest} {DESTINATION_FLAGS[dest]}
+                    </option>
+                  ))}
+                </optgroup>
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Add the destination here to make it searchable by the "Where to?"
+              search bar on the homepage.
+            </p>
+
+            {state.errors?.where_to && (
+              <p
+                id="where-to-error"
+                className="text-sm font-medium text-destructive"
+              >
+                {formatErrorMessage(state.errors.where_to)}
+              </p>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="origin">Departure Airport (Origin)</Label>
+              <div className="relative">
+                <select
+                  id="origin"
+                  name="origin"
+                  value={formData.origin}
+                  onChange={handleInputChange}
+                  aria-invalid={!!state.errors?.origin}
+                  aria-describedby="origin-error"
+                  className="w-full appearance-none rounded-md border border-input bg-background py-2 pl-3 pr-8 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="">Select Airport</option>
+                  {AIRPORTS.map((airport) => (
+                    <option key={airport} value={airport}>
+                      {airport}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              </div>
+              {state.errors?.origin && (
+                <p
+                  id="origin-error"
+                  className="text-sm font-medium text-destructive"
+                >
+                  {formatErrorMessage(state.errors.origin)}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="travel_date">Travel Month</Label>
+              <div className="relative">
+                <select
+                  id="travel_date"
+                  name="travel_date"
+                  value={formData.travel_date}
+                  onChange={handleInputChange}
+                  aria-invalid={!!state.errors?.travel_date}
+                  aria-describedby="travel-date-error"
+                  className="w-full appearance-none rounded-md border border-input bg-background py-2 pl-3 pr-8 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="">Select Month</option>
+                  {MONTHS.map((month) => (
+                    <option key={month} value={month}>
+                      {month}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              </div>
+              {state.errors?.travel_date && (
+                <p
+                  id="travel-date-error"
+                  className="text-sm font-medium text-destructive"
+                >
+                  {formatErrorMessage(state.errors.travel_date)}
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -576,7 +736,9 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
             <p className="text-sm text-muted-foreground">
               {formType === "edit"
                 ? "Upload a new image to replace the current one."
-                : "Upload an image for the escape."} Supported formats: JPG, PNG, WebP, GIF. HEIC files are not supported.
+                : "Upload an image for the escape."}{" "}
+              Supported formats: JPG, PNG, WebP, GIF. HEIC files are not
+              supported.
             </p>
             {state.errors?.image_file && (
               <p
@@ -778,7 +940,9 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                   <option value="">Select Board Basis</option>
                   {getFilteredBoardBasisOptions().map((key) => (
                     <option key={key} value={key}>
-                      {BOARD_BASIS_LABELS[key as keyof typeof BOARD_BASIS_LABELS] || key}
+                      {BOARD_BASIS_LABELS[
+                        key as keyof typeof BOARD_BASIS_LABELS
+                      ] || key}
                     </option>
                   ))}
                 </select>
@@ -887,10 +1051,14 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
           </div>
 
           <div className="mt-6 space-y-4">
-            <Label htmlFor="scheduled_for">Schedule Publication Date/Time</Label>
-            
+            <Label htmlFor="scheduled_for">
+              Schedule Publication Date/Time
+            </Label>
+
             <div className="space-y-2">
-              <Label htmlFor="timezone" className="text-sm font-medium">Timezone</Label>
+              <Label htmlFor="timezone" className="text-sm font-medium">
+                Timezone
+              </Label>
               <select
                 id="timezone"
                 value={selectedTimezone}
@@ -904,7 +1072,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 ))}
               </select>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <CalendarIcon className="h-4 w-4 text-muted-foreground" />
               <Input
@@ -923,7 +1091,9 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
               />
             </div>
             <p className="text-xs text-gray-500">
-              Leave empty to publish immediately, or set a future date/time for when this deal should appear on the website. The time you enter will be converted to UTC for storage.
+              Leave empty to publish immediately, or set a future date/time for
+              when this deal should appear on the website. The time you enter
+              will be converted to UTC for storage.
             </p>
             {state.errors?.scheduled_for && (
               <p

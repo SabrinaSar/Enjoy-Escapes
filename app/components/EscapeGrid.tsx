@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { fetchEscapes, type EscapeData } from "@/app/actions/fetchEscapes";
 import CardSelector from "./cards/CardSelector";
-import { Loader2 } from "lucide-react"; // Loading spinner
+import { Loader2, Search } from "lucide-react"; // Loading spinner
 import { Button } from "@/components/ui/button";
 import BannerContainer from "./BannerContainer";
 
@@ -24,6 +24,8 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
   const searchQuery = searchParams.get("q");
+  const originQuery = searchParams.get("origin");
+  const dateQuery = searchParams.get("date");
 
   const [escapes, setEscapes] = useState<EscapeData[]>(initialEscapes);
   const [page, setPage] = useState<number>(2); // Start loading from page 2
@@ -39,7 +41,9 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
         const result = await fetchEscapes(
           1,
           category || undefined,
-          searchQuery || undefined
+          searchQuery || undefined,
+          originQuery || undefined,
+          dateQuery || undefined,
         );
         if (result.error) {
           throw new Error(result.error);
@@ -56,7 +60,7 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
     };
 
     loadInitialEscapes();
-  }, [category, searchQuery]);
+  }, [category, searchQuery, originQuery, dateQuery]);
 
   const loadMoreEscapes = useCallback(async () => {
     if (loading || !hasMore) return; // Don't fetch if already loading or no more data
@@ -68,7 +72,9 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
       const result = await fetchEscapes(
         page,
         category || undefined,
-        searchQuery || undefined
+        searchQuery || undefined,
+        originQuery || undefined,
+        dateQuery || undefined,
       );
       if (result.error) {
         throw new Error(result.error);
@@ -84,7 +90,7 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [page, loading, hasMore, category, searchQuery]);
+  }, [page, loading, hasMore, category, searchQuery, originQuery, dateQuery]);
 
   // Determine where to split based on available items
   let firstBatchEscapes: EscapeData[] = [];
@@ -108,16 +114,26 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
   }
 
   // Determine if we should show the insert component
-  const shouldShowInsert = insertComponent && 
-    (firstBatchEscapes.length > 0) && 
+  const shouldShowInsert =
+    insertComponent &&
+    firstBatchEscapes.length > 0 &&
     (firstBatchEscapes.length === insertAfterItems || !hasMore);
 
   return (
     <div>
       {escapes.length === 0 && !loading && !error && (
-        <p className="text-center text-muted-foreground">
-          No escape deals found.
-        </p>
+        <div className="flex flex-col items-center justify-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+            <Search className="text-gray-400" size={32} />
+          </div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">
+            No results found
+          </h3>
+          <p className="text-center text-muted-foreground max-w-sm px-4">
+            We couldn't find any deals matching your search. Try searching for
+            something else or browse our latest deals.
+          </p>
+        </div>
       )}
 
       {/* First batch of escapes */}
@@ -130,9 +146,7 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
       </div>
 
       {/* Inserted component */}
-      {shouldShowInsert && (
-        <div className="my-10">{insertComponent}</div>
-      )}
+      {shouldShowInsert && <div className="my-10">{insertComponent}</div>}
 
       {/* Remaining escapes */}
       {remainingEscapes.length > 0 && (
@@ -185,7 +199,7 @@ const EscapeGrid: React.FC<EscapeGridProps> = ({
       )}
 
       {/* Banner section at the bottom of the page */}
-      {(!error && escapes.length > 0) && (
+      {!error && escapes.length > 0 && (
         <div className="mt-10">
           <BannerContainer />
         </div>

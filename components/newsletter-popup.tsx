@@ -183,7 +183,7 @@ export default function NewsletterPopup({
             </Button>
           </DialogTrigger>
         )}
-        <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-md bottom-4 top-auto left-[50%] translate-y-0 sm:top-[50%] sm:bottom-auto sm:translate-y-[-50%] rounded-lg [&>button]:hidden">
+        <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-md rounded-xl [&>button]:hidden">
           <DialogHeader>
             <DialogTitle className="sr-only">
               Newsletter Subscription Success
@@ -220,13 +220,13 @@ export default function NewsletterPopup({
   }
 
   return (
-    <Dialog open={showPopup} onOpenChange={handleOpenChange}>
+    <Dialog open={showPopup} onOpenChange={handleOpenChange} >
       {showTrigger && (
         <DialogTrigger asChild>
           <Button
             variant="ghost"
             size="icon"
-            className="relative group hover:bg-primary/10 transition-colors"
+            className="relative group hover:bg-primary/10 transition-colors "
           >
             <Mail className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
             <span className="absolute -top-1 -right-1 flex h-3 w-3">
@@ -236,7 +236,7 @@ export default function NewsletterPopup({
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-lg p-0 overflow-hidden bottom-4 top-auto left-[50%] translate-y-0 sm:top-[50%] sm:bottom-auto sm:translate-y-[-50%] rounded-lg [&>button]:hidden min-h-[300px]">
+      <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-lg p-0 overflow-hidden rounded-xl [&>button]:hidden min-h-[300px]">
         <DialogHeader className="sr-only">
           <DialogTitle>Newsletter Subscription Giveaway</DialogTitle>
         </DialogHeader>
@@ -244,7 +244,7 @@ export default function NewsletterPopup({
         <div className="absolute right-3 top-3 z-30">
           <button
             onClick={closePopup}
-            className="rounded-full bg-black/50 p-2 hover:bg-black/70 transition-colors text-white"
+            className="rounded-full bg-black/50 p-2 hover:bg-black/70 transition-colors text-white "
             aria-label="Close"
           >
             <X className="h-5 w-5" />

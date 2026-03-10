@@ -8,6 +8,7 @@ import EscapeGrid from "@/app/components/EscapeGrid";
 import PopularDestinations from "@/app/components/PopularDestinations";
 import TimestampDisplay from "@/app/components/TimestampDisplay";
 import { Metadata } from "next";
+import SearchFilterBanner from "./components/SearchFilterBanner";
 
 export const metadata: Metadata = {
   title: "Latest Travel Deals & Escapes | Enjoy Escapes",
@@ -135,9 +136,9 @@ export default async function Home() {
         <div className="mb-3">
           <CategoryFilter />
         </div>
-        {/* <div className="mb-3">
+        <div className="mb-3">
           <SearchFilterBanner />
-        </div> */}
+        </div>
 
         {/* Last Updated Info */}
         <div className="mb-2 text-center md:text-right">
