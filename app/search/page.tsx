@@ -1,9 +1,14 @@
 import EscapeGrid from "@/app/components/EscapeGrid";
 import { Metadata } from "next";
 import { fetchEscapes } from "@/app/actions/fetchEscapes";
+import SearchFilterBanner from "@/app/components/SearchFilterBanner";
+import CategoryFilter from "../components/CategoryFilter";
+import PopularDestinations from "../components/PopularDestinations";
 
 type SearchParams = {
   q?: string;
+  origin?: string;
+  date?: string;
 };
 
 // The correct type for pages in Next.js 14+
@@ -20,12 +25,15 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const resolvedParams = await searchParams;
   const query = resolvedParams.q || "";
+  const origin = resolvedParams.origin ? ` from ${resolvedParams.origin}` : "";
+  const date = resolvedParams.date ? ` on ${resolvedParams.date}` : "";
 
   return {
-    title: query
-      ? `Search results for "${query}" | Enjoy Escapes`
-      : "Search | Enjoy Escapes",
-    description: `Find travel deals and escapes matching "${query}" on Enjoy Escapes.`,
+    title:
+      query || origin || date
+        ? `Search results for ${query}${origin}${date} | Enjoy Escapes`
+        : "Search | Enjoy Escapes",
+    description: `Find travel deals and escapes matching your search on Enjoy Escapes.`,
   };
 }
 
@@ -36,29 +44,30 @@ export default async function SearchPage({
 }) {
   const resolvedParams = await searchParams;
   const query = resolvedParams.q || "";
+  const origin = resolvedParams.origin || "";
+  const date = resolvedParams.date || "";
 
-  // Fetch initial data on the server with search query
-  const initialData = await fetchEscapes(1, undefined, query);
+  // Fetch initial data on the server with search query, origin, and date
+  const initialData = await fetchEscapes(1, undefined, query, origin, date);
+
+  const hasSearchParams = query || origin || date;
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {query ? (
-        <>
-          <h1 className="text-2xl font-bold mb-6">
-            Search results for &quot;{query}&quot;
-          </h1>
+      {/* Search Filters */}
+      <div className="mb-6">
+        <CategoryFilter />
+      </div>
+      <div className="mb-8">
+        <SearchFilterBanner />
+      </div>
 
-          {/* Display message if no results */}
-          {initialData.escapes.length === 0 && (
-            <div className="text-center my-12">
-              <p className="text-lg text-muted-foreground">
-                No results found for &quot;{query}&quot;
-              </p>
-              <p className="mt-2">
-                Try a different search term or browse our categories.
-              </p>
-            </div>
-          )}
+      {hasSearchParams ? (
+        <>
+          <h1 className="text-xl font-bold mb-6 text-gray-800">
+            Search results {query ? `for "${query}"` : ""}{" "}
+            {origin ? `from "${origin}"` : ""} {date ? `on ${date}` : ""}
+          </h1>
 
           {/* Escape Grid */}
           {initialData.error ? (
@@ -70,6 +79,8 @@ export default async function SearchPage({
             <EscapeGrid
               initialEscapes={initialData.escapes}
               initialHasMore={initialData.hasMore}
+              insertAfterItems={20}
+              insertComponent={<PopularDestinations />}
             />
           )}
         </>

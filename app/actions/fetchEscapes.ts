@@ -34,6 +34,9 @@ export type EscapeData = {
   hot_deal: boolean | null;
   last_minute: boolean | null;
   scheduled_for: string | null;
+  origin: string | null;
+  travel_date: string | null;
+  where_to: string | null;
 };
 
 // Define a type for category filters
@@ -49,7 +52,9 @@ export type CategoryFilter = {
 export async function fetchEscapes(
   page: number = 1,
   category?: string,
-  search?: string
+  search?: string,
+  origin?: string,
+  date?: string,
 ): Promise<{ escapes: EscapeData[]; hasMore: boolean; error: string | null }> {
   const cookieStore = cookies();
   const supabase = await createClient();
@@ -67,7 +72,17 @@ export async function fetchEscapes(
 
   // Apply search filter if provided
   if (search && search.trim() !== "") {
-    query = query.ilike("title", `%${search.trim()}%`);
+    query = query.ilike("where_to", `%${search.trim()}%`);
+  }
+
+  // Apply origin filter if provided
+  if (origin && origin.trim() !== "") {
+    query = query.ilike("origin", `%${origin.trim()}%`);
+  }
+
+  // Apply date filter if provided
+  if (date && date.trim() !== "") {
+    query = query.eq("travel_date", date);
   }
 
   // Apply filters based on the selected category

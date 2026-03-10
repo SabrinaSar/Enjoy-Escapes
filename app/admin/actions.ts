@@ -155,6 +155,18 @@ const escapeFormSchema = z
           return null;
         }
       }),
+    origin: z
+      .string()
+      .optional()
+      .transform((v) => (v === "" ? null : v)),
+    travel_date: z
+      .string()
+      .optional()
+      .transform((v) => (v === "" ? null : v)),
+    where_to: z
+      .string()
+      .optional()
+      .transform((v) => (v === "" ? null : v)),
     // Exclude image_file from schema validation if handled separately
   })
   .refine(
@@ -166,20 +178,19 @@ const escapeFormSchema = z
         return (
           data.board_basis !== "flight_only" && data.board_basis !== "room_only"
         );
-      if (data.type === "other")
-        return !data.board_basis; // "other" type should not have board basis
+      if (data.type === "other") return !data.board_basis; // "other" type should not have board basis
       return true;
     },
     {
       message: "Invalid combination of type and board basis",
       path: ["board_basis"],
-    }
+    },
   );
 
 // Updated function signature for createEscape
 export async function createEscape(
   prevState: FormState, // Added prevState
-  formData: FormData
+  formData: FormData,
 ): Promise<FormState> {
   // Return type updated to FormState
   const supabase = await createClient();
@@ -206,15 +217,20 @@ export async function createEscape(
 
     // Check for HEIC files (by file extension and MIME type)
     const fileName = imageFile.name.toLowerCase();
-    const isHeicByExtension = fileName.endsWith('.heic') || fileName.endsWith('.heif');
-    const isHeicByMimeType = imageFile.type === 'image/heic' || imageFile.type === 'image/heif';
-    
+    const isHeicByExtension =
+      fileName.endsWith(".heic") || fileName.endsWith(".heif");
+    const isHeicByMimeType =
+      imageFile.type === "image/heic" || imageFile.type === "image/heif";
+
     if (isHeicByExtension || isHeicByMimeType) {
       return {
         success: false,
-        message: "HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format.",
+        message:
+          "HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format.",
         errors: {
-          image_file: ["HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format."],
+          image_file: [
+            "HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format.",
+          ],
         },
       };
     }
@@ -298,13 +314,16 @@ export async function createEscape(
       rawFormData.last_minute === "true" ||
       false,
     scheduled_for: rawFormData.scheduled_for,
+    origin: rawFormData.origin,
+    travel_date: rawFormData.travel_date,
+    where_to: rawFormData.where_to,
   });
 
   // If validation fails, return errors
   if (!validatedFields.success) {
     console.log(
       "Validation Errors:",
-      validatedFields.error.flatten().fieldErrors
+      validatedFields.error.flatten().fieldErrors,
     );
     return {
       success: false,
@@ -331,6 +350,9 @@ export async function createEscape(
     hot_deal,
     last_minute,
     scheduled_for,
+    origin,
+    travel_date,
+    where_to,
   } = validatedFields.data;
 
   // Prepare data for database insertion
@@ -351,6 +373,9 @@ export async function createEscape(
     hot_deal: hot_deal || false,
     last_minute: last_minute || false,
     scheduled_for: scheduled_for,
+    origin: origin || null,
+    travel_date: travel_date || null,
+    where_to: where_to || null,
     image: imageUrl ?? "", // Use uploaded URL or empty string
   };
 
@@ -391,7 +416,7 @@ export async function createEscape(
 // Updated function signature for updateEscape
 export async function updateEscape(
   prevState: FormState, // Added prevState
-  formData: FormData
+  formData: FormData,
 ): Promise<FormState> {
   // Return type updated to FormState
   const supabase = await createClient();
@@ -417,7 +442,7 @@ export async function updateEscape(
   if (fetchError) {
     console.error(
       "Database Error: Failed to fetch current escape data for update.",
-      fetchError
+      fetchError,
     );
     return {
       success: false,
@@ -449,15 +474,20 @@ export async function updateEscape(
 
     // Check for HEIC files (by file extension and MIME type)
     const fileName = imageFile.name.toLowerCase();
-    const isHeicByExtension = fileName.endsWith('.heic') || fileName.endsWith('.heif');
-    const isHeicByMimeType = imageFile.type === 'image/heic' || imageFile.type === 'image/heif';
-    
+    const isHeicByExtension =
+      fileName.endsWith(".heic") || fileName.endsWith(".heif");
+    const isHeicByMimeType =
+      imageFile.type === "image/heic" || imageFile.type === "image/heif";
+
     if (isHeicByExtension || isHeicByMimeType) {
       return {
         success: false,
-        message: "HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format.",
+        message:
+          "HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format.",
         errors: {
-          image_file: ["HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format."],
+          image_file: [
+            "HEIC/HEIF files are not supported. Please convert to JPG, PNG, or WebP format.",
+          ],
         },
       };
     }
@@ -501,7 +531,7 @@ export async function updateEscape(
     newImageUrl = imageData?.publicUrl ?? null;
     if (!newImageUrl) {
       console.error(
-        "Storage Error: New image uploaded but failed to get public URL."
+        "Storage Error: New image uploaded but failed to get public URL.",
       );
       // Attempt to clean up the newly uploaded file
       if (newImagePath) {
@@ -641,6 +671,18 @@ export async function updateEscape(
             return null;
           }
         }),
+      origin: z
+        .string()
+        .optional()
+        .transform((v) => (v === "" ? null : v)),
+      travel_date: z
+        .string()
+        .optional()
+        .transform((v) => (v === "" ? null : v)),
+      where_to: z
+        .string()
+        .optional()
+        .transform((v) => (v === "" ? null : v)),
       // ID is handled separately, image_file is handled separately
     })
     .refine(
@@ -653,14 +695,13 @@ export async function updateEscape(
             data.board_basis !== "flight_only" &&
             data.board_basis !== "room_only"
           );
-        if (data.type === "other")
-          return !data.board_basis; // "other" type should not have board basis
+        if (data.type === "other") return !data.board_basis; // "other" type should not have board basis
         return true;
       },
       {
         message: "Invalid combination of type and board basis",
         path: ["board_basis"],
-      }
+      },
     );
 
   // Exclude file and id before validation
@@ -698,18 +739,21 @@ export async function updateEscape(
       dataToValidate.last_minute === "true" ||
       false,
     scheduled_for: dataToValidate.scheduled_for,
+    origin: dataToValidate.origin,
+    travel_date: dataToValidate.travel_date,
+    where_to: dataToValidate.where_to,
   });
 
   // If validation fails, return errors
   if (!validatedFields.success) {
     console.log(
       "Validation Errors:",
-      validatedFields.error.flatten().fieldErrors
+      validatedFields.error.flatten().fieldErrors,
     );
     // Clean up newly uploaded image if validation fails *after* upload
     if (newImagePath) {
       console.log(
-        `Validation failed, deleting newly uploaded image: ${newImagePath}`
+        `Validation failed, deleting newly uploaded image: ${newImagePath}`,
       );
       await supabase.storage
         .from("enjoy-escapes-assets")
@@ -740,6 +784,9 @@ export async function updateEscape(
     hot_deal,
     last_minute,
     scheduled_for,
+    origin,
+    travel_date,
+    where_to,
   } = validatedFields.data;
 
   // Prepare data for database update
@@ -760,6 +807,9 @@ export async function updateEscape(
     hot_deal: hot_deal || false,
     last_minute: last_minute || false,
     scheduled_for: scheduled_for,
+    origin: origin || null,
+    travel_date: travel_date || null,
+    where_to: where_to || null,
 
     // Conditionally add the image field only if a new one was uploaded
     // Otherwise keep the existing image URL from currentEscapeData
@@ -779,7 +829,7 @@ export async function updateEscape(
     // Clean up newly uploaded image if update fails *after* upload
     if (newImagePath) {
       console.log(
-        `Update failed, deleting newly uploaded image: ${newImagePath}`
+        `Update failed, deleting newly uploaded image: ${newImagePath}`,
       );
       await supabase.storage
         .from("enjoy-escapes-assets")
@@ -821,7 +871,7 @@ export async function deleteEscape(id: number) {
   }
 
   // Clean up associated clicks first
-  // We target item_type='escape' (or null for backward compatibility) 
+  // We target item_type='escape' (or null for backward compatibility)
   // to avoid deleting banner clicks if IDs happen to match
   const { error: cleanupError } = await supabase
     .from("clicks_data")
@@ -830,7 +880,10 @@ export async function deleteEscape(id: number) {
     .or("item_type.eq.escape,item_type.is.null");
 
   if (cleanupError) {
-    console.error("Warning: Failed to clean up associated clicks:", cleanupError);
+    console.error(
+      "Warning: Failed to clean up associated clicks:",
+      cleanupError,
+    );
     // Continue with escape deletion anyway
   }
 
@@ -867,7 +920,7 @@ export async function fetchEscapesWithPagination(
     last_minute?: boolean;
     type?: "hotel" | "flight" | "hotel+flight" | "other";
     include_scheduled?: boolean; // New filter to include scheduled escapes
-  } = {}
+  } = {},
 ): Promise<{
   escapes: Database["public"]["Tables"]["escapes_data"]["Row"][];
   totalCount: number;
