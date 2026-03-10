@@ -72,7 +72,8 @@ export async function fetchEscapes(
 
   // Apply search filter if provided
   if (search && search.trim() !== "") {
-    query = query.ilike("where_to", `%${search.trim()}%`);
+    const searchTerm = search.trim();
+    query = query.or(`title.ilike.%${searchTerm}%,where_to.ilike.%${searchTerm}%`);
   }
 
   // Apply origin filter if provided
