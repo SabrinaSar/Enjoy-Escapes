@@ -38,6 +38,7 @@ export const ALL_DESTINATIONS = [
   "Thailand",
   "Tunisia",
   "Turkey",
+  "United Kingdom",
 ];
 
 export const DESTINATION_FLAGS: Record<string, string> = {
@@ -70,6 +71,7 @@ export const DESTINATION_FLAGS: Record<string, string> = {
   Paris: "🇫🇷",
   Qatar: "🇶🇦",
   "United States of America": "🇺🇸",
+  "United Kingdom": "🇬🇧",
 };
 
 export const DESTINATION_CODES: Record<string, string> = {
@@ -102,10 +104,12 @@ export const DESTINATION_CODES: Record<string, string> = {
   Paris: "fr",
   Qatar: "qa",
   "United States of America": "us",
+  "United Kingdom": "gb",
 };
 
 
 export const AIRPORTS = [
+  "Any Airport",
   "Any London",
   "Any Midlands",
   "Any North East",
@@ -116,6 +120,7 @@ export const AIRPORTS = [
 ];
 
 export const MONTHS = [
+  "Any",
   "January",
   "February",
   "March",
