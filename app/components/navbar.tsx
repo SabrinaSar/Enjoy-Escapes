@@ -10,8 +10,8 @@ export default function Navbar() {
   return (
     <div>
       <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-        <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-          <Link href={"/"} className="flex items-center gap-2 font-semibold">
+        <div className="w-full max-w-5xl flex justify-between items-center p-3 px-3 sm:px-5 text-sm">
+          <Link href={"/"} className="flex items-center gap-2 font-semibold shrink-0">
             <Image
               src={staticAssets.logo}
               alt="Enjoy Escapes Logo"
@@ -55,7 +55,7 @@ export default function Navbar() {
           </div>
 
           {/* Auth button (dropdown menu on mobile, normal buttons on desktop) */}
-          <div className="ml-1 sm:ml-0 flex items-center gap-2">
+          <div className="ml-1 sm:ml-0 flex items-center gap-2 shrink-0">
             <AuthButton />
           </div>
         </div>
