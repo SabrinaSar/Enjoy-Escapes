@@ -172,7 +172,7 @@ export default function ImageGalleryAdmin({ initialImages }: Props) {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="flex-1">

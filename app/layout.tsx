@@ -3,9 +3,8 @@ import "./globals.css";
 import Navbar from "@/app/components/navbar";
 import { ThemeProvider } from "next-themes";
 import Script from "next/script";
-import Footer from "@/components/footer";
-import NewsletterPopup from "@/components/newsletter-popup";
 import { Analytics } from "@vercel/analytics/next";
+import LayoutWrapper from "@/app/components/LayoutWrapper";
 
 const defaultUrl = "https://enjoyescapes.com";
 
@@ -38,14 +37,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="min-h-screen flex flex-col">
-            <div className="flex-1 w-full flex flex-col">
-              <Navbar />
-              <div className="w-full flex-1 flex flex-col">{children}</div>
-              <Footer />
-            </div>
-            <NewsletterPopup showTrigger={false} />
-          </main>
+          <LayoutWrapper>
+            <Navbar />
+            <div className="w-full flex-1 flex flex-col">{children}</div>
+          </LayoutWrapper>
         </ThemeProvider>
       </body>
     </html>

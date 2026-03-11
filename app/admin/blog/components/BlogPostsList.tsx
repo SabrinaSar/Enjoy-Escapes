@@ -102,7 +102,7 @@ export default function BlogPostsList({ posts, categories, onEditPost, onDeleteP
       </div>
 
       {/* Posts Table */}
-      <div className="border rounded-md">
+      <div className="border rounded-md overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>

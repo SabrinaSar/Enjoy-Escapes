@@ -289,28 +289,32 @@ export default function BlogPostEditor({ post, categories, tags, onClose, onSave
       <div className="container mx-auto max-w-7xl">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
           {/* Header */}
-          <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <div className="border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {post ? "Edit Post" : "Create New Post"}
               </h1>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
                   variant="outline"
+                  size="sm"
                   onClick={() => handleSave("draft")}
                   disabled={isSaving}
+                  className="flex-1 sm:flex-none"
                 >
                   <Save className="h-4 w-4 mr-2" />
-                  Save Draft
+                  Draft
                 </Button>
                 <Button
+                  size="sm"
                   onClick={() => handleSave("published")}
                   disabled={isSaving}
+                  className="flex-1 sm:flex-none"
                 >
                   <Eye className="h-4 w-4 mr-2" />
                   Publish
                 </Button>
-                <Button variant="ghost" onClick={onClose}>
+                <Button variant="ghost" size="sm" onClick={onClose} className="shrink-0">
                   <X className="h-4 w-4" />
                 </Button>
               </div>
