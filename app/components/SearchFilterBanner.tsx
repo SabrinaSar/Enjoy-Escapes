@@ -1,7 +1,14 @@
 "use client";
 
 import React from "react";
-import { MapPin, Plane, Calendar, Search, ChevronDown } from "lucide-react";
+import {
+  MapPin,
+  Plane,
+  Calendar,
+  Search,
+  ChevronDown,
+  Globe,
+} from "lucide-react";
 
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
@@ -24,6 +31,14 @@ import {
   DESTINATION_FLAGS,
   DESTINATION_CODES,
 } from "@/app/constants/searchOptions";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
 
 const SearchFilterBannerContent = () => {
   // Get search parameters to populate defaults
@@ -33,6 +48,21 @@ const SearchFilterBannerContent = () => {
   const currentDate = searchParams.get("date") || "";
 
   const [selectedDest, setSelectedDest] = React.useState(currentDestination);
+  const [selectedOrigins, setSelectedOrigins] = React.useState<string[]>(
+    currentOrigin ? currentOrigin.split(",").map((o: string) => o.trim()) : [],
+  );
+
+  const toggleOrigin = (airport: string) => {
+    setSelectedOrigins((prev) =>
+      prev.includes(airport)
+        ? prev.filter((a) => a !== airport)
+        : [...prev, airport],
+    );
+  };
+
+  const removeOrigin = (airport: string) => {
+    setSelectedOrigins((prev) => prev.filter((a) => a !== airport));
+  };
 
   const getFlagUrl = (destName: string) => {
     const code = DESTINATION_CODES[destName];
@@ -67,7 +97,9 @@ const SearchFilterBannerContent = () => {
                   <SelectValue placeholder="Search destination">
                     {selectedDest && (
                       <div className="flex items-center gap-2">
-                        {getFlagUrl(selectedDest) ? (
+                        {selectedDest === "Any" ? (
+                          <Globe className="w-4 h-4 text-gray-400" />
+                        ) : getFlagUrl(selectedDest) ? (
                           <img
                             src={getFlagUrl(selectedDest)!}
                             alt=""
@@ -78,12 +110,17 @@ const SearchFilterBannerContent = () => {
                             {DESTINATION_FLAGS[selectedDest]}
                           </span>
                         )}
-                        <span>{selectedDest}</span>
+                        <span>
+                          {selectedDest === "Any"
+                            ? "Any Destination"
+                            : selectedDest}
+                        </span>
                       </div>
                     )}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="Any">Any Destination</SelectItem>
                   <SelectGroup>
                     <SelectLabel>Most popular</SelectLabel>
                     {POPULAR_DESTINATIONS.map((dest) => (
@@ -143,20 +180,69 @@ const SearchFilterBannerContent = () => {
               Flying from
             </label>
             <div className="flex items-center w-full">
-              <Select name="origin" defaultValue={currentOrigin}>
-                <SelectTrigger className="text-base md:text-sm font-medium text-gray-900 dark:text-gray-100 bg-transparent border-0 p-0 h-auto focus:ring-0 shadow-none w-full">
-                  <SelectValue placeholder="Departure airport" />
-                </SelectTrigger>
-                <SelectContent>
-                  {AIRPORTS.map((airport) => (
-                    <SelectItem key={airport} value={airport}>
-                      {airport}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <input
+                type="hidden"
+                name="origin"
+                value={selectedOrigins.join(",")}
+              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="flex items-center justify-between gap-2 text-base md:text-sm font-medium text-gray-900 dark:text-gray-100 bg-transparent border-0 p-0 h-auto focus:ring-0 shadow-none w-full text-left"
+                  >
+                    <div className="flex flex-wrap gap-1">
+                      {selectedOrigins.length > 0 ? (
+                        selectedOrigins.map((airport) => (
+                          <Badge
+                            key={airport}
+                            variant="secondary"
+                            className="text-[10px] md:text-xs py-0 px-1.5 flex items-center gap-1 bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200"
+                          >
+                            {airport}
+                            <X
+                              size={10}
+                              className="cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeOrigin(airport);
+                              }}
+                            />
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-gray-400">Departure airport</span>
+                      )}
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-gray-400 shrink-0 opacity-50" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-2" align="start">
+                  <div className="space-y-2">
+                    {AIRPORTS.map((airport) => (
+                      <div
+                        key={airport}
+                        className="flex items-center space-x-2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer"
+                        onClick={() => toggleOrigin(airport)}
+                      >
+                        <Checkbox
+                          id={`airport-${airport}`}
+                          checked={selectedOrigins.includes(airport)}
+                          onCheckedChange={() => toggleOrigin(airport)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <label
+                          htmlFor={`airport-${airport}`}
+                          className="text-sm font-medium leading-none cursor-pointer flex-1"
+                        >
+                          {airport}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
-
           </div>
         </div>
 

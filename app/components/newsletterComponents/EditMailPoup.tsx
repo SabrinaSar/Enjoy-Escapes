@@ -58,7 +58,7 @@ export default function EditMailPoup({
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col gap-1.5 border-b pb-6">
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
           Edit Popup Content
@@ -68,7 +68,7 @@ export default function EditMailPoup({
         </p>
       </div>
 
-      <form action={handleSubmit} className="space-y-8">
+      <form action={handleSubmit} className="">
         <input type="hidden" name="id" value={initialData?.id} />
         <input
           type="hidden"
@@ -76,7 +76,7 @@ export default function EditMailPoup({
           value={initialData?.image_url || ""}
         />
 
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {/* Title Input */}
           <div className="grid gap-3">
             <Label htmlFor="title" className="text-base font-semibold">

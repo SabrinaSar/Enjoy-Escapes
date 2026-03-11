@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import React from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useActionState } from "react";
 import { useEffect } from "react";
 import { useFormStatus } from "react-dom";
@@ -562,6 +563,7 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
                 className="w-full appearance-none rounded-md border border-input bg-background py-2 pl-3 pr-8 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <option value="">Select Destination</option>
+                <option value="Any">Any Destination</option>
                 <optgroup label="Most popular">
                   {POPULAR_DESTINATIONS.map((dest) => (
                     <option key={`form-pop-${dest}`} value={dest}>
@@ -598,23 +600,33 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
             <div className="space-y-2">
               <Label htmlFor="origin">Departure Airport (Origin)</Label>
               <div className="relative">
-                <select
-                  id="origin"
-                  name="origin"
-                  value={formData.origin}
-                  onChange={handleInputChange}
-                  aria-invalid={!!state.errors?.origin}
-                  aria-describedby="origin-error"
-                  className="w-full appearance-none rounded-md border border-input bg-background py-2 pl-3 pr-8 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <option value="">Select Airport</option>
-                  {AIRPORTS.map((airport) => (
-                    <option key={airport} value={airport}>
+              <div className="grid grid-cols-2 gap-3 border rounded-md p-4 bg-background">
+                {AIRPORTS.map((airport) => (
+                  <div key={airport} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`airport-${airport}`}
+                      checked={formData.origin.split(",").map(o => o.trim()).includes(airport)}
+                      onCheckedChange={(checked) => {
+                        const currentOrigins = formData.origin ? formData.origin.split(",").map(o => o.trim()).filter(o => o !== "") : [];
+                        let newOrigins;
+                        if (checked) {
+                          newOrigins = [...currentOrigins, airport];
+                        } else {
+                          newOrigins = currentOrigins.filter(o => o !== airport);
+                        }
+                        setFormData(prev => ({ ...prev, origin: newOrigins.join(", ") }));
+                      }}
+                    />
+                    <Label
+                      htmlFor={`airport-${airport}`}
+                      className="text-sm font-normal cursor-pointer"
+                    >
                       {airport}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    </Label>
+                  </div>
+                ))}
+              </div>
+              <input type="hidden" name="origin" value={formData.origin} />
               </div>
               {state.errors?.origin && (
                 <p

@@ -67,17 +67,17 @@ export default function BlogAdmin({ initialPosts, initialCategories, initialTags
   }
 
   return (
-    <div className="p-6">
+    <div className="p-2 sm:p-6">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="flex items-center justify-between mb-6">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <TabsList className="grid w-full sm:max-w-md grid-cols-3">
             <TabsTrigger value="posts">Posts</TabsTrigger>
             <TabsTrigger value="categories">Categories</TabsTrigger>
             <TabsTrigger value="tags">Tags</TabsTrigger>
           </TabsList>
 
           {activeTab === "posts" && (
-            <Button onClick={handleCreatePost} className="flex items-center gap-2">
+            <Button onClick={handleCreatePost} className="w-full sm:w-auto flex items-center justify-center gap-2">
               <Plus className="h-4 w-4" />
               New Post
             </Button>

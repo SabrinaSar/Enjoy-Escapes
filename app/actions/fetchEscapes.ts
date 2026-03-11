@@ -71,14 +71,18 @@ export async function fetchEscapes(
   query = query.or(`scheduled_for.is.null,scheduled_for.lte.${now}`);
 
   // Apply search filter if provided
-  if (search && search.trim() !== "") {
+  if (search && search.trim() !== "" && search.toLowerCase() !== "any" && search.toLowerCase() !== "any destination") {
     const searchTerm = search.trim();
     query = query.or(`title.ilike.%${searchTerm}%,where_to.ilike.%${searchTerm}%`);
   }
 
   // Apply origin filter if provided (ignore "Any" options)
-  if (origin && origin.trim() !== "" && !origin.toLowerCase().includes("any airport")) {
-    query = query.ilike("origin", `%${origin.trim()}%`);
+  if (origin && origin.trim() !== "") {
+    const originList = origin.split(",").map(o => o.trim()).filter(o => o !== "" && !o.toLowerCase().includes("any airport"));
+    if (originList.length > 0) {
+      const orConditions = originList.map(o => `origin.ilike.%${o}%`).join(",");
+      query = query.or(orConditions);
+    }
   }
 
   // Apply date filter if provided (ignore "Any")
