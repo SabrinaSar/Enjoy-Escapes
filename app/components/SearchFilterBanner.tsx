@@ -51,6 +51,9 @@ const SearchFilterBannerContent = () => {
   const [selectedOrigins, setSelectedOrigins] = React.useState<string[]>(
     currentOrigin ? currentOrigin.split(",").map((o: string) => o.trim()) : [],
   );
+  const [selectedDates, setSelectedDates] = React.useState<string[]>(
+    currentDate ? currentDate.split(",").map((d: string) => d.trim()) : [],
+  );
 
   const toggleOrigin = (airport: string) => {
     setSelectedOrigins((prev) =>
@@ -62,6 +65,18 @@ const SearchFilterBannerContent = () => {
 
   const removeOrigin = (airport: string) => {
     setSelectedOrigins((prev) => prev.filter((a) => a !== airport));
+  };
+
+  const toggleDate = (month: string) => {
+    setSelectedDates((prev) =>
+      prev.includes(month)
+        ? prev.filter((d) => d !== month)
+        : [...prev, month],
+    );
+  };
+
+  const removeDate = (month: string) => {
+    setSelectedDates((prev) => prev.filter((d) => d !== month));
   };
 
   const getFlagUrl = (destName: string) => {
@@ -256,18 +271,70 @@ const SearchFilterBannerContent = () => {
             >
               When
             </label>
-            <Select name="date" defaultValue={currentDate}>
-              <SelectTrigger className="text-base md:text-sm font-medium text-gray-900 dark:text-gray-100 bg-transparent border-0 p-0 h-auto focus:ring-0 shadow-none w-full">
-                <SelectValue placeholder="Select month" />
-              </SelectTrigger>
-              <SelectContent>
-                {MONTHS.map((month) => (
-                  <SelectItem key={month} value={month}>
-                    {month}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center w-full">
+              <input
+                type="hidden"
+                name="date"
+                value={selectedDates.join(",")}
+              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="flex items-center justify-between gap-2 text-base md:text-sm font-medium text-gray-900 dark:text-gray-100 bg-transparent border-0 p-0 h-auto focus:ring-0 shadow-none w-full text-left"
+                  >
+                    <div className="flex flex-wrap gap-1">
+                      {selectedDates.length > 0 ? (
+                        selectedDates.map((month) => (
+                          <Badge
+                            key={month}
+                            variant="secondary"
+                            className="text-[10px] md:text-xs py-0 px-1.5 flex items-center gap-1 bg-yellow-50 text-yellow-700 hover:bg-yellow-100 border-yellow-200"
+                          >
+                            {month}
+                            <X
+                              size={10}
+                              className="cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeDate(month);
+                              }}
+                            />
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-gray-400">Select month</span>
+                      )}
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-gray-400 shrink-0 opacity-50" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-2" align="start">
+                  <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                    {MONTHS.map((month) => (
+                      <div
+                        key={month}
+                        className="flex items-center space-x-2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer"
+                        onClick={() => toggleDate(month)}
+                      >
+                        <Checkbox
+                          id={`date-${month}`}
+                          checked={selectedDates.includes(month)}
+                          onCheckedChange={() => toggleDate(month)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <label
+                          htmlFor={`date-${month}`}
+                          className="text-sm font-medium leading-none cursor-pointer flex-1"
+                        >
+                          {month}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
         </div>
 
