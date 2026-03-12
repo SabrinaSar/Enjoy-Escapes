@@ -640,23 +640,33 @@ export function EscapeForm({ action, initialData, formType }: EscapeFormProps) {
             <div className="space-y-2">
               <Label htmlFor="travel_date">Travel Month</Label>
               <div className="relative">
-                <select
-                  id="travel_date"
-                  name="travel_date"
-                  value={formData.travel_date}
-                  onChange={handleInputChange}
-                  aria-invalid={!!state.errors?.travel_date}
-                  aria-describedby="travel-date-error"
-                  className="w-full appearance-none rounded-md border border-input bg-background py-2 pl-3 pr-8 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <option value="">Select Month</option>
+                <div className="grid grid-cols-3 gap-3 border rounded-md p-4 bg-background">
                   {MONTHS.map((month) => (
-                    <option key={month} value={month}>
-                      {month}
-                    </option>
+                    <div key={month} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`month-${month}`}
+                        checked={formData.travel_date.split(",").map(m => m.trim()).includes(month)}
+                        onCheckedChange={(checked) => {
+                          const currentMonths = formData.travel_date ? formData.travel_date.split(",").map(m => m.trim()).filter(m => m !== "") : [];
+                          let newMonths;
+                          if (checked) {
+                            newMonths = [...currentMonths, month];
+                          } else {
+                            newMonths = currentMonths.filter(m => m !== month);
+                          }
+                          setFormData(prev => ({ ...prev, travel_date: newMonths.join(", ") }));
+                        }}
+                      />
+                      <Label
+                        htmlFor={`month-${month}`}
+                        className="text-sm font-normal cursor-pointer"
+                      >
+                        {month}
+                      </Label>
+                    </div>
                   ))}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                </div>
+                <input type="hidden" name="travel_date" value={formData.travel_date} />
               </div>
               {state.errors?.travel_date && (
                 <p

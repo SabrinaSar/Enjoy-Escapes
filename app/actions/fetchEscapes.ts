@@ -87,7 +87,11 @@ export async function fetchEscapes(
 
   // Apply date filter if provided (ignore "Any")
   if (date && date.trim() !== "" && date.toLowerCase() !== "any") {
-    query = query.eq("travel_date", date);
+    const dateList = date.split(",").map(d => d.trim()).filter(d => d !== "");
+    if (dateList.length > 0) {
+      const orConditions = dateList.map(d => `travel_date.ilike.%${d}%`).join(",");
+      query = query.or(orConditions);
+    }
   }
 
   // Apply filters based on the selected category
